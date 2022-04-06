@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from 'firebase/app'
+import LoginScreen from './assets/screens/LoginScreen';
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -15,10 +17,7 @@ const app = initializeApp({
 export default function App() {
   
   return (
-    <View style={styles.container}>
-      <Text>Socimap away!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <LoginScreen/>
   );
 }
 
