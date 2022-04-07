@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Feather} from 'react-native-feather';
+import { auth } from '../../App';
+import firebase from 'react-native-firebase';
 
 function LoginScreen(props) {
     const [email, setEmail] = useState('');
@@ -13,6 +15,17 @@ function LoginScreen(props) {
         secureTextEntry: true
 
     });
+
+    const handleSignUp = () =>{
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(email, password)
+        .then(userCredentials => {
+         const user = userCredentials.user;
+         console.log(user.email);
+       })
+       .catch(error => alert(error.message))
+    }
 
     const handlePasswordChange = (val) =>{
         setData({
@@ -35,7 +48,8 @@ function LoginScreen(props) {
         <TextInput
           style={styles.TextInput}
           placeholder="Username"
-          onChangeText={(email) => setEmail(email)}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
           
       />
       </View>
@@ -43,10 +57,12 @@ function LoginScreen(props) {
         <TextInput
             style={styles.TextInput}
             placeholder="Password"
+            value={password}
             secureTextEntry={data.secureTextEntry ? true : false}
-          //autoCapitalize='none'
-        //onChangeText={(password) => setPassword(password)}
-            onChangeText={(val) => handlePasswordChange(val)}
+            autoCapitalize='none'
+            onChangeText={(text) => setPassword(text)}
+            //onChangeText={(val) => handlePasswordChange(val),
+            //() => setPassword(val)}
         />
             <TouchableOpacity 
             onPress={updateSecureText}
@@ -64,11 +80,15 @@ function LoginScreen(props) {
 
       </View>
      <View style={styles.btnContainer}>
-      <TouchableOpacity style={styles.userBtn}>
+      <TouchableOpacity 
+      onPress={handleSignUp}
+      style={styles.userBtn}>
         <Text style={styles.btnTxt}>SignUp</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.userBtn}>
+      <TouchableOpacity 
+      onPress={() => { }}
+      style={styles.userBtn}>
         <Text style={styles.btnTxt}>Login</Text>
       </TouchableOpacity> 
 

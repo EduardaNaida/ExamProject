@@ -1,7 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { initializeApp } from 'firebase/app'
+import { FirebaseError, initializeApp } from 'firebase/app'
+//import * as firebase from "firebase";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './assets/screens/LoginScreen';
 
 const app = initializeApp({
@@ -14,10 +17,27 @@ const app = initializeApp({
   measurementId: "G-DB1JX1T6L8"
 })
 
+// let application;
+
+// if (firebase.apps.length === 0){
+//   application = firebase.initializeApp(app)
+// } else {
+//   application = firebase.app()
+// }
+
+// const auth = firebase.auth()
+// export {auth}; 
+const Stack = createNativeStackNavigator();
+
 export default function App() {
-  
+
   return (
-    <LoginScreen/>
+    //<LoginScreen/>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen options={{ headerShown: false}} name="Login" component={LoginScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
