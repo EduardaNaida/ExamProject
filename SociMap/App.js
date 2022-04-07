@@ -4,6 +4,15 @@ import { StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from 'firebase/app'
 import LoginScreen from './assets/screens/LoginScreen';
 
+// Added this for navigation between pages, refine to have button OnClick
+import {NavigationContainer} from '@react-navigation/native';
+import PersonScreen from './assets/screens/PersonScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+
+// Added for app header
+//import Header from '.assets/screeens/Header'
+
+
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
   authDomain: "socimap-2b18e.firebaseapp.com",
@@ -15,9 +24,16 @@ const app = initializeApp({
 })
 
 export default function App() {
+  const Stack = createStackNavigator();
   
   return (
-    <LoginScreen/>
+    //<LoginScreen/>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="PersonScreen">
+        <Stack.Screen name="LoginScreen" component={LoginScreen} />
+        <Stack.Screen name="PersonScreen" component={PersonScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
