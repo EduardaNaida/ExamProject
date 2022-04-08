@@ -114,5 +114,5 @@ const styles = StyleSheet.create({
       //btnTxt:{
       //  fontSize: 16,
       //  textAlign: "center",
-      //},
+      },
   });
