@@ -4,19 +4,23 @@ import { Edit, Trash } from 'react-native-feather';
 
 export default function PersonScreen({navigation}){
 
-    // TODO: Fetch data from user input 
+    // TODO: Fetch data from user input, stored in database 
+    // TODO: is it better to store the values as an array in categories? 
+    // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
     personName = "NAME: Greta Garbo";
-    categories = ["Title:", "Workplace:", "Family:", "Hobbies:", "Other info:"];
+    categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
     title = "CEO";
     workplace = "The House of ABCD";
+    group = "IKEA";
     family = "Kids: Ada, Love och Lace, Wife: Grynet";
     hobbies = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
     other = "Does not like peanuts";
   
     return (
     
-
-    <View style={styles.container}>
+    // TODO: Check variable names and structure 
+    // TODO: If category empty ==> hide category
+    <View style={styles.container}> 
         <Text style={styles.nameHeader}>{personName}</Text>
         <Text style={styles.categoryTitle}>{categories[0]}</Text>
         <View style={styles.categoryContainer}>
@@ -27,17 +31,21 @@ export default function PersonScreen({navigation}){
             <Text style={styles.categoryText}>{workplace}</Text>
             </View>
         <Text style={styles.categoryTitle}>{categories[2]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family}</Text>
+        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{group}</Text>
             </View>
         <Text style={styles.categoryTitle}>{categories[3]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
+        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family}</Text>
             </View>
         <Text style={styles.categoryTitle}>{categories[4]} </Text>
+        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
+            </View>
+        <Text style={styles.categoryTitle}>{categories[5]} </Text>
         <View style={styles.categoryContainer}><Text style={styles.categoryText}>{other}</Text>
             </View>
-        <View style={styles.btnContainer}>
-            
-            <TouchableOpacity style={styles.userBtn}>
+
+        
+        <View style={styles.btnContainer}>    
+            <TouchableOpacity style={styles.clickBtn}>
                 <Trash 
                 // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
                 name = 'trash'
@@ -110,9 +118,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#c97ba1",
         padding: 10,
         width: "20%"
+    },
       //},
       //btnTxt:{
       //  fontSize: 16,
       //  textAlign: "center",
-      },
+      
   });

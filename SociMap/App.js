@@ -4,14 +4,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from 'firebase/app'
 import LoginScreen from './assets/screens/LoginScreen';
 
-// Added this for navigation between pages, refine to have button OnClick
-import {NavigationContainer} from '@react-navigation/native';
-import PersonScreen from './assets/screens/PersonScreen';
-import {createStackNavigator} from '@react-navigation/stack';
-
-// Added for app header
-//import Header from '.assets/screeens/Header'
-
+// Added this for navigation to other page, refine to have button OnClick or just remove 
+//import {NavigationContainer} from '@react-navigation/native';
+//import PersonScreen from './assets/screens/PersonScreen';
+//import {createStackNavigator} from '@react-navigation/stack';
+// END 
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -24,16 +21,19 @@ const app = initializeApp({
 })
 
 export default function App() {
-  const Stack = createStackNavigator();
+  // TODO: Used for navigation to other page at developing stage 
+  // const Stack = createStackNavigator();
   
   return (
-    //<LoginScreen/>
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="PersonScreen">
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="PersonScreen" component={PersonScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <LoginScreen/>
+
+    // TODO: Shows PersonScreen when starting the app, used when developing PersonScreen  
+    // <NavigationContainer>
+    //  <Stack.Navigator initialRouteName="PersonScreen">
+    //    <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    //    <Stack.Screen name="PersonScreen" component={PersonScreen} />
+    //  </Stack.Navigator>
+    // </NavigationContainer>
   );
 }
 
