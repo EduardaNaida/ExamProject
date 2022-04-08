@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Edit, Trash } from 'react-native-feather';
 
 export default function PersonScreen({navigation}){
@@ -7,21 +7,25 @@ export default function PersonScreen({navigation}){
     // TODO: Fetch data from user input, stored in database 
     // TODO: is it better to store the values as an array in categories? 
     // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
-    personName = "NAME: Greta Garbo";
+    personName = "Greta Garbo";
     categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
     title = "CEO";
     workplace = "The House of ABCD";
     group = "IKEA";
-    family = "Kids: Ada, Love och Lace, Wife: Grynet";
+    family = ["Kids:", "Ada", "Love", "Lace", "Wife:", "Grynet"];
     hobbies = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
     other = "Does not like peanuts";
-  
+    // Used for allContacts to sort contacts alphabetically  
+    alphabeticalOrder = personName.charAt(0);
+
+
     return (
     
     // TODO: Check variable names and structure 
     // TODO: If category empty ==> hide category
     <View style={styles.container}> 
-        <Text style={styles.nameHeader}>{personName}</Text>
+    <ScrollView>
+        <Text style={styles.pageHeader}>{personName}</Text>
         <Text style={styles.categoryTitle}>{categories[0]}</Text>
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryText}>{title}</Text>
@@ -34,8 +38,17 @@ export default function PersonScreen({navigation}){
         <View style={styles.categoryContainer}><Text style={styles.categoryText}>{group}</Text>
             </View>
         <Text style={styles.categoryTitle}>{categories[3]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family}</Text>
+        <Text style={styles.subCategoryText}>{family[0]}</Text>
+            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[1]}</Text>
             </View>
+            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[2]}</Text>
+            </View>
+            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[3]}</Text>
+            </View>
+            <Text style={styles.subCategoryText}>{family[4]}</Text>
+            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[5]}</Text>
+            </View>
+            
         <Text style={styles.categoryTitle}>{categories[4]} </Text>
         <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
             </View>
@@ -62,7 +75,9 @@ export default function PersonScreen({navigation}){
                 />
             </TouchableOpacity> 
         </View>
-      </View>
+        </ScrollView>
+        </View>
+    
       
   );
 };
@@ -74,7 +89,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#ffffff',
       justifyContent: 'flex-start',
     },
-    nameHeader: {
+    pageHeader: {
         marginTop: 10,
         flex: 0,
         padding:10,
@@ -100,6 +115,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         color: "#000000",
         textAlign: 'auto',
+        fontSize: 20,
+    },
+    subCategoryTitle: {
+        marginTop: 20,
+        //paddingVertical: 5,
+        //borderRadius: 10,
+        color: "#000000",
+        alignSelf: 'auto',
         fontSize: 20,
     },
     categoryText: {
