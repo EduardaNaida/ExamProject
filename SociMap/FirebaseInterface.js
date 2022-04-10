@@ -1,6 +1,7 @@
 
-import { initializeApp } from 'firebase/app'
-import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut  } from 'firebase/auth'
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut, browserLocalPersistence } from 'firebase/auth';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc} from 'firebase/firestore';
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -12,11 +13,12 @@ const app = initializeApp({
   measurementId: "G-DB1JX1T6L8"
 });
 const auth = getAuth();
+const db = getFirestore();
 
 export async function AttemptSignIn(email, password){
     try{
         const result = await signInWithEmailAndPassword(auth, email, password);
-        await setPersistence(auth, 'LOCAL');
+        //await setPersistence(auth, browserLocalPersistence);
         return result.user;
     }
     catch(err){
@@ -47,4 +49,27 @@ export function GetUid(){
 
 export function DelayedLoginCheck(callback){
     setTimeout(()=>{callback(GetCurrentUser())}, 50);
+}
+
+export async function GetPersonsFromPath(path){
+    const ref = await getDocs(collection(db, path));
+    let ret = [];
+    for(let i = 0; i < ref.docs.length; i++)
+    {
+        const d = ref.docs[i];
+        console.log(doc(db, 'Users', GetUid(), 'People', d.id).path);
+        const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id))
+        
+        ret.push({
+            id: d.id,
+            ...r.data()
+        })
+    }
+    return ret;
+}
+
+export async function AddNewPerson(person){
+    const ref = await addDoc(collection(db, 'Users', GetUid(), 'People'), person);
+    console.log(ref.id);
+    return ref.id;
 }

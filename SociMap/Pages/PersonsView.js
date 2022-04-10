@@ -1,7 +1,7 @@
 
-import { async } from '@firebase/util';
 import React, { useState, useEffect, use } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button } from 'react-native';
+import { GetPersonsFromPath, AttemptSignIn, GetUid, AddNewPerson } from '../FirebaseInterface'
 
 async function dummy(str)
 {
@@ -24,8 +24,76 @@ async function dummy(str)
             name: "Annika Berg",
             img: 'https://reactnative.dev/img/tiny_logo.png',
             color: 'blue'
+        },
+        {
+            id: 4,
+            name: "Lucas Berg",
+            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+            color:'green'
+        },
+        {
+            id: 5,
+            name: "Marcus Berg",
+            img: '',
+            color: 'red'
+        },
+        {
+            id: 6,
+            name: "Annika Berg",
+            img: 'https://reactnative.dev/img/tiny_logo.png',
+            color: 'blue'
+        },
+        {
+            id: 7,
+            name: "Lucas Berg",
+            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+            color:'green'
+        },
+        {
+            id: 8,
+            name: "Marcus Berg",
+            img: '',
+            color: 'red'
+        },
+        {
+            id: 9,
+            name: "Annika Berg",
+            img: 'https://reactnative.dev/img/tiny_logo.png',
+            color: 'blue'
+        },
+        {
+            id: 10,
+            name: "Lucas Berg",
+            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
+            color:'green'
+        },
+        {
+            id: 11,
+            name: "Marcus Berg",
+            img: '',
+            color: 'red'
+        },
+        {
+            id: 12,
+            name: "Annika Berg",
+            img: 'https://reactnative.dev/img/tiny_logo.png',
+            color: 'blue'
         }
     ];
+}
+
+async function addTemp(name){
+    const obj = {
+        name: name,
+        img: 'https://reactnative.dev/img/tiny_logo.png',
+        color:'green',
+    };
+    const id = await AddNewPerson(obj);
+
+    return ({
+        id:id,
+        ...obj
+    });
 }
 
 const PersonThumbnail = ({personData}) =>
@@ -38,20 +106,26 @@ const PersonThumbnail = ({personData}) =>
     });
     if(personData.img != ''){
         return (
-            <Image style={{width:50, height:50}}
+            <Image style={styles.thumbnail}
             source={{uri:personData.img}}/>
         );
     }
 
-    return <Text style={{backgroundColor:personData.color, width:50, height:50}}>{acro}</Text>
+    return (<Text style={{
+            backgroundColor:personData.color, 
+            ...styles.thumbnail,
+            ...styles.thumbnailText
+        }}>
+            {acro}
+        </Text>);
 }
 
 const PersonWidget = ({personData}) =>
 {
     return (
-        <View>
+        <View style={styles.widgetContainer}>
             <PersonThumbnail personData={personData}/>
-            <Text >{personData.name}</Text>
+            <Text style={styles.widgetText}>{personData.name}</Text>
         </View>
     );
 }
@@ -63,16 +137,30 @@ export default PersonsView = ({path}) =>
     const [filterText, setFilterText] = useState("")
     const [filteredPersons, setFilteredPersons] = useState(null)
 
-    useEffect(()=>{
-        dummy(path).then(ret => {
+    useEffect(async ()=>{
+        console.log('fetching...')
+
+        //TODO REMOVE THE FOLLOWING ROW!!!!
+        console.log(await AttemptSignIn("test@test.com", "test123"));
+
+        const p = path == null ? `Users/${GetUid()}/People` : path;
+        
+        GetPersonsFromPath(p).then(ret => {
             setPersons(ret);
-            filterPersons(filterText);
-            
+            setFilteredPersons(ret);
+
             setLoading(false);
             console.log('fetched persons')
-        }).catch(err => console.log(err));
+        }).catch(err => {
+            console.log(err);
+            
+            setPersons([]);
+            setFilteredPersons([]);
+
+            setLoading(false);
+        });
     }, [path]);
-    
+
     const renderWidget = ({item}) =>{
         //console.log(item);
 
@@ -94,15 +182,66 @@ export default PersonsView = ({path}) =>
         />)
         :
         (<View>
-            <TextInput 
-                style={{backgroundColor:'red'}} 
-                placeholder='Filter' 
-                value={filterText} 
-                onChangeText={filterPersons}/>
+            <View style={{flexDirection:'row', }}>
+                <TextInput 
+                    style={styles.filter} 
+                    placeholder='Filter' 
+                    value={filterText} 
+                    onChangeText={filterPersons}/>
+                <Button
+                    title='Add'
+                    style='buttonStyle'
+                    onPress={async () =>{
+                        setPersons([...persons, await addTemp(filterText)]);
+                        //setImmediate(() => filterPersons(filterText));
+                    }}/>
+            </View>
             <FlatList
+                style={{padding:10}}
                 data={filteredPersons}
                 renderItem={renderWidget}
-                keyExtractor={item => item.id}
+                keyExtractor={(_, index) => index}
             />
         </View>);
 }
+
+const styles = StyleSheet.create({
+    widgetContainer:{
+        flexDirection: 'row',
+        flex:1,
+        marginBottom:5,
+        backgroundColor:'#b5b5b5',
+        padding:10,
+        borderRadius:10,
+    },
+    widgetText:{
+        fontSize:40,
+        textAlignVertical:'center',
+        marginLeft:10
+    },
+    thumbnail:{
+        width:70,
+        height:70,
+        borderRadius:35,
+    },
+    thumbnailText:{
+        fontSize:30,
+        textAlign: 'center',
+        textAlignVertical: 'center',
+    },
+    filter:{
+        height:70,
+        fontSize:30,
+        margin:10,
+        borderWidth:1,
+        borderColor:'#b5b5b5',
+        flex:1,
+        alignSelf:'stretch'
+    },
+    buttonStyle:{
+        margin: 10,
+        width:40,
+        textAlignVertical:'center',
+        backgroundColor: 'blue',
+    }
+});
