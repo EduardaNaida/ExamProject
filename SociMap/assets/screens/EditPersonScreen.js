@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
 import { Edit, Trash } from 'react-native-feather';
 
 export default function PersonScreen({navigation}){
 
-    // TODO: Fetch data from user input, stored in database 
-    // TODO: is it better to store the values as an array in categories? 
-    // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
     personName = "Greta Garbo";
     categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
     title = "CEO";
@@ -61,22 +58,22 @@ export default function PersonScreen({navigation}){
 
         
         <View style={styles.btnContainer}>    
-            <TouchableOpacity style={styles.clickBtn}>
+            <Button style={styles.clickBtn}>
                 <Trash 
                 // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
                 name = 'trash'
                 color = 'black'
                 alignSelf = 'center'
                 />
-            </TouchableOpacity> 
-            <TouchableOpacity style={styles.clickBtn}>
+            </Button> 
+            <Button style={styles.clickBtn}>
                 <Edit 
                 // TODO: New screen to edit a contact? 
                 name = 'edit'
                 color = 'black'
                 alignSelf = 'center'
                 />
-            </TouchableOpacity> 
+            </Button> 
         </View>
         </ScrollView>
         </View>
