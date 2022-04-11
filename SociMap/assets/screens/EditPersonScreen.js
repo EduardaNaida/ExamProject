@@ -1,150 +1,169 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
-import { Edit, Trash } from 'react-native-feather';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput} from 'react-native';
+import { Edit, Trash, X, Plus, Save } from 'react-native-feather';
 
-export default function PersonScreen({navigation}){
+function EditPersonScreen(props){
+    const [data, setData] = React.useState({
+        name: '',
+        title: '',
+        workplace: '',
+        group: '',
+        family: '',
+        hobbies:'',
+        other:''
+    });
 
-    personName = "Greta Garbo";
-    categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
-    title = "CEO";
-    workplace = "The House of ABCD";
-    group = "IKEA";
-    family = ["Kids:", "Ada", "Love", "Lace", "Wife:", "Grynet"];
-    hobbies = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
-    other = "Does not like peanuts";
+    // TODO: Fetch data from AddPerson 
+    var pageTitle = "EDIT: ";
+    var personName = pageTitle + "Greta Garbo";
+    var categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
+    var title = "CEO";
+    // TODO: Allow previous workplaces? 
+    var workplace = "The House of ABCD";
+    var group = "IKEA";
+    var family = {
+        "NumKids": 3, // update 
+        "Kid1": "Ada", 
+        "Kid2": "Love", 
+        "Kid3": "Lace",
+        "Wife": "Grynet",
+        "Husband": null,
+        "Grandfather": null,
+        "Grandmother": null
+    }
+    // TODO: Allow multiple hobbies 
+    var hobbies = "TEST for longer text inputs: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
+    var other = "Does not like peanuts";
+
     // TODO: Used for allContacts to sort contacts alphabetically, to simplify categorization
     // when viewing list of persons 
     //alphabeticalOrder = personName.charAt(0);
+    
+    function renderText(array) {
+        return array.map(obj => {
+          return <Text>family</Text>
+        });
+      }
+    // TODO: Family relation variable should be dynamic, find entries in the dictionary 
 
 
     return (
+        <View>
+        <ScrollView>
 
-    
-    // TODO: Check variable names and structure 
-    // TODO: If category empty ==> hide category
-    // TODO: Add for-loop to generate categoryContainers  
-    <View style={styles.container}> 
-    <ScrollView>
         <Text style={styles.pageHeader}>{personName}</Text>
-        <Text style={styles.categoryTitle}>{categories[0]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{title}</Text>
-        </View>
-        <Text style={styles.categoryTitle}>{categories[1]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{workplace}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[2]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{group}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[3]} </Text>
-        <Text style={styles.subCategoryText}>{family[0]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[1]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[2]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[3]}</Text>
-            </View>
-            <Text style={styles.subCategoryText}>{family[4]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[5]}</Text>
-            </View>
-            
-        <Text style={styles.categoryTitle}>{categories[4]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[5]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{other}</Text>
-            </View>
-
         
+        <Text style={styles.editHeader}> Edit {categories[0]}</Text>
+        <TextInput 
+          style={styles.input}
+          placeholder={title}
+          value={data}
+          onChangeText={(data) => setData(data)}/>
+          
+        <Text style={styles.editHeader}> Edit {categories[1]}</Text>
+        <TextInput 
+          style={styles.input}
+          placeholder={workplace}
+          value={data}
+          onChangeText={(data)=> setData}/>
+
+        <Text style={styles.editHeader}> Edit {categories[2]}</Text>
+        <TextInput 
+          style={styles.input}
+          placeholder={group}
+          value={data}
+          onChangeText={(data)=> setData}></TextInput>
+
+        <Text style={styles.editHeader}> Edit {categories[3]}</Text>
+        <Text style={styles.subEditHeader}>Kids</Text>
+        <TextInput 
+          style={styles.input}
+          placeholder={family["Kid1"]}
+          value={data}
+          onChangeText={(data)=> setData}></TextInput>
+        <TextInput 
+          style={styles.input}
+          value={data}
+          placeholder={family["Kid2"]}
+          onChangeText={(data)=> setData}/>
+        <TextInput 
+          style={styles.input}
+          value={data}
+          placeholder={family["Kid3"]}
+          onChangeText={(data)=> setData}/>
+        <Text style={styles.subEditHeader}>Wife: </Text>
+        <TextInput 
+          style={styles.input}
+          value={data}
+          placeholder={family["Wife"]}
+          onChangeText={(data)=> setData}></TextInput>
+        <Text style={styles.editHeader}> Edit {categories[4]}</Text>
+        <TextInput 
+          style={styles.input}
+          placeholder={hobbies}
+          value={data}
+          onChangeText={(data)=> setData}></TextInput>
         <View style={styles.btnContainer}>    
-            <Button style={styles.clickBtn}>
-                <Trash 
+        <TouchableOpacity style={styles.btn}>
+            <Plus 
                 // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
                 name = 'trash'
                 color = 'black'
                 alignSelf = 'center'
-                />
-            </Button> 
-            <Button style={styles.clickBtn}>
-                <Edit 
-                // TODO: New screen to edit a contact? 
-                name = 'edit'
+            /></TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
+            <Save 
+                // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
+                name = 'trash'
                 color = 'black'
                 alignSelf = 'center'
-                />
-            </Button> 
-        </View>
+            />
+            </TouchableOpacity></View> 
         </ScrollView>
         </View>
+        // TODO: For TextInput: onSubmitEditing={(value) => setName(value.nativeEvent.text)} 
+        // When a user submits the changes instead of changetextr
     
-      
-  );
-};
+    // TODO: Check variable names and structure 
+    // TODO: If category empty ==> hide category
+    // TODO: Add for-loop to generate categoryContainers  
+    );
+};   
+export default EditPersonScreen;
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      backgroundColor: '#ffffff',
-      justifyContent: 'flex-start',
-    },
     pageHeader: {
         marginTop: 10,
         flex: 0,
         padding:10,
-        //backgroundColor: "#E98D79",       // used for debugging
         textAlign: 'center',
         fontSize: 30,
         alignSelf:'center',
     },
-    categoryContainer: {
-        flexDirection: 'column',
-        justifyContent:'flex-start',
-        width: "85%",
-        padding: 10,
-        backgroundColor: "#d3d3d3",
-        borderRadius: 15,
-        alignSelf:'center',
+    editHeader: {
+        fontSize: 22,
+        padding: 5,
     },
-    categoryTitle: {
-        marginTop: 20,
-        paddingVertical: 5,
-        borderWidth: 0,
-        borderColor: "#20232a",
-        borderRadius: 10,
-        color: "#000000",
-        textAlign: 'auto',
+    subEditHeader: {
         fontSize: 20,
+        padding: 3, 
     },
-    subCategoryTitle: {
-        marginTop: 20,
-        //paddingVertical: 5,
-        //borderRadius: 10,
-        color: "#000000",
-        alignSelf: 'auto',
-        fontSize: 20,
-    },
-    categoryText: {
-        padding: 0,
-        fontSize: 15,
-        textAlign: 'center',
-    },
-    btnContainer: {
-      flexDirection: 'row',
-      justifyContent: "space-around",
-      width: "100%",
-    },
-    clickBtn:{
+    btn: {
         marginTop:50,
         borderRadius: 20,
         backgroundColor: "#c97ba1",
         padding: 10,
         width: "20%"
     },
-      //},
-      //btnTxt:{
-      //  fontSize: 16,
-      //  textAlign: "center",
-      
+    btnContainer: {
+        flexDirection: 'row-reverse',
+        //justifyContent: "flex-end",
+        width: "100%",
+    },
+    input: {
+        margin: 15,
+        padding:10,
+        borderColor: "#000000",
+        borderWidth: 1
+    }
   });

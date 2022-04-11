@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { Edit, Trash } from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import { Edit, Trash, Delete} from 'react-native-feather';
 
-export default function PersonScreen({navigation}){
-
+export default function PersonScreen() {
+   
     // TODO: Fetch data from user input, stored in database 
     // TODO: is it better to store the values as an array in categories? 
     // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
@@ -19,9 +19,15 @@ export default function PersonScreen({navigation}){
     // when viewing list of persons 
     //alphabeticalOrder = personName.charAt(0);
 
+    // TODO: Refine to render new user data 
+    //<View style={styles.categoryContainer}>{renderText(family)}</View>
+    function renderText(array) {
+        return array.map(obj => {
+          return <Text style={styles.format}>{obj}</Text>;
+        });
+      }
 
     return (
-
     
     // TODO: Check variable names and structure 
     // TODO: If category empty ==> hide category
@@ -69,9 +75,11 @@ export default function PersonScreen({navigation}){
                 alignSelf = 'center'
                 />
             </TouchableOpacity> 
+            
             <TouchableOpacity style={styles.clickBtn}>
                 <Edit 
                 // TODO: New screen to edit a contact? 
+                // TODO: Edit 
                 name = 'edit'
                 color = 'black'
                 alignSelf = 'center'

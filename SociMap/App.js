@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { initializeApp } from 'firebase/app'
 import LoginScreen from './assets/screens/LoginScreen';
 
-import AllContactsScreen from './assets/screens/AllContactsScreen';
+import EditPersonScreen from './assets/screens/EditPersonScreen';
 
 // Added this for navigation to other page, refine to have button OnClick or just remove 
 import {NavigationContainer} from '@react-navigation/native';
@@ -27,15 +27,15 @@ export default function App() {
   const Stack = createStackNavigator();
   
   return (
-    //<LoginScreen/>
+    <LoginScreen/>
 
     // TODO: Shows PersonScreen when starting the app, used when developing PersonScreen  
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="PersonScreen">
-        <Stack.Screen name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen name="PersonScreen" component={PersonScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    //<NavigationContainer>
+    //  <Stack.Navigator initialRouteName="EditPersonScreen">
+    //    <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    //    <Stack.Screen name="EditPersonScreen" component={EditPersonScreen} />
+    //  </Stack.Navigator>
+    //</NavigationContainer>
   );
 }
 
