@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { AttemptSignIn } from './FirebaseInterface';
+import { QuizView } from './quiz';
 
 export default function App() {
   const [text, setText] = useState("nuthing")
@@ -14,10 +15,7 @@ export default function App() {
       }).catch(err=>console.log(err))
   },[])
   return (
-    <View style={styles.container}>
-      <Text>{text}</Text>
-      <StatusBar style="auto" />
-    </View>
+    <QuizView/>
   );
 }
 
