@@ -1,6 +1,7 @@
 
 import { initializeApp } from 'firebase/app'
-import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut  } from 'firebase/auth'
+import { useNavigation } from '@react-navigation/native';
+import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from 'firebase/auth'
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -14,15 +15,15 @@ const app = initializeApp({
 const auth = getAuth();
 
 export async function AttemptSignIn(email, password){
-    try{
+    //try{
         const result = await signInWithEmailAndPassword(auth, email, password);
-        await setPersistence(auth, 'LOCAL');
+        //await setPersistence(auth, 'LOCAL');
         return result.user;
-    }
-    catch(err){
-        console.log(err);
-        return null;
-    }
+    //}
+    //catch(err){
+    //    console.log(err);
+     //   return null;
+    //}
 }
 
 export async function AttemptSignUp(email, password){
@@ -47,4 +48,18 @@ export function GetUid(){
 
 export function DelayedLoginCheck(callback){
     setTimeout(()=>{callback(GetCurrentUser())}, 50);
+}
+
+export function SendPasswordResetEmail(auth, email){
+
+        const result = sendPasswordResetEmail(auth, email);
+          // Redirect user to your login screen
+          
+          return result.user;
+      
+    // catch(error){
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // ..
+    //   };
 }

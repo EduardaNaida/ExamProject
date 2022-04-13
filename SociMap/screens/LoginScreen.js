@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Feather} from 'react-native-feather';
-import { auth } from '../../App';
-import firebase from 'react-native-firebase';
+import { AttemptSignIn, AttemptSignUp} from "../FirebaseInterface"
+import { useNavigation } from '@react-navigation/native';
 
 function LoginScreen(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const navigation = useNavigation();
     const [data, setData] = React.useState({
         email: '',
         password: '',
@@ -16,15 +17,40 @@ function LoginScreen(props) {
 
     });
 
-    const handleSignUp = () =>{
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(userCredentials => {
-         const user = userCredentials.user;
-         console.log(user.email);
-       })
-       .catch(error => alert(error.message))
+    const handleSignUp = async () =>{
+      
+
+
+       // Password should be at least 6 characters
+      if (password.length < 6){
+        alert('Password should be at least 6 characters\n');
+      }
+      else {
+        try{
+          const signUp = await AttemptSignUp(email, password);
+        }
+        catch(err){
+          if ( err.code === 'auth/email-already-in-use' ) {
+            alert('Email already in use. Please try again');
+          }
+        }
+      }
+    }
+
+    const handleSignIn = async () =>{
+      
+      // input validation
+
+      try{
+        const signIn = await AttemptSignIn(email, password);
+      }
+      catch(err){
+        if ( err.code === 'auth/wrong-password' ) {
+            alert('Wrong password. Please try again');
+          }
+        
+      }
+
     }
 
     const handlePasswordChange = (val) =>{
@@ -61,8 +87,6 @@ function LoginScreen(props) {
             secureTextEntry={data.secureTextEntry ? true : false}
             autoCapitalize='none'
             onChangeText={(text) => setPassword(text)}
-            //onChangeText={(val) => handlePasswordChange(val),
-            //() => setPassword(val)}
         />
             <TouchableOpacity 
             onPress={updateSecureText}
@@ -87,15 +111,18 @@ function LoginScreen(props) {
       </TouchableOpacity>
 
       <TouchableOpacity 
-      onPress={() => { }}
+      onPress={handleSignIn}
       style={styles.userBtn}>
         <Text style={styles.btnTxt}>Login</Text>
       </TouchableOpacity> 
 
       </View>
 
-      <TouchableOpacity>
+      <TouchableOpacity
+      onPress={() => navigation.navigate('ResetPasswordScreen')}>
+        <View>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
+        </View>
       </TouchableOpacity>
      
        <StatusBar style="auto" />  
