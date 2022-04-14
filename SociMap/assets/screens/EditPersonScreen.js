@@ -3,15 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput} from '
 import { Edit, Trash, X, Plus, Save } from 'react-native-feather';
 
 function EditPersonScreen(props){
-    const [data, setData] = React.useState({
-        name: '',
-        title: '',
-        workplace: '',
-        group: '',
-        family: '',
-        hobbies:'',
-        other:''
-    });
+    const [text,setText] = useState('');
 
     // TODO: Fetch data from AddPerson 
     var pageTitle = "EDIT: ";
@@ -57,52 +49,45 @@ function EditPersonScreen(props){
         <TextInput 
           style={styles.input}
           placeholder={title}
-          value={data}
-          onChangeText={(data) => setData(data)}/>
+          onSubmitEditing={(value) => setText(value.nativeEvent.text)}/>
+          <Text>New title: {title}!</Text>
           
         <Text style={styles.editHeader}> Edit {categories[1]}</Text>
         <TextInput 
           style={styles.input}
           placeholder={workplace}
-          value={data}
-          onChangeText={(data)=> setData}/>
+          value={text}/>
 
         <Text style={styles.editHeader}> Edit {categories[2]}</Text>
         <TextInput 
           style={styles.input}
           placeholder={group}
-          value={data}
-          onChangeText={(data)=> setData}></TextInput>
+          value={text}/>
 
         <Text style={styles.editHeader}> Edit {categories[3]}</Text>
         <Text style={styles.subEditHeader}>Kids</Text>
         <TextInput 
           style={styles.input}
           placeholder={family["Kid1"]}
-          value={data}
-          onChangeText={(data)=> setData}></TextInput>
+          value={text}/>
         <TextInput 
           style={styles.input}
-          value={data}
-          placeholder={family["Kid2"]}
-          onChangeText={(data)=> setData}/>
+          value={text}
+          placeholder={family["Kid2"]}/>
         <TextInput 
           style={styles.input}
-          value={data}
-          placeholder={family["Kid3"]}
-          onChangeText={(data)=> setData}/>
+          value={text}
+          placeholder={family["Kid3"]}/>
         <Text style={styles.subEditHeader}>Wife: </Text>
         <TextInput 
           style={styles.input}
-          value={data}
-          placeholder={family["Wife"]}
-          onChangeText={(data)=> setData}></TextInput>
+          value={text}
+          placeholder={family["Wife"]}></TextInput>
         <Text style={styles.editHeader}> Edit {categories[4]}</Text>
         <TextInput 
           style={styles.input}
           placeholder={hobbies}
-          value={data}
-          onChangeText={(data)=> setData}></TextInput>
+          value={text}/>
         <View style={styles.btnContainer}>    
         <TouchableOpacity style={styles.btn}>
             <Plus 
