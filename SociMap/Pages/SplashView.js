@@ -1,18 +1,9 @@
-import { useEffect } from 'react';
-import { View } from 'react-native';
-import { DelayedLoginCheck } from '../FirebaseInterface'
+import { View, Text } from 'react-native';
 
 export default SplashView = () => {
-    const moveForward = (user) =>{
-        if(user == null){
-            //goto login
-            return;
-        }
+    console.log('hejooo');
 
-        //goto main
-    };
-
-    useEffect(()=>{
-        DelayedLoginCheck(moveForward)
-    }, []);
+    return (<Text>
+        Splashing!!! whowohwohwohohwhowhowohohwohwhoohw
+    </Text>);
 }

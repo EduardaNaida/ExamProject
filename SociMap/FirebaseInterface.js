@@ -1,7 +1,11 @@
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut, inMemoryPersistence } from 'firebase/auth';
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, documentId} from 'firebase/firestore';
+import { 
+    getAuth, signInWithEmailAndPassword, setPersistence, 
+    createUserWithEmailAndPassword, signOut, 
+    reactNativeLocalPersistence, sendPasswordResetEmail, 
+    onAuthStateChanged } from 'firebase/auth/react-native';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc} from 'firebase/firestore';
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -16,18 +20,19 @@ const auth = getAuth();
 const db = getFirestore();
 
 export async function AttemptSignIn(email, password){
-    try{
+    //try{
+        await setPersistence(auth, reactNativeLocalPersistence);
         const result = await signInWithEmailAndPassword(auth, email, password);
-        await setPersistence(auth, inMemoryPersistence);
         return result.user;
-    }
-    catch(err){
-        console.log(err);
-        return null;
-    }
+    //}
+    //catch(err){
+    //    console.log(err);
+     //   return null;
+    //}
 }
 
 export async function AttemptSignUp(email, password){
+    await setPersistence(auth, reactNativeLocalPersistence);
     const uc = await createUserWithEmailAndPassword(auth, email, password);
     return uc.user;
 }
@@ -48,7 +53,12 @@ export function GetUid(){
 }
 
 export function DelayedLoginCheck(callback){
-    setTimeout(()=>{callback(GetCurrentUser())}, 50);
+    
+    setTimeout(()=>{callback(GetCurrentUser())}, 100);
+}
+
+export function SetAuthStateChangeCallback(callback){
+    return onAuthStateChanged(auth, callback);
 }
 
 export async function GetPersonsFromPath(path){
@@ -88,4 +98,17 @@ export async function AddNewPerson(person){
     const ref = await addDoc(collection(db, 'Users', GetUid(), 'People'), person);
     console.log(ref.id);
     return ref.id;
+}
+export function SendPasswordResetEmail(auth, email){
+
+        const result = sendPasswordResetEmail(auth, email);
+          // Redirect user to your login screen
+          
+          return result.user;
+      
+    // catch(error){
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     // ..
+    //   };
 }

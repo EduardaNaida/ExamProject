@@ -1,11 +1,17 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, LogBox  } from 'react-native';
 import PersonsView from './Pages/PersonsView';
-import { GetUid } from './FirebaseInterface';
+import SplashView from './Pages/SplashView';
+import { DelayedLoginCheck, SetAuthStateChangeCallback } from './FirebaseInterface';
+import LoginView from './Pages/LoginView';
+import MainView from './Pages/MainView';
 
 LogBox.ignoreLogs(['Setting a timer']);
 console.ignoredYellowBox = ['Setting a timer'];
+
+//import * as firebase from "firebase";
+
 
 // let application;
 
@@ -19,6 +25,28 @@ console.ignoredYellowBox = ['Setting a timer'];
 // export {auth}; 
 
 export default function App() {
+  const [splashing, setSplashing] = useState(true);
+  const [logged, setLogged] = useState(false);
+
+  useEffect(()=>{
+    return SetAuthStateChangeCallback(user =>{
+      setSplashing(false);
+
+      setLogged(user != null);
+    });
+  },[]);
+
+  if(splashing)
+    return(<SplashView></SplashView>);
+
+
+
+  return !logged ? 
+    (<LoginView></LoginView>)
+    :
+    (<MainView></MainView>);
+
+
   return (
     <SafeAreaView style={{flex:1}}>
         <StatusBar StatusBarStyle='light-content' ></StatusBar>

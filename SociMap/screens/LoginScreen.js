@@ -1,37 +1,54 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { Feather} from 'react-native-feather';
-import { auth } from '../../App';
-import firebase from 'react-native-firebase';
+import { Feather } from 'react-native-feather';
+import { AttemptSignIn, AttemptSignUp, GetCurrentUser } from "../FirebaseInterface"
 
-function LoginScreen(props) {
+function LoginScreen({navigation}) {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [data, setData] = React.useState({
-        email: '',
-        password: '',
-        check_textInput: false,
         secureTextEntry: true
 
     });
 
-    const handleSignUp = () =>{
-      firebase
-        .auth()
-        .createUserWithEmailAndPassword(email, password)
-        .then(userCredentials => {
-         const user = userCredentials.user;
-         console.log(user.email);
-       })
-       .catch(error => alert(error.message))
+    const handleSignUp = async () =>{
+      
+      console.log(GetCurrentUser());
+      console.log('signing up!');
+       // Password should be at least 6 characters
+      if (password.length < 6){
+        alert('Password should be at least 6 characters\n');
+      }
+      else {
+        try{
+          const signUp = await AttemptSignUp(email, password);
+          console.log('signed up');
+        }
+        catch(err){
+          if ( err.code === 'auth/email-already-in-use' ) {
+            alert('Email already in use. Please try again');
+          }
+        }
+      }
     }
 
-    const handlePasswordChange = (val) =>{
-        setData({
-            ... data,
-            password: val
-        });
+    const handleSignIn = async () =>{
+      
+      // input validation
+
+      try{
+        const signIn = await AttemptSignIn(email, password);
+        setLogged(true);
+      }
+      catch(err){
+        if ( err.code === 'auth/wrong-password' ) {
+            alert('Wrong password. Please try again');
+          }
+        
+      }
+
     }
 
     const updateSecureText = () => {
@@ -61,8 +78,6 @@ function LoginScreen(props) {
             secureTextEntry={data.secureTextEntry ? true : false}
             autoCapitalize='none'
             onChangeText={(text) => setPassword(text)}
-            //onChangeText={(val) => handlePasswordChange(val),
-            //() => setPassword(val)}
         />
             <TouchableOpacity 
             onPress={updateSecureText}
@@ -87,15 +102,18 @@ function LoginScreen(props) {
       </TouchableOpacity>
 
       <TouchableOpacity 
-      onPress={() => { }}
+      onPress={handleSignIn}
       style={styles.userBtn}>
         <Text style={styles.btnTxt}>Login</Text>
       </TouchableOpacity> 
 
       </View>
 
-      <TouchableOpacity>
+      <TouchableOpacity
+      onPress={() => navigation.navigate('ResetPasswordScreen')}>
+        <View>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
+        </View>
       </TouchableOpacity>
      
        <StatusBar style="auto" />  
