@@ -1,7 +1,7 @@
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut, browserLocalPersistence } from 'firebase/auth';
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc} from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, setPersistence, createUserWithEmailAndPassword, signOut, inMemoryPersistence } from 'firebase/auth';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, query, where, documentId} from 'firebase/firestore';
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -18,7 +18,7 @@ const db = getFirestore();
 export async function AttemptSignIn(email, password){
     try{
         const result = await signInWithEmailAndPassword(auth, email, password);
-        //await setPersistence(auth, browserLocalPersistence);
+        await setPersistence(auth, inMemoryPersistence);
         return result.user;
     }
     catch(err){
@@ -54,10 +54,14 @@ export function DelayedLoginCheck(callback){
 export async function GetPersonsFromPath(path){
     const ref = await getDocs(collection(db, path));
     let ret = [];
+    //let ids = Array.from(ref.docs, (d => d.id));
+
+    //console.log(ids);
+
     for(let i = 0; i < ref.docs.length; i++)
     {
         const d = ref.docs[i];
-        console.log(doc(db, 'Users', GetUid(), 'People', d.id).path);
+        //console.log(doc(db, 'Users', GetUid(), 'People', d.id).path);
         const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id))
         
         ret.push({
@@ -65,7 +69,19 @@ export async function GetPersonsFromPath(path){
             ...r.data()
         })
     }
+
     return ret;
+
+    /*const q = query(collection(db, 'Users', GetUid(), 'People'), where(documentId(), 'in', ids))
+    const arr = (await getDocs(q)).docs;
+    //console.log("arrr", arr);
+    return Array.from(arr, d => {
+        console.log('id', d.id);
+        return ({
+            id:d.id, 
+            ...d.data()
+        });
+    });*/
 }
 
 export async function AddNewPerson(person){

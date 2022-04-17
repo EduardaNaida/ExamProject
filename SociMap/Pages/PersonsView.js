@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, use } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button } from 'react-native';
 import { GetPersonsFromPath, AttemptSignIn, GetUid, AddNewPerson } from '../FirebaseInterface'
 
