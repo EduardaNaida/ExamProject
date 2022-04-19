@@ -1,24 +1,58 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { useEffect, useState } from 'react';
-import { AttemptSignIn } from './FirebaseInterface';
+
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, LogBox  } from 'react-native';
+import PersonsView from './Pages/PersonsView';
+import SplashView from './Pages/SplashView';
+import { DelayedLoginCheck, SetAuthStateChangeCallback } from './FirebaseInterface';
+import LoginView from './Pages/LoginView';
+import MainView from './Pages/MainView';
+
+LogBox.ignoreLogs(['Setting a timer']);
+console.ignoredYellowBox = ['Setting a timer'];
+
+//import * as firebase from "firebase";
+
+
+// let application;
+
+// if (firebase.apps.length === 0){
+//   application = firebase.initializeApp(app)
+// } else {
+//   application = firebase.app()
+// }
+
+// const auth = firebase.auth()
+// export {auth}; 
 
 export default function App() {
-  const [text, setText] = useState("nuthing")
+  const [splashing, setSplashing] = useState(true);
+  const [logged, setLogged] = useState(false);
 
   useEffect(()=>{
-    AttemptSignIn("test@test.com", "123123")
-      .then(result =>{
-        console.log(result);
-        setText(result.user.uid)
-      }).catch(err=>console.log(err))
-  },[])
+    return SetAuthStateChangeCallback(user =>{
+      setSplashing(false);
+
+      setLogged(user != null);
+    });
+  },[]);
+
+  if(splashing)
+    return(<SplashView></SplashView>);
+
+
+
+  return !logged ? 
+    (<LoginView></LoginView>)
+    :
+    (<MainView></MainView>);
+
+
   return (
-    <View style={styles.container}>
-      <Text>{text}</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    <SafeAreaView style={{flex:1}}>
+        <StatusBar StatusBarStyle='light-content' ></StatusBar>
+        <PersonsView></PersonsView>
+    </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -28,4 +62,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
 });
