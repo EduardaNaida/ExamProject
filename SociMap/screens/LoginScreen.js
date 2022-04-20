@@ -117,14 +117,6 @@ function LoginScreen({navigation}) {
         
         </View>
       </TouchableOpacity>
-
-      <View style={styles.btnContainer}>
-        <TouchableOpacity 
-            onPress={() => navigation.navigate('SettingsPage')}
-            style={styles.userBtn}>
-          <Text style={styles.btnTxt}>Settings</Text>
-        </TouchableOpacity>
-      </View>
       <StatusBar style="auto" />  
     </View>
   );
