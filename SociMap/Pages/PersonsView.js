@@ -140,9 +140,6 @@ export default PersonsView = ({path}) =>
     useEffect(async ()=>{
         console.log('fetching...')
 
-        //TODO REMOVE THE FOLLOWING ROW!!!!
-        console.log(await AttemptSignIn("test@test.com", "test123"));
-
         const p = path == null ? `Users/${GetUid()}/People` : path;
         
         GetPersonsFromPath(p).then(ret => {
