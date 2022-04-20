@@ -1,28 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, LogBox  } from 'react-native';
+import PersonsView from './Pages/PersonsView';
+import SplashView from './Pages/SplashView';
+import { DelayedLoginCheck, SetAuthStateChangeCallback } from './FirebaseInterface';
+import LoginView from './Pages/LoginView';
+import MainView from './Pages/MainView';
+
+LogBox.ignoreLogs(['Setting a timer']);
+console.ignoredYellowBox = ['Setting a timer'];
+
 //import * as firebase from "firebase";
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from './screens/LoginScreen';
-import ResetPasswordScreen from './screens/ResetPasswordScreen';
-import SettingsPage from './screens/SettingsPage';
 
 
-const Stack = createNativeStackNavigator();
+// let application;
+
+// if (firebase.apps.length === 0){
+//   application = firebase.initializeApp(app)
+// } else {
+//   application = firebase.app()
+// }
+
+// const auth = firebase.auth()
+// export {auth}; 
 
 export default function App() {
+  const [splashing, setSplashing] = useState(true);
+  const [logged, setLogged] = useState(false);
 
-  return (
-    //<LoginScreen/>
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen options={{ headerShown: false}} name="LoginScreen" component={LoginScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="ResetPasswordScreen" component={ResetPasswordScreen} />
-        <Stack.Screen options={{ headerShown: false}} name="SettingsPage" component={SettingsPage} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  useEffect(()=>{
+    return SetAuthStateChangeCallback(user =>{
+      setSplashing(false);
+
+      setLogged(user != null);
+    });
+  },[]);
+
+  if(splashing)
+    return(<SplashView></SplashView>);
+
+
+
+  return !logged ? 
+    (<LoginView></LoginView>)
+    :
+    (<MainView></MainView>);
+
 }
 
 const styles = StyleSheet.create({
@@ -32,4 +55,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
 });

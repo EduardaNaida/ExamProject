@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
-import { Feather} from 'react-native-feather';
-import { AttemptSignIn, AttemptSignUp} from "../FirebaseInterface"
-import { useNavigation } from '@react-navigation/native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Feather } from 'react-native-feather';
+import { AttemptSignIn, AttemptSignUp, GetCurrentUser } from "../FirebaseInterface"
 
-function LoginScreen(props) {
+function LoginScreen({navigation}) {
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const navigation = useNavigation();
     const [data, setData] = React.useState({
-        email: '',
-        password: '',
-        check_textInput: false,
         secureTextEntry: true
 
     });
 
-    const handleSignUp = async () => {
+    const handleSignUp = async () =>{
+      
+      console.log(GetCurrentUser());
+      console.log('signing up!');
        // Password should be at least 6 characters
       if (password.length < 6){
         alert('Password should be at least 6 characters\n');
@@ -25,6 +24,7 @@ function LoginScreen(props) {
       else {
         try{
           const signUp = await AttemptSignUp(email, password);
+          console.log('signed up');
         }
         catch(err){
           if ( err.code === 'auth/email-already-in-use' ) {
@@ -38,8 +38,7 @@ function LoginScreen(props) {
 
       try {
         const signIn = await AttemptSignIn(email, password);
-        Alert.alert('Success', 
-        `You have successfully signed in!`);
+        setLogged(true);
       }
       catch(err){
         if ( err.code === 'auth/wrong-password' ) {
@@ -51,13 +50,6 @@ function LoginScreen(props) {
         
       }
 
-    }
-
-    const handlePasswordChange = (val) =>{
-        setData({
-            ... data,
-            password: val
-        });
     }
 
     const updateSecureText = () => {
