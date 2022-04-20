@@ -32,11 +32,13 @@ export async function AttemptSignUp(email, password){
 }
 
 export async function SignOut(){
-    await signOut(auth)
+    const result = await signOut(auth);
+    console.log(result.user, 'User signed out!')
+    return result.user;
 }
 
 export function GetCurrentUser(){
-    return auth.currentUser
+    return auth.currentUser;
 }
 
 export function GetUid(){
@@ -63,3 +65,4 @@ export function SendPasswordResetEmail(auth, email){
     //     // ..
     //   };
 }
+

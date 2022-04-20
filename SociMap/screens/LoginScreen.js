@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { Alert, StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 import { Feather} from 'react-native-feather';
 import { AttemptSignIn, AttemptSignUp} from "../FirebaseInterface"
 import { useNavigation } from '@react-navigation/native';
@@ -17,10 +17,7 @@ function LoginScreen(props) {
 
     });
 
-    const handleSignUp = async () =>{
-      
-
-
+    const handleSignUp = async () => {
        // Password should be at least 6 characters
       if (password.length < 6){
         alert('Password should be at least 6 characters\n');
@@ -38,16 +35,19 @@ function LoginScreen(props) {
     }
 
     const handleSignIn = async () =>{
-      
-      // input validation
 
-      try{
+      try {
         const signIn = await AttemptSignIn(email, password);
+        Alert.alert('Success', 
+        `You have successfully signed in!`);
       }
       catch(err){
         if ( err.code === 'auth/wrong-password' ) {
             alert('Wrong password. Please try again');
           }
+        else if( err.code === 'auth/missing-email'||  err.code === 'auth/missing-password' ) {
+          alert('Please enter your email or password');
+        }
         
       }
 
@@ -105,27 +105,35 @@ function LoginScreen(props) {
       </View>
      <View style={styles.btnContainer}>
       <TouchableOpacity 
-      onPress={handleSignUp}
-      style={styles.userBtn}>
+        onPress={handleSignUp}
+        style={styles.userBtn}>
         <Text style={styles.btnTxt}>SignUp</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
-      onPress={handleSignIn}
-      style={styles.userBtn}>
+        onPress={handleSignIn}
+        style={styles.userBtn}>
         <Text style={styles.btnTxt}>Login</Text>
       </TouchableOpacity> 
 
       </View>
 
-      <TouchableOpacity
-      onPress={() => navigation.navigate('ResetPasswordScreen')}>
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('ResetPasswordScreen')}>
         <View>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
+        
         </View>
       </TouchableOpacity>
-     
-       <StatusBar style="auto" />  
+
+      <View style={styles.btnContainer}>
+        <TouchableOpacity 
+            onPress={() => navigation.navigate('SettingsPage')}
+            style={styles.userBtn}>
+          <Text style={styles.btnTxt}>Settings</Text>
+        </TouchableOpacity>
+      </View>
+      <StatusBar style="auto" />  
     </View>
   );
 }

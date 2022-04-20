@@ -6,18 +6,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
+import SettingsPage from './screens/SettingsPage';
 
 
-// let application;
-
-// if (firebase.apps.length === 0){
-//   application = firebase.initializeApp(app)
-// } else {
-//   application = firebase.app()
-// }
-
-// const auth = firebase.auth()
-// export {auth}; 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -28,6 +19,7 @@ export default function App() {
       <Stack.Navigator>
         <Stack.Screen options={{ headerShown: false}} name="LoginScreen" component={LoginScreen} />
         <Stack.Screen options={{ headerShown: false}} name="ResetPasswordScreen" component={ResetPasswordScreen} />
+        <Stack.Screen options={{ headerShown: false}} name="SettingsPage" component={SettingsPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
