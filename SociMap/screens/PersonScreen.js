@@ -1,96 +1,81 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import React, { useReducer, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image } from 'react-native';
 import { Edit, Trash, Delete} from 'react-native-feather';
 
-export default function PersonScreen() {
-   
-    // TODO: Fetch data from user input, stored in database 
-    // TODO: is it better to store the values as an array in categories? 
-    // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
-    personName = "Greta Garbo";
-    categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
-    title = "CEO";
-    workplace = "The House of ABCD";
-    group = "IKEA";
-    family = ["Kids:", "Ada", "Love", "Lace", "Wife:", "Grynet"];
-    hobbies = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
-    other = "Does not like peanuts";
-    // TODO: Used for allContacts to sort contacts alphabetically, to simplify categorization
-    // when viewing list of persons 
-    //alphabeticalOrder = personName.charAt(0);
 
-    // TODO: Refine to render new user data 
-    //<View style={styles.categoryContainer}>{renderText(family)}</View>
-    function renderText(array) {
-        return array.map(obj => {
-          return <Text style={styles.format}>{obj}</Text>;
-        });
-      }
+
+const PersonThumbnail = ({personData}) =>
+{
+    const [acro, _] = useState(() => {
+        console.log(personData)
+        const str = personData.name;
+        const matches = str.match(/\b(\w)/g);
+        const acronym = matches.join('').substring(0,2); 
+        return acronym;
+    });
+    if(personData.img != '' && personData.img){
+        return (
+            <Image style={styles.thumbnail}
+            source={{uri:personData.img}}/>
+        );
+    }
+
+    return (<Text style={{
+            backgroundColor:personData.color, 
+            ...styles.thumbnail,
+            ...styles.thumbnailText
+        }}>
+            {acro}
+        </Text>);
+}
+
+const Section = ({dispatch, sectionData}) => {
 
     return (
-    
-    // TODO: Check variable names and structure 
-    // TODO: If category empty ==> hide category
-    // TODO: Add for-loop to generate categoryContainers  
-    <View style={styles.container}> 
-    <ScrollView>
-        <Text style={styles.pageHeader}>{personName}</Text>
-        <Text style={styles.categoryTitle}>{categories[0]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{title}</Text>
+        <View key={sectionData.headline}>
+            <Text>{sectionData.headline}</Text>
+            {
+                sectionData.notes.map(note => <Note note={note}></Note>)
+            }
         </View>
-        <Text style={styles.categoryTitle}>{categories[1]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{workplace}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[2]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{group}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[3]} </Text>
-        <Text style={styles.subCategoryText}>{family[0]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[1]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[2]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[3]}</Text>
-            </View>
-            <Text style={styles.subCategoryText}>{family[4]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[5]}</Text>
-            </View>
-            
-        <Text style={styles.categoryTitle}>{categories[4]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[5]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{other}</Text>
-            </View>
+    );
+}
 
-        
-        <View style={styles.btnContainer}>    
-            <TouchableOpacity style={styles.clickBtn}>
-                <Trash 
-                // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
-                name = 'trash'
-                color = 'black'
-                alignSelf = 'center'
-                />
-            </TouchableOpacity> 
-            
-            <TouchableOpacity style={styles.clickBtn}>
-                <Edit 
-                // TODO: New screen to edit a contact? 
-                // TODO: Edit 
-                name = 'edit'
-                color = 'black'
-                alignSelf = 'center'
-                />
-            </TouchableOpacity> 
+const Note = ({dispatch, note}) => {
+    const input = useRef();
+    const [text, setText] = useState(note);
+    const [editable, setEditable] = useState(false);
+    console.log(editable);
+
+    return (
+        <View key={note}>
+
+            <TextInput 
+                editable={editable} 
+                onFocus={() => setEditable(true)} 
+                onBlur={() => setEditable(false)} 
+                value={text} 
+                ref={input} 
+                onChangeText={setText}/>
+            <Button onPress={() => {setEditable(true); setTimeout(() => input.current.focus(), 10);} } title='hej'></Button>
         </View>
-        </ScrollView>
+    );
+}
+
+export default function PersonView() {
+   const [state, dispatch] = useReducer(()=>{}, {name:'Lucas Berg', color:'red', img:null, notes:[{headline:'emails', notes:['test@test.com']}]});
+    return (
+        <View>
+            <ScrollView>
+                <PersonThumbnail personData={state}/>
+                <Text>{state.name}</Text>
+
+                {
+                    state.notes.map(section => <Section sectionData={section}></Section>)
+                }
+            </ScrollView>
         </View>
-    
-      
-  );
+    );
 };
 
 const styles = StyleSheet.create({
@@ -152,6 +137,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#c97ba1",
         padding: 10,
         width: "20%"
+    },
+    thumbnail:{
+        width:70,
+        height:70,
+        borderRadius:35,
+    },
+    thumbnailText:{
+        fontSize:30,
+        textAlign: 'center',
+        textAlignVertical: 'center',
     },
       //},
       //btnTxt:{

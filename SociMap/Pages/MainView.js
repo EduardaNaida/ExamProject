@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 
 import PersonsView from './PersonsView';
+import PersonView from '../screens/PersonScreen'
 
 const Tab = createBottomTabNavigator();
 
@@ -21,7 +22,7 @@ export default MainView = ({SetLogged}) => {
         <NavigationContainer>
             <Tab.Navigator>
                 <Tab.Screen name='Persons' component={PersonsView}/>
-                <Tab.Screen name='Groups' component={Blank}/>
+                <Tab.Screen name='Groups' component={PersonView}/>
                 <Tab.Screen name='Quiz' component={Blank}/>
             </Tab.Navigator>
         </NavigationContainer>
