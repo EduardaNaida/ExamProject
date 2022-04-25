@@ -1,11 +1,13 @@
 
+import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
 import { 
     getAuth, signInWithEmailAndPassword, setPersistence, 
     createUserWithEmailAndPassword, signOut, 
     reactNativeLocalPersistence, sendPasswordResetEmail, 
     onAuthStateChanged } from 'firebase/auth/react-native';
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc} from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc} from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -18,6 +20,7 @@ const app = initializeApp({
 });
 const auth = getAuth();
 const db = getFirestore();
+const storage = getStorage();
 
 export async function AttemptSignIn(email, password){
     //try{
@@ -111,4 +114,80 @@ export function SendPasswordResetEmail(auth, email){
     //     const errorMessage = error.message;
     //     // ..
     //   };
+}
+
+export async function GetPersonData(personId){
+    const refGeneral = await getDoc(doc(db, 'Users', GetUid(), 'People', personId));
+    const refHeadlines = await getDocs(collection(db, 'Users', GetUid(), 'People', personId, 'Notes'));
+
+    const notes = [];
+
+    for(const x of refHeadlines.docs){
+        const refValues = await getDocs(collection(db, 'Users', GetUid(), 'People', personId, 'Notes', x.id, 'Values'));
+        
+        notes.push({
+            id: x.id,
+            ...x.data(),
+            values: refValues.docs.map(x => ({
+                value: x.get('value'),
+                id: x.id
+            }))
+        })
+    }
+
+    const ret = {
+        ...refGeneral.data(),
+        notes: notes,
+        id:refGeneral.id
+    };
+
+
+    return ret;
+}
+
+export async function AddValueToNote(personId, noteId, value){
+    const col = collection(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values');
+    const ref = await addDoc(col, {value:value});
+    
+    return ({value: value, id: ref.id});
+}
+
+
+export async function AddValueToNoteCustomId(personId, noteId, value, valueId){
+    const col = doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId);
+    await setDoc(col, {value:value});
+    
+    return ({value: value, id: valueId});
+}
+
+export async function RemoveValueFromNote(personId, noteId, valueId){
+    await deleteDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId));
+}
+
+export async function UpdateValueOfNote(personId, noteId, valueId, newValue){
+    await updateDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId), {value: newValue});
+}
+
+export async function RemoveNote(personId, noteId){
+    await deleteDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId));
+}
+
+export async function AddNoteCustomId(personId, headline, noteId){
+    console.log(personId, headline, noteId);
+    await setDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId), {headline:headline});
+}
+
+export async function SetPersonImage(personId, imageUri){
+    const blob = await (await fetch(imageUri)).blob();
+    
+    //const type = imageUri.split(/[#?]/)[0].split('.').pop().trim();
+    const path = `Users/${GetUid()}/PeoplePics/${personId}`;
+
+    const imageRef = await uploadBytes(ref(storage, path), blob);
+
+    const url = await getDownloadURL(imageRef.ref);
+    console.log(url);
+    updateDoc(doc(db, 'Users', GetUid(), 'People', personId), {img:url});
+
+    return url;
 }

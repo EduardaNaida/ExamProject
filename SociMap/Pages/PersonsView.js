@@ -1,86 +1,7 @@
 
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button } from 'react-native';
-import { GetPersonsFromPath, AttemptSignIn, GetUid, AddNewPerson } from '../FirebaseInterface'
-
-async function dummy(str)
-{
-    await new Promise(r => setTimeout(r, 2000));
-    return [
-        {
-            id: 1,
-            name: "Lucas Berg",
-            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
-            color:'green'
-        },
-        {
-            id: 2,
-            name: "Marcus Berg",
-            img: '',
-            color: 'red'
-        },
-        {
-            id: 3,
-            name: "Annika Berg",
-            img: 'https://reactnative.dev/img/tiny_logo.png',
-            color: 'blue'
-        },
-        {
-            id: 4,
-            name: "Lucas Berg",
-            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
-            color:'green'
-        },
-        {
-            id: 5,
-            name: "Marcus Berg",
-            img: '',
-            color: 'red'
-        },
-        {
-            id: 6,
-            name: "Annika Berg",
-            img: 'https://reactnative.dev/img/tiny_logo.png',
-            color: 'blue'
-        },
-        {
-            id: 7,
-            name: "Lucas Berg",
-            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
-            color:'green'
-        },
-        {
-            id: 8,
-            name: "Marcus Berg",
-            img: '',
-            color: 'red'
-        },
-        {
-            id: 9,
-            name: "Annika Berg",
-            img: 'https://reactnative.dev/img/tiny_logo.png',
-            color: 'blue'
-        },
-        {
-            id: 10,
-            name: "Lucas Berg",
-            img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAzCAYAAAA6oTAqAAAAEXRFWHRTb2Z0d2FyZQBwbmdjcnVzaEB1SfMAAABQSURBVGje7dSxCQBACARB+2/ab8BEeQNhFi6WSYzYLYudDQYGBgYGBgYGBgYGBgYGBgZmcvDqYGBgmhivGQYGBgYGBgYGBgYGBgYGBgbmQw+P/eMrC5UTVAAAAABJRU5ErkJggg==',
-            color:'green'
-        },
-        {
-            id: 11,
-            name: "Marcus Berg",
-            img: '',
-            color: 'red'
-        },
-        {
-            id: 12,
-            name: "Annika Berg",
-            img: 'https://reactnative.dev/img/tiny_logo.png',
-            color: 'blue'
-        }
-    ];
-}
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity } from 'react-native';
+import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
 
 async function addTemp(name){
     const obj = {
@@ -120,17 +41,23 @@ const PersonThumbnail = ({personData}) =>
         </Text>);
 }
 
-const PersonWidget = ({personData}) =>
+const PersonWidget = ({personData, navigation}) =>
 {
+    const navToPerson = () => {
+        navigation.navigate('Person', {personId: personData.id})
+    }
+
     return (
-        <View style={styles.widgetContainer}>
-            <PersonThumbnail personData={personData}/>
-            <Text style={styles.widgetText}>{personData.name}</Text>
-        </View>
+        <TouchableOpacity onPress={navToPerson}>
+            <View style={styles.widgetContainer}>
+                <PersonThumbnail personData={personData}/>
+                <Text style={styles.widgetText}>{personData.name}</Text>
+            </View>
+        </TouchableOpacity>
     );
 }
 
-export default PersonsView = ({path}) =>
+export default PersonsView = ({path, navigation}) =>
 {
     const [loading, setLoading] = useState(true);
     const [persons, setPersons] = useState(null);
@@ -138,7 +65,7 @@ export default PersonsView = ({path}) =>
     const [filteredPersons, setFilteredPersons] = useState(null)
 
     useEffect(async ()=>{
-        console.log('fetching...')
+        //console.log('fetching...')
 
         const p = path == null ? `Users/${GetUid()}/People` : path;
         
@@ -147,7 +74,7 @@ export default PersonsView = ({path}) =>
             setFilteredPersons(ret);
 
             setLoading(false);
-            console.log('fetched persons')
+            //console.log('fetched persons')
         }).catch(err => {
             console.log(err);
             
@@ -159,9 +86,9 @@ export default PersonsView = ({path}) =>
     }, [path]);
 
     const renderWidget = ({item}) =>{
-        //console.log(item);
+        console.log(item);
 
-        return (<PersonWidget personData={item}/>)
+        return (<PersonWidget personData={item} navigation={navigation}/>)
     };
 
     const filterPersons = (text) => {
@@ -201,6 +128,8 @@ export default PersonsView = ({path}) =>
             />
         </View>);
 }
+
+
 
 const styles = StyleSheet.create({
     widgetContainer:{
