@@ -1,161 +1,254 @@
-import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button } from 'react-native';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator } from 'react-native';
 import { Edit, Trash, Delete} from 'react-native-feather';
+import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage } from '../FirebaseInterface';
+import uuid from 'react-native-uuid';
+import * as ImagePicker from 'expo-image-picker';
 
-export default function PersonScreen() {
-   
-    // TODO: Fetch data from user input, stored in database 
-    // TODO: is it better to store the values as an array in categories? 
-    // categories = [["Title:", "abcde"], ["Workplace:",["ackis"]]]
-    personName = "Greta Garbo";
-    categories = ["Title:", "Workplace:", "Group:", "Family:", "Hobbies:", "Other info:"];
-    title = "CEO";
-    workplace = "The House of ABCD";
-    group = "IKEA";
-    family = ["Kids:", "Ada", "Love", "Lace", "Wife:", "Grynet"];
-    hobbies = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin molestie massa, ut ullamcorper sem congue commodo. In tempor lectus sem, ac molestie magna feugiat vitae. ";
-    other = "Does not like peanuts";
-    // TODO: Used for allContacts to sort contacts alphabetically, to simplify categorization
-    // when viewing list of persons 
-    //alphabeticalOrder = personName.charAt(0);
+const PersonThumbnail = ({personData}) =>
+{
+    const [acro, _] = useState(() => {
+        const str = personData.name + '';
+        const matches = str.match(/\b(\w)/g);
+        const acronym = matches.join('').substring(0,2); 
+        return acronym;
+    });
+    if(personData.img != '' && personData.img){
+        return (
+            <Image style={styles.thumbnail}
+            source={{uri:personData.img}}/>
+        );
+    }
 
-    // TODO: Refine to render new user data 
-    //<View style={styles.categoryContainer}>{renderText(family)}</View>
-    function renderText(array) {
-        return array.map(obj => {
-          return <Text style={styles.format}>{obj}</Text>;
-        });
-      }
+    return (<Text style={{
+            backgroundColor:personData.color, 
+            ...styles.thumbnail,
+            ...styles.thumbnailText
+        }}>
+            {acro}
+        </Text>);
+}
+
+const Section = ({dispatch, sectionData, personId}) => {
+    
+    const [adding, setAdding] = useState(false);
+    const [text, setText] = useState('');
+    const input = useRef();
+
+    const buttonClicked = () => {
+        setAdding(true);
+        setTimeout(() => input.current.focus(), 10);
+    };
+
+    const textFinished = async () => {
+        input.current.blur();
+        setAdding(false);
+        if(text != ''){
+            console.log('adding note:', text);
+            const id = uuid.v4();
+            AddValueToNoteCustomId(personId, sectionData.id, text, id);
+            const v = {
+                value:text,
+                id:id
+            }
+            setText('');
+            dispatch({type:'add value', noteId:sectionData.id, value:v});
+        }
+    }
+
+    const removeNote = () => {
+        RemoveNote(personId, sectionData.id);
+        dispatch({type:'remove note', noteId:sectionData.id})
+    }
 
     return (
-    
-    // TODO: Check variable names and structure 
-    // TODO: If category empty ==> hide category
-    // TODO: Add for-loop to generate categoryContainers  
-    <View style={styles.container}> 
-    <ScrollView>
-        <Text style={styles.pageHeader}>{personName}</Text>
-        <Text style={styles.categoryTitle}>{categories[0]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{title}</Text>
+        <View>
+            <View style={{flexDirection:'row'}}>
+                <Text>{sectionData.headline}</Text>
+                <Button title='remove' onPress={removeNote}/>
+            </View>
+            {
+                sectionData.values.map(note => <Note key={note.id} value={note} dispatch={dispatch} personId={personId} noteId={sectionData.id}></Note>)
+            }
+            {
+                adding ?
+                    <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                :
+                    <Button title='Add value' onPress={buttonClicked}/>
+            }
         </View>
-        <Text style={styles.categoryTitle}>{categories[1]}</Text>
-        <View style={styles.categoryContainer}>
-            <Text style={styles.categoryText}>{workplace}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[2]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{group}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[3]} </Text>
-        <Text style={styles.subCategoryText}>{family[0]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[1]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[2]}</Text>
-            </View>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[3]}</Text>
-            </View>
-            <Text style={styles.subCategoryText}>{family[4]}</Text>
-            <View style={styles.categoryContainer}><Text style={styles.categoryText}>{family[5]}</Text>
-            </View>
-            
-        <Text style={styles.categoryTitle}>{categories[4]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{hobbies}</Text>
-            </View>
-        <Text style={styles.categoryTitle}>{categories[5]} </Text>
-        <View style={styles.categoryContainer}><Text style={styles.categoryText}>{other}</Text>
-            </View>
+    );
+}
 
-        
-        <View style={styles.btnContainer}>    
-            <TouchableOpacity style={styles.clickBtn}>
-                <Trash 
-                // TODO: OnPress ==> Are you sure, if yes ==> Delete, otherwise Nothing
-                name = 'trash'
-                color = 'black'
-                alignSelf = 'center'
-                />
-            </TouchableOpacity> 
-            
-            <TouchableOpacity style={styles.clickBtn}>
-                <Edit 
-                // TODO: New screen to edit a contact? 
-                // TODO: Edit 
-                name = 'edit'
-                color = 'black'
-                alignSelf = 'center'
-                />
-            </TouchableOpacity> 
+const Note = ({dispatch, value, personId, noteId}) => {
+    //console.log(value);
+    const input = useRef();
+    const [text, setText] = useState(value.value);
+    const [editable, setEditable] = useState(false);
+    //console.log(editable);
+
+    const updateText = async () => {
+        setEditable(false);
+
+        if(value.value == text)
+            return;
+
+        if(text == ''){
+            RemoveValueFromNote(personId, noteId, value.id);
+            dispatch({type:'remove value', noteId: noteId, valueId:value.id});
+            return;
+        }
+        UpdateValueOfNote(personId, noteId, value.id, text);
+        dispatch({type:'update value', noteId: noteId, valueId:value.id, newValue:text});
+    };
+
+    return (
+        <View style={{flexDirection:'row'}}>
+            {
+                editable ? 
+                <TextInput 
+                    onFocus={() => setEditable(true)} 
+                    onBlur={updateText} 
+                    value={text} 
+                    ref={input} 
+                    onChangeText={setText}
+                    multiline={true}/>
+                :
+                <Text>{text}</Text>
+            }
+
+            <Button onPress={() => {setEditable(true); setTimeout(() => input.current.focus(), 10);} } title='edit'></Button>
         </View>
-        </ScrollView>
-        </View>
+    );
+}
+
+function stateUpdater(state, action) {
+    switch (action.type) {
+        case 'init':
+            return action.data;
+        case 'add value':
+            const addIndex = state.notes.findIndex(val => val.id == action.noteId);
+            state.notes[addIndex].values.push(action.value);
+            return {...state};
+        case 'remove value':
+            const removeIndex = state.notes.findIndex(val => val.id == action.noteId);
+            const removeSubIndex = state.notes[removeIndex].values.findIndex(val => val.id == action.valueId);
+            state.notes[removeIndex].values.splice(removeSubIndex, 1);
+            return {...state};
+        case 'update value':
+            const updateIndex = state.notes.findIndex(val => val.id == action.noteId);
+            const updateSubIndex = state.notes[updateIndex].values.findIndex(val => val.id == action.valueId);
+            state.notes[updateIndex].values[updateSubIndex].value = action.newValue;
+            return {...state};
+        case 'remove note':
+            const noteRemoveIndex = state.notes.findIndex(val => val.id == action.noteId);
+            state.notes.splice(noteRemoveIndex, 1);
+            return {...state};
+        case 'add note':
+            state.notes.push(action.note)
+            return {...state}
+        case 'update img':
+            return {
+                ...state,
+                img:action.url
+            };
+        default:
+            break;
+    }
+    console.log('unkown action');
+    return state;
+}
+
+export default function PersonView({navigation, route}) {
+    const [state, dispatch] = useReducer(stateUpdater, null);   
+    const [adding, setAdding] = useState(false);
+    const [text, setText] = useState('');
+    const input = useRef();
+
+    const [editingName, setEditingName] = useState(false);
+    const [name, setName] = useState('');
+    const nameInput = useRef();
+
+    console.log('params', route.params);
+
+    const personId = route.params.personId;
+
+ 
+
+    useEffect(()=>{
+        GetPersonData(personId).then(x=>{
+            dispatch({type:'init', data:x});
+        })
+    }, []);
     
-      
-  );
+    const buttonClicked = () => {
+        setAdding(true);
+        setTimeout(() => input.current.focus(), 10);
+    };
+
+    
+    const textFinished = async () => {
+        input.current.blur();
+        setAdding(false);
+        if(text != ''){
+            console.log('adding note:', text);
+            const id = uuid.v4();
+            AddNoteCustomId(state.id, text, id);
+            
+            setText('');
+            dispatch({type:'add note', note:{id:id, headline:text, values:[]}});
+        }
+    };
+
+    const setImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.3,
+        });
+
+        const uri = await SetPersonImage(state.id, result.uri);
+
+        dispatch({type:'update img', url:uri});
+    };
+
+    if(state == null)
+        return(<ActivityIndicator size='large'/>)
+
+    return (
+        <View>
+            <ScrollView>
+                <TouchableOpacity onPress={setImage}>
+                    <PersonThumbnail personData={state}/>
+                </TouchableOpacity>
+                <Text>{state.name}</Text>
+
+                {
+                    state.notes.map(section => <Section key={section.id} sectionData={section} dispatch={dispatch} personId={state.id}></Section>)
+                }
+                
+                {
+                    adding ?
+                        <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                    :
+                        <Button title='Add note' onPress={buttonClicked}/>
+                }
+            </ScrollView>
+        </View>
+    );
 };
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      padding: 24,
-      backgroundColor: '#ffffff',
-      justifyContent: 'flex-start',
+    
+    thumbnail:{
+        width:70,
+        height:70,
+        borderRadius:35,
     },
-    pageHeader: {
-        marginTop: 10,
-        flex: 0,
-        padding:10,
-        //backgroundColor: "#E98D79",       // used for debugging
+    thumbnailText:{
+        fontSize:30,
         textAlign: 'center',
-        fontSize: 30,
-        alignSelf:'center',
+        textAlignVertical: 'center',
     },
-    categoryContainer: {
-        flexDirection: 'column',
-        justifyContent:'flex-start',
-        width: "85%",
-        padding: 10,
-        backgroundColor: "#d3d3d3",
-        borderRadius: 15,
-        alignSelf:'center',
-    },
-    categoryTitle: {
-        marginTop: 20,
-        paddingVertical: 5,
-        borderWidth: 0,
-        borderColor: "#20232a",
-        borderRadius: 10,
-        color: "#000000",
-        textAlign: 'auto',
-        fontSize: 20,
-    },
-    subCategoryTitle: {
-        marginTop: 20,
-        //paddingVertical: 5,
-        //borderRadius: 10,
-        color: "#000000",
-        alignSelf: 'auto',
-        fontSize: 20,
-    },
-    categoryText: {
-        padding: 0,
-        fontSize: 15,
-        textAlign: 'center',
-    },
-    btnContainer: {
-      flexDirection: 'row',
-      justifyContent: "space-around",
-      width: "100%",
-    },
-    clickBtn:{
-        marginTop:50,
-        borderRadius: 20,
-        backgroundColor: "#c97ba1",
-        padding: 10,
-        width: "20%"
-    },
-      //},
-      //btnTxt:{
-      //  fontSize: 16,
-      //  textAlign: "center",
-      
-  });
+});
