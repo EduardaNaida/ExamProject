@@ -6,6 +6,7 @@ import SplashView from './Pages/SplashView';
 import { DelayedLoginCheck, SetAuthStateChangeCallback } from './FirebaseInterface';
 import LoginView from './Pages/LoginView';
 import MainView from './Pages/MainView';
+import { createQuiz } from './QuizAlgorithm';
 
 LogBox.ignoreLogs(['Setting a timer']);
 console.ignoredYellowBox = ['Setting a timer'];
