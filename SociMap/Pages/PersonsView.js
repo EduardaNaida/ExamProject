@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity } from 'react-native';
 import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
 
@@ -20,7 +20,9 @@ async function addTemp(name){
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
-        console.log(personData);
+        if(!personData.name)
+            return '';
+
         const str = personData.name;
         const matches = str.match(/\b(\w)/g);
         const acronym = matches.join('').substring(0,2); 
@@ -45,7 +47,7 @@ const PersonThumbnail = ({personData}) =>
 const PersonWidget = ({personData, navigation}) =>
 {
     const navToPerson = () => {
-        navigation.navigate('Person', {personId: personData.id})
+        navigation.navigate('Person', {personId: personData.id, isCreatingNew:false})
     }
 
     return (
@@ -58,12 +60,39 @@ const PersonWidget = ({personData, navigation}) =>
     );
 }
 
-export default PersonsView = ({path, navigation}) =>
+const stateUpdater = (state, action) => {
+    switch (action.type) {
+        case 'init':
+            return {people:action.data, filtered:action.data, text:''};
+
+        case 'add':
+            const dat = action.data;
+            delete dat.notes;
+            const n = [...state.people, dat];
+            const filt = filterPersons(state.text, n)
+            //console.log(n);
+            return {...state, people:n, filtered:filt};
+        case 'set text':
+            return {...state, text:action.data, filtered:filterPersons(action.data, state.people)};
+    
+        default:
+            console.log('Unkown');
+            return state;
+    }
+}
+
+
+const filterPersons = (text, arr) => {
+    return (arr.filter(person => {
+        const name = person.name.toLowerCase();
+        return name.includes(text.toLowerCase());
+    }));
+};
+
+export default PersonsView = ({path, navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
-    const [persons, setPersons] = useState(null);
-    const [filterText, setFilterText] = useState("")
-    const [filteredPersons, setFilteredPersons] = useState(null)
+    const [state, dispatch] = useReducer(stateUpdater, null);
 
     useEffect(async ()=>{
         //console.log('fetching...')
@@ -71,34 +100,41 @@ export default PersonsView = ({path, navigation}) =>
         const p = path == null ? `Users/${GetUid()}/People` : path;
         
         GetPersonsFromPath(p).then(ret => {
-            setPersons(ret);
-            setFilteredPersons(ret);
+            dispatch({type:'init', data:ret});
 
             setLoading(false);
             //console.log('fetched persons')
         }).catch(err => {
             console.log(err);
             
-            setPersons([]);
-            setFilteredPersons([]);
+            dispatch({type:'init', data:[]});
 
             setLoading(false);
         });
     }, [path]);
 
+    useEffect(async ()=>{
+        
+        if(!route.params?.Post)
+            return;
+        
+        const obj = JSON.parse(route.params?.Post);
+        
+        const [id, url] = await AddNewPerson(obj);
+
+        console.log(id,url);
+
+        const nObj = {...obj, id:id, img:url};
+
+        dispatch({type:'add', data:nObj});
+    }, [route.params?.Post])
+
     const renderWidget = ({item}) =>{
-        console.log(item);
+        //console.log(item);
 
         return (<PersonWidget personData={item} navigation={navigation}/>)
     };
 
-    const filterPersons = (text) => {
-        setFilterText(text);
-        setFilteredPersons(persons.filter(person => {
-            const name = person.name.toLowerCase();
-            return name.includes(text.toLowerCase());
-        }));
-    };
 
     return loading ? 
         (<ActivityIndicator
@@ -111,19 +147,19 @@ export default PersonsView = ({path, navigation}) =>
                 <TextInput 
                     style={styles.filter} 
                     placeholder='Filter' 
-                    value={filterText} 
-                    onChangeText={filterPersons}/>
+                    value={state.text} 
+                    onChangeText={(text) => dispatch({type:'set text', data:text})}/>
                 <Button
                     title='Add'
                     style='buttonStyle'
-                    onPress={async () =>{
-                        setPersons([...persons, await addTemp(filterText)]);
+                    onPress={() =>{
+                        navigation.navigate('Person', {isCreatingNew:true});
                         //setImmediate(() => filterPersons(filterText));
                     }}/>
             </View>
             <FlatList
                 style={{padding:10}}
-                data={filteredPersons}
+                data={state.filtered}
                 renderItem={renderWidget}
                 keyExtractor={(_, index) => index}
             />
