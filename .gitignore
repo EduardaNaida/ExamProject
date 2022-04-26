@@ -2,6 +2,10 @@
 ./.expo/
 ./dist/
 ./npm-debug.*
+node_modules/
+.expo/
+dist/
+npm-debug.*
 *.jks
 *.p8
 *.p12

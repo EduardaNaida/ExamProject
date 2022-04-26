@@ -5,7 +5,7 @@ import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
 
 async function addTemp(name){
     const obj = {
-        name: name,
+        name: name + ' testson',
         img: 'https://reactnative.dev/img/tiny_logo.png',
         color:'green',
     };
@@ -20,6 +20,7 @@ async function addTemp(name){
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
+        console.log(personData);
         const str = personData.name;
         const matches = str.match(/\b(\w)/g);
         const acronym = matches.join('').substring(0,2); 
