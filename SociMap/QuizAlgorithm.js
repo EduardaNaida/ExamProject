@@ -96,6 +96,14 @@ function multipleChoiceQuestion(choices, topic)
             break;
     }
 
+    answers = [];
+
+    for (var i = 0; i < choices.length && i < 4; i++)
+    {
+
+    }
+
+    return {};
 }
 
 function createPeopleDictionary(people)
