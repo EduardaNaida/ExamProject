@@ -1,21 +1,8 @@
 
+import { useIsFocused } from '@react-navigation/native';
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity } from 'react-native';
-import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
-
-async function addTemp(name){
-    const obj = {
-        name: name + ' testson',
-        img: 'https://reactnative.dev/img/tiny_logo.png',
-        color:'green',
-    };
-    const id = await AddNewPerson(obj);
-
-    return ({
-        id:id,
-        ...obj
-    });
-}
+import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -70,7 +57,7 @@ const stateUpdater = (state, action) => {
             delete dat.notes;
             const n = [...state.people, dat];
             const filt = filterPersons(state.text, n)
-            //console.log(n);
+            //console.log(filt);
             return {...state, people:n, filtered:filt};
         case 'set text':
             return {...state, text:action.data, filtered:filterPersons(action.data, state.people)};
@@ -89,17 +76,23 @@ const filterPersons = (text, arr) => {
     }));
 };
 
-export default PersonsView = ({path, navigation, route}) =>
+export default PersonsView = ({navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
+    const isFocused = useIsFocused();
+
+    const path = route.params?.Path;
 
     useEffect(async ()=>{
         //console.log('fetching...')
+        if(!isFocused || route.params?.Post)
+            return;
 
-        const p = path == null ? `Users/${GetUid()}/People` : path;
+        const p = path ? path : '';
         
         GetPersonsFromPath(p).then(ret => {
+
             dispatch({type:'init', data:ret});
 
             setLoading(false);
@@ -111,22 +104,25 @@ export default PersonsView = ({path, navigation, route}) =>
 
             setLoading(false);
         });
-    }, [path]);
+    }, [path, isFocused]);
 
     useEffect(async ()=>{
-        
         if(!route.params?.Post)
             return;
-        
-        const obj = JSON.parse(route.params?.Post);
-        
-        const [id, url] = await AddNewPerson(obj);
 
-        console.log(id,url);
+        const obj = JSON.parse(route.params?.Post);
+            
+        const [id, url] = await AddNewPerson(obj);
+        if(path)
+            AddPersonIdToCollection(path, id);
+            
+        navigation.setParams({...route.params, Post:''});
+
+        //console.log(id,url);
 
         const nObj = {...obj, id:id, img:url};
 
-        dispatch({type:'add', data:nObj});
+        setImmediate(() => dispatch({type:'add', data:nObj}));
     }, [route.params?.Post])
 
     const renderWidget = ({item}) =>{
@@ -153,7 +149,7 @@ export default PersonsView = ({path, navigation, route}) =>
                     title='Add'
                     style='buttonStyle'
                     onPress={() =>{
-                        navigation.navigate('Person', {isCreatingNew:true});
+                        navigation.push('Person', {isCreatingNew:true});
                         //setImmediate(() => filterPersons(filterText));
                     }}/>
             </View>

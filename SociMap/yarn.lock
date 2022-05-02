@@ -5359,6 +5359,11 @@
     "react-native-ratings" "8.0.4"
     "react-native-size-matters" "^0.3.1"
 
+"react-native-elevation@^1.0.0":
+  "integrity" "sha512-BWIKcEYtzjRV6GpkX0Km5/w2E7fgIcywiQOT7JZTc5NSbv/YI9kpFinB9lRFsOoRVGmiqq/O3VfP/oH2clIiBA=="
+  "resolved" "https://registry.npmjs.org/react-native-elevation/-/react-native-elevation-1.0.0.tgz"
+  "version" "1.0.0"
+
 "react-native-feather@^1.1.2":
   "integrity" "sha512-qBc0+XegKkX4JV6ykgScasguEV3RdlbYp9IrCMnbozngOgJ7vi76pyRpb+dnZ1AZVkYsbYnpdA9JXeP7EJbMCA=="
   "resolved" "https://registry.npmjs.org/react-native-feather/-/react-native-feather-1.1.2.tgz"
@@ -5435,6 +5440,13 @@
     "inline-style-prefixer" "^6.0.0"
     "normalize-css-color" "^1.0.2"
     "prop-types" "^15.6.0"
+
+"react-native-wheel-color-picker@^1.2.0":
+  "integrity" "sha512-j4IcN7so9dZAkXyrPTTaPqCKsjkGBZkd5F7HqLo0OTRB1EZX3Ww5VMKsKjloxv6Omv193wGOhwfG20ec2KnxJQ=="
+  "resolved" "https://registry.npmjs.org/react-native-wheel-color-picker/-/react-native-wheel-color-picker-1.2.0.tgz"
+  "version" "1.2.0"
+  dependencies:
+    "react-native-elevation" "^1.0.0"
 
 "react-native@*", "react-native@^0.60.6 || ^0.61.5 || ^0.62.2 || ^0.63.2 || ^0.64.0 || 1000.0.0", "react-native@>= 0.57.0 < 1", "react-native@>=0.46", "react-native@>=0.50.0", "react-native@>=0.64.0", "react-native@>=0.64.0-rc.0 || 0.0.0-*", "react-native@0.64.3":
   "integrity" "sha512-2OEU74U0Ek1/WeBzPbg6XDsCfjF/9fhrNX/5TFgEiBKd5mNc9LOZ/OlMmkb7iues/ZZ/oc51SbEfLRQdcW0fVw=="
