@@ -346,13 +346,13 @@ export default function PersonView({navigation, route}) {
 const styles = StyleSheet.create({
     
     thumbnail:{
-        width:70,
-        height:70,
+        width:40,
+        height:40,
         borderRadius:35,
     },
     thumbnailText:{
-        fontSize:30,
+        fontSize:20,
         textAlign: 'center',
-        textAlignVertical: 'center',
+        textAlignVertical: 'center'
     },
 });

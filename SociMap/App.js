@@ -40,12 +40,10 @@ export default function App() {
     return(<SplashView></SplashView>);
 
 
-
   return !logged ? 
     (<LoginView></LoginView>)
     :
     (<MainView></MainView>);
-
 
   return (
     <SafeAreaView style={{flex:1}}>
