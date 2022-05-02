@@ -213,13 +213,10 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         alignItems:'center',
-        //justifyContent:'center',
-        //flex: 3,
         backgroundColor:'#ffffff',
         width:'100%',
         height:'60%',
         left:0,
-        //justifyContent:'center',
         top:'10%',
         marginLeft:0,
         borderRadius:60,

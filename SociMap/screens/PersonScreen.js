@@ -1,11 +1,10 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator, Pressable } from 'react-native';
-import { Edit, Trash, Delete, Plus, Save} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator, Pressable, ImageBackground } from 'react-native';
+import { Edit, Trash, Delete, Plus, Save,FilePlus} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 
-import HeaderPage from './Pages/Header'
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -72,15 +71,14 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     return (
         // TODO: Remove <View>
         <View style={{flexDirection:'column'}}> 
-            <View style={styles.txtContainer}>
-                <Text style={styles.txtValues}>{sectionData.headline}</Text>
-                <View style={styles.buttonView}>
+            <View style={styles.headlineContainer}>
+                <Text style={styles.txtHeadline}>{sectionData.headline}</Text>
+                
                 <Pressable  
                     onPress={removeNote}>
-                        <Trash style={styles.button}/>
+                        <Trash style={styles.deleteButton}/>
                         </Pressable>
                         </View>
-            </View>
             {
                 sectionData.values.map(note => 
                 <Note 
@@ -92,17 +90,16 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     isCreatingNew={isCreatingNew}
                 />)
             }
+            
             {
                 adding ?
                     <TextInput style={styles.txtInputView}
                     ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                 :
-                <View style={styles.buttonView}>
                     <Pressable 
-                    onPress={buttonClicked}>
-                        <Plus style={styles.button}/>
+                    style={styles.button}
+                    onPress={buttonClicked}><Plus style={styles.addButton}/>
                         </Pressable>
-                    </View>
             }
 
         </View>
@@ -148,14 +145,14 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                     onChangeText={setText}
                     multiline={true}/>
                 :
-                <Text style={styles.txtContainer}>{text}</Text>
+                <View style={styles.txtContainer}>
+                <Text style={styles.txtValues}>{text}</Text></View>
             }
-            <View style={styles.buttonView}>
             <Pressable 
                 onPress={() => {setEditable(true); 
                 setTimeout(() => input.current.focus(), 10);
             } }>
-                <Edit style={styles.editButton}/></Pressable></View>
+                <Edit style={styles.editButton}/></Pressable>
         
         </View>
     );
@@ -328,13 +325,18 @@ export default function PersonView({navigation, route}) {
     //console.log(state.name);
 
     return (
-
+        <ScrollView>
+        <View style={{flex:1}}>
+            <ImageBackground 
+                source={require('../Pages/img/header.png')}
+                style={styles.image}><Text style={styles.header}>{"SociMap"}</Text>
+                </ImageBackground>
             <View style={styles.container}>
-                <ScrollView>
+                
                     <TouchableOpacity onPress={setImage}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
-                    <View style={styles.txtContainer}>
+                    <View style={{flex:1}}>
                     {
                         editingName ?
                             <TextInput
@@ -344,18 +346,17 @@ export default function PersonView({navigation, route}) {
                                 onBlur={nameFinished}
                             />
                             :
-                            <View style={styles.header}>
-                            <Text style={styles.txtName}>{state.name}</Text></View>
+                            <Text style={styles.txtName}>{state.name}</Text>
                     }
-                    <View style={styles.buttonView}>
+                    <View style={{flex:1}}>
                     <Pressable 
                         onPress={() => 
                         buttonClicked(nameInput, setEditingName)}>
                             <Edit
-                                style={styles.button}/>
+                                style={styles.nameEditButton}/>
                             </Pressable>
                             </View>
-                </View>
+                    </View>
 
                 {
                     state.notes.map(section => 
@@ -378,53 +379,68 @@ export default function PersonView({navigation, route}) {
                     :
                         <Pressable 
                             title='Add note' 
-                            onPress={() => buttonClicked(input, setAdding)}/>
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add note'}</Text>
+                            </Pressable> 
                 }
-            </ScrollView>
+                
         </View>
+    </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
     // TODO: Same as in PersonsView, move to global 
     header:{
-        marginTop: 80,
-        marginBottom:-20,
+        //marginTop: 80,
+        marginBottom:0,
+        marginTop:30,
+        marginLeft:30,
         fontSize: 40,
-        textAlign:'center',
-        marginLeft:-150,
-        color:'#000',
+        //marginLeft:-150,
+        color:'#fff',
+        marginBottom:10,
+    },
+    image:{
+        marginTop:0,
+        //flex:1, 
+        width:null,
+        height:'60%',
     },
     thumbnail:{
+        alignSelf:'center',
         marginTop:20,
-        width:50,
-        height:50,
+        width:70,
+        height:70,
         borderRadius:35,
     },
     thumbnailText:{
         fontSize:20,
         backgroundColor:'lightblue',
         textAlignVertical: 'center',
+        marginBottom:'60%',
     },
     container:{
         flex: 1,
+        padding:10,
         //alignItems:'center',
         backgroundColor:'#ffffff',
         width:'100%',
-        height:'60%',
-        left:0,
-        top:'10%',
-        marginLeft:0,
+        height:'200%',
+        top:'-40%',
         borderRadius:60,
         flexDirection:'column',
+        justifyContent:'space-evenly'
+        //alignItems:'center',
     }, 
     txtContainer:{
-        flex:1,
+        //flex:1,
         margin:10,
         height:40,
-        backgroundColor:'orange', // TODO: The color of user-choice (from group)
+        backgroundColor:'#f2caaa', // TODO: The color of user-choice (from group)
         flexDirection:'column',
-        borderRadius:30,
+        justifyContent:'center',
+        borderRadius:20,
         width:'80%',
     },
     txtInputView:{
@@ -434,6 +450,15 @@ const styles = StyleSheet.create({
         height:40,
         width:220,
     },
+    txtHeadline:{
+        fontSize:25,
+    },
+    headlineContainer:{
+        //backgroundColor:'lightgray',
+        padding:5,
+        alignSelf: 'flex-start',
+        marginLeft:'10%'
+    },
     txtName:{
         fontSize:30,
         color:'black',
@@ -442,14 +467,16 @@ const styles = StyleSheet.create({
     },
     txtValues:{
         fontSize:20,
+        textAlign:'center',
+        padding:10,
     },
     // TODO: Same as in PersonsView, move to global file? 
     // START ----- 
     buttonView:{
         backgroundColor:'#ADD8E6',
         borderRadius:10,
-        width:40,
-        height:40,
+        width:'30%',
+        height:'20%',
         alignItems:'center',
         justifyContent:'center',
         //alignSelf:'center',
@@ -459,15 +486,46 @@ const styles = StyleSheet.create({
         width:40,
         color:'black',
     },
+    deleteButton:{
+        height:40,
+        width:40,
+        color:'grey',
+        marginTop:'-10%',
+        marginLeft:'60%',
+    },
     editButton:{
         height:40,
         width:40,
-        color:'black',
+        color:'gray',
+        marginTop:15,
+        marginLeft:-50,
+    },
+
+    addButton:{
+        height:40,
+        width:40,
+        color:'gray',
+        marginTop:0,
+        marginLeft:20,
+    },
+    nameEditButton:{
+        height:40,
+        marginTop:-27,
+        marginRight:'15%',
+        alignSelf:'flex-end',
+        width:40,
+        color:'gray',
     },
     saveButton:{
         height:40,
         width:40,
         color:'black',
+    },
+    buttonText:{
+        fontSize:20,
+        backgroundColor:'lightgrey',
+        width:'20%',
+        borderRadius:20,
     },
     buttonStyle:{
         width:70,
