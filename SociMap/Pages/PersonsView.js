@@ -176,13 +176,15 @@ export default PersonsView = ({path, navigation, route}) =>
                         </View>
                     </View>
 
-
+                    <View style={styles.listContainer}>
                     <FlatList
                         style={styles.listSection}
                         data={state.filtered}
                         renderItem={renderWidget}
                         keyExtractor={(_, index) => index} /></View>
+                        </View>
                         </ImageBackground>);
+
 }
 
 // TODO: Changed Button to Pressable style on row 167
@@ -284,10 +286,15 @@ const styles = StyleSheet.create({
         margin: 7.5,
         padding:5,
         flexDirection: 'row',
-        backgroundColor:'#f2caaa', // TODO: background color of the items should be depending on what group+group color?
+        backgroundColor:'#FFB6C1', // TODO: background color of the items should be depending on what group+group color?
         borderRadius:10,
         width:319,
         justifyContent:'flex-start',
+    },
+    listContainer:{
+        flex:3,
+        marginBottom:'20%',
+
     },
     itemText:{
         fontSize:20,

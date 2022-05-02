@@ -325,14 +325,14 @@ export default function PersonView({navigation, route}) {
     //console.log(state.name);
 
     return (
-        <ScrollView>
+        
         <View style={{flex:1}}>
             <ImageBackground 
                 source={require('../Pages/img/header.png')}
                 style={styles.image}><Text style={styles.header}>{"SociMap"}</Text>
                 </ImageBackground>
             <View style={styles.container}>
-                
+            <ScrollView>
                     <TouchableOpacity onPress={setImage}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
@@ -382,10 +382,9 @@ export default function PersonView({navigation, route}) {
                             onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add note'}</Text>
                             </Pressable> 
                 }
-                
-        </View>
-    </View>
         </ScrollView>
+        </View>      
+    </View>
     );
 };
 
@@ -437,7 +436,7 @@ const styles = StyleSheet.create({
         //flex:1,
         margin:10,
         height:40,
-        backgroundColor:'#f2caaa', // TODO: The color of user-choice (from group)
+        backgroundColor:'#FFB6C1', // TODO: The color of user-choice (from group)
         flexDirection:'column',
         justifyContent:'center',
         borderRadius:20,
