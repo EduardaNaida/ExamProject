@@ -1,9 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator } from 'react-native';
-import { Edit, Trash, Delete} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator, Pressable } from 'react-native';
+import { Edit, Trash, Delete, Plus, Save} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
+
+import HeaderPage from './Pages/Header'
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -68,10 +70,16 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     }
 
     return (
-        <View>
-            <View style={{flexDirection:'row'}}>
-                <Text>{sectionData.headline}</Text>
-                <Button title='remove' onPress={removeNote}/>
+        // TODO: Remove <View>
+        <View style={{flexDirection:'column'}}> 
+            <View style={styles.txtContainer}>
+                <Text style={styles.txtValues}>{sectionData.headline}</Text>
+                <View style={styles.buttonView}>
+                <Pressable  
+                    onPress={removeNote}>
+                        <Trash style={styles.button}/>
+                        </Pressable>
+                        </View>
             </View>
             {
                 sectionData.values.map(note => 
@@ -86,12 +94,17 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
             }
             {
                 adding ?
-                    <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                    <TextInput style={styles.txtInputView}
+                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                 :
-                <View style={styles.buttonStyle}>
-                    <Button title='Add value' onPress={buttonClicked}/>
+                <View style={styles.buttonView}>
+                    <Pressable 
+                    onPress={buttonClicked}>
+                        <Plus style={styles.button}/>
+                        </Pressable>
                     </View>
             }
+
         </View>
     );
 }
@@ -102,6 +115,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
     const [text, setText] = useState(value.value);
     const [editable, setEditable] = useState(false);
     //console.log(editable);
+    const header_name = "People";
 
     const updateText = async () => {
         setEditable(false);
@@ -126,6 +140,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
             {
                 editable ? 
                 <TextInput 
+                    style={styles.txtInputView}
                     onFocus={() => setEditable(true)} 
                     onBlur={updateText} 
                     value={text} 
@@ -133,10 +148,15 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                     onChangeText={setText}
                     multiline={true}/>
                 :
-                <Text>{text}</Text>
+                <Text style={styles.txtContainer}>{text}</Text>
             }
-
-            <Button onPress={() => {setEditable(true); setTimeout(() => input.current.focus(), 10);} } title='edit'></Button>
+            <View style={styles.buttonView}>
+            <Pressable 
+                onPress={() => {setEditable(true); 
+                setTimeout(() => input.current.focus(), 10);
+            } }>
+                <Edit style={styles.editButton}/></Pressable></View>
+        
         </View>
     );
 }
@@ -239,7 +259,12 @@ export default function PersonView({navigation, route}) {
         }
 
         return (
-            <Button style={styles.saveButton} title='Save' onPress={pressed}/>
+            <View style={styles.buttonView}>
+                <Pressable  
+                    onPress={pressed}>
+                    <Save style={styles.saveButton}/>
+                    </Pressable>
+            </View>
         );
     }
 
@@ -303,23 +328,33 @@ export default function PersonView({navigation, route}) {
     //console.log(state.name);
 
     return (
-        <View>
-            <ScrollView>
-                <TouchableOpacity onPress={setImage}>
-                    <PersonThumbnail personData={state}/>
-                </TouchableOpacity>
-                <View style={{flexDirection:'row'}}>
+
+            <View style={styles.container}>
+                <ScrollView>
+                    <TouchableOpacity onPress={setImage}>
+                        <PersonThumbnail personData={state}/>
+                    </TouchableOpacity>
+                    <View style={styles.txtContainer}>
                     {
                         editingName ?
                             <TextInput
+                                style={styles.txtInputView}
                                 ref={nameInput}
                                 onChangeText={setName}
                                 onBlur={nameFinished}
                             />
                             :
-                            <Text>{state.name}</Text>
+                            <View style={styles.header}>
+                            <Text style={styles.txtName}>{state.name}</Text></View>
                     }
-                    <Button title='Change Name' onPress={() => buttonClicked(nameInput, setEditingName)}/>
+                    <View style={styles.buttonView}>
+                    <Pressable 
+                        onPress={() => 
+                        buttonClicked(nameInput, setEditingName)}>
+                            <Edit
+                                style={styles.button}/>
+                            </Pressable>
+                            </View>
                 </View>
 
                 {
@@ -336,14 +371,14 @@ export default function PersonView({navigation, route}) {
                 
                 {
                     adding ?
-                        <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                        <TextInput 
+                        ref={input} 
+                        onChangeText={setText} 
+                        onBlur={textFinished}></TextInput>
                     :
-                    <View style={styles.buttonView}>
-                        <Button 
-                        style={styles.addNoteButton}
-                        title='Add note' 
-                        onPress={() => buttonClicked(input, setAdding)}/>
-                        </View>
+                        <Pressable 
+                            title='Add note' 
+                            onPress={() => buttonClicked(input, setAdding)}/>
                 }
             </ScrollView>
         </View>
@@ -351,33 +386,96 @@ export default function PersonView({navigation, route}) {
 };
 
 const styles = StyleSheet.create({
-    
+    // TODO: Same as in PersonsView, move to global 
+    header:{
+        marginTop: 80,
+        marginBottom:-20,
+        fontSize: 40,
+        textAlign:'center',
+        marginLeft:-150,
+        color:'#000',
+    },
     thumbnail:{
-        width:40,
-        height:40,
+        marginTop:20,
+        width:50,
+        height:50,
         borderRadius:35,
-        backgroundColor:'red',
     },
     thumbnailText:{
         fontSize:20,
-        textAlign: 'center',
+        backgroundColor:'lightblue',
         textAlignVertical: 'center',
     },
-    saveButtonn:{
-        backgroundColor:'red',
-
-    },
-    buttonView:{
+    container:{
+        flex: 1,
+        //alignItems:'center',
+        backgroundColor:'#ffffff',
+        width:'100%',
+        height:'60%',
+        left:0,
+        top:'10%',
+        marginLeft:0,
+        borderRadius:60,
+        flexDirection:'column',
+    }, 
+    txtContainer:{
         flex:1,
-        backgroundColor:'red',
+        margin:10,
+        height:40,
+        backgroundColor:'orange', // TODO: The color of user-choice (from group)
+        flexDirection:'column',
+        borderRadius:30,
+        width:'80%',
+    },
+    txtInputView:{
+        backgroundColor:'#e3e3e3',
+        borderRadius:30,
+        padding:5,
+        height:40,
+        width:220,
+    },
+    txtName:{
+        fontSize:30,
+        color:'black',
+        marginLeft:10,
+        alignSelf:'center',
+    },
+    txtValues:{
+        fontSize:20,
+    },
+    // TODO: Same as in PersonsView, move to global file? 
+    // START ----- 
+    buttonView:{
+        backgroundColor:'#ADD8E6',
+        borderRadius:10,
+        width:40,
+        height:40,
+        alignItems:'center',
+        justifyContent:'center',
+        //alignSelf:'center',
+    },
+    button:{
+        height:40,
+        width:40,
+        color:'black',
+    },
+    editButton:{
+        height:40,
+        width:40,
+        color:'black',
+    },
+    saveButton:{
+        height:40,
+        width:40,
+        color:'black',
     },
     buttonStyle:{
-        flex:1,
-        borderRadius:20,
-        backgroundColor:'red'
+        width:70,
+        height:40,
+        borderRadius:10,
+        alignSelf:'flex-start',
+        backgroundColor:'#ADD8E6',
+        opacity:0.8,
     },
-    addNoteButton:{
-        backgroundColor:'red',
-
-    },
+    /// ------- END
 });

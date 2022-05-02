@@ -4,7 +4,7 @@ import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+//import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 
 async function addTemp(name){
@@ -101,7 +101,7 @@ export default PersonsView = ({path, navigation, route}) =>
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
     const header_name = "People";
-    const Stack = createNativeStackNavigator();
+    //const Stack = createNativeStackNavigator();
 
     useEffect(async ()=>{
         //console.log('fetching...')
@@ -167,7 +167,8 @@ export default PersonsView = ({path, navigation, route}) =>
                             <Search style={styles.searchIcon} />
                         </View>
                         <View style={styles.buttonView}>
-                            <Pressable style={styles.buttonStyle} onPress={() => {
+                            <Pressable style={styles.buttonStyle} 
+                            onPress={() => {
                                 navigation.navigate('Person', { isCreatingNew: true });
                             } }>
                                 <Plus style={styles.addButton} />
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
         textAlign:'center',
         marginLeft:-150,
         color:'#fff',
-        fontFamily:'Inter'
     },
     image:{
         flex:1, 
@@ -226,14 +226,14 @@ const styles = StyleSheet.create({
     },
     menuBar:{
         flex: 1, 
-        marginTop:40, 
-        marginBottom:-90, 
+        marginTop:20, 
+        marginBottom:-80, 
         flexDirection:'row',
         justifyContent:'space-between',
     },
     inputView:{
         flex:1,
-        paddingLeft:50,
+        paddingLeft:60,
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: 'transparent',
@@ -260,14 +260,14 @@ const styles = StyleSheet.create({
         flex:1, 
     },
     addButton:{
-        marginLeft:25,
+        alignSelf:'center',
         color:'black',
         height:40,
     },
     buttonStyle:{
-        width:70,
+        width:60,
         height:40,
-        borderRadius:10,
+        borderRadius:80,
         justifyContent:'center',
         alignSelf:'center',
         backgroundColor:'#ADD8E6',
