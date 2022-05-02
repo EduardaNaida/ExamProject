@@ -1,11 +1,10 @@
-import { GetPersonData } from "./FirebaseInterface";
-
-export function createQuiz(personId)
+import { GetPersonData, GetPersonsFromPath } from "./FirebaseInterface";
+//!THE TOPICS THAT ARE USED IN createQuestion NEEDS TO HAVE CASES IN createTopicDictionary, yesOrNoQuestion and multipleChoiceQuestion
+export function createQuiz(id)
 {
-    //!TODO change to multiple people
-    const people = fbInterface.GetPersonData(personId);
-    var peopleDictionary = createPeopleDictionary(people);
-    var topics = ['email', 'relatives', 'interests', 'job'];
+    //!TODO change to multiple people this is just testing
+    const people = [GetPersonData(id)];
+    var topicDictionary = createTopicDictionary(people);
     const numberOfQuestions = 10;
 
     console.log(people);
@@ -13,7 +12,7 @@ export function createQuiz(personId)
     var quiz = [];
     for (var i in numberOfQuestions)
     {
-        var question = createQuestion(dict, topics);
+        var question = createQuestion(topicDictionary);
         if (question != null)
         {
             quiz.push(question);
@@ -26,13 +25,11 @@ export function createQuiz(personId)
 
 function createQuestion(dict, topics)
 {
-    if (topics.length == 0)
-    {
-        return null;
-    }
+    if(topics.length == 0) return null;
+    //! needs to be the same topics that are used in createTopicDictionary for getting specified questions
+    var topics = ['work', 'unspecified']
     var topic = topics[Math.floor(Math.random() * topics.length)];
     const rand = Math.random() < 0.5;
-    //const rand = 0;
     if(dict[topic].length > 2)
     {
         if (rand)
@@ -57,12 +54,12 @@ function yesOrNoQuestion(choices, topic)
     var text;
     //!TODO add more topics and cases
     switch (topic) {
-        case 'email':
-            text = 'Is ' + person + "'s email " + questionAnswer + '?';
+        case 'work':
+            text = 'Does ' + person + " work at/with " + questionAnswer + '?';
             break;
     
         default:
-            text = 'Is ' + person + 'related to ' + questionAnswer + '?';
+            text = 'Does the note ' + questionAnswer + 'belong to ' + person + '?';
             break;
     }
 
@@ -72,7 +69,7 @@ function yesOrNoQuestion(choices, topic)
     }
     else
     {
-        answers = [{text:'Yes', correct:no}, {text:'No', correct:true}];
+        answers = [{text:'Yes', correct:false}, {text:'No', correct:true}];
     }
     
 
@@ -87,45 +84,74 @@ function multipleChoiceQuestion(choices, topic)
     var correctAnswer = choice[value];
 
     switch (topic) {
-        case 'email':
-            text = 'Which email address belongs to ' + person + '?';
+        case 'work':
+            text = 'Where does ' + person + 'work/what does ' + person + 'work with?';
             break;
     
         default:
-            text = 'What does ' + person + 'work with?';
+            text = 'Which note is under ' + person + '?';
             break;
     }
 
-    answers = [];
+    answers = [{text:correctAnswer, correct:true}];
 
     for (var i = 0; i < choices.length && i < 4; i++)
     {
-
+        answer = choices[Math.floor(Math.random() * choices.length)][value];
+        if(answer == correctAnswer)
+        {
+            answers.push({text:answer, correct:true});
+        }
+        else
+        {
+            answers.push({text:answer, correct:false});
+        }
     }
-
-    return {};
+    return {type:'multiplechoice', text:text, answers:shuffleArray(answers)}
 }
 
-function createPeopleDictionary(people)
+function shuffleArray(array)
+{
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const temp = array[i];
+      array[i] = array[j];
+      array[j] = temp;
+    }
+  }
+
+function createTopicDictionary(people)
 {
     var dict = {}
     for (const person in people)
     {
         for (const header in person)
         {
-            if (person[header] != null && header != person[id])
+            //TODO fix person[id] to correct name/id and add a metric shitton of keywords to sort by
+            if (header != person[id])
             {
-                if (dict[header] != null)
-                {
-                    dict[header].push({id:person[id], value:person[header]})
-                }
-                else
-                {
-                    dict[header] = [{id:person[id], value:person[header]}]
+                switch (header) {
+                    case ['work', 'job'].some(s => header.toLowerCase.includes(s)):
+                        createListOrPush(dict, "work");
+                        break;
+                                        
+                    default:
+                        createListOrPush(dict, "unspecified")
+                        break;
                 }
             }
         }
     }
 }
 
-createQuiz("lA33tHQiCCb88nQzkIax");
+function createListOrPush(dict, tag)
+{
+    if (dict[tag] != null)
+    {
+        dict[tag].push({id:person[id], value:person[header]})
+    }
+    else
+    {
+        dict[tag] = [{id:person[id], value:person[header]}]
+    }
+}
