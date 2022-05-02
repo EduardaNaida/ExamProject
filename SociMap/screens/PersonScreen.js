@@ -349,10 +349,11 @@ const styles = StyleSheet.create({
         width:40,
         height:40,
         borderRadius:35,
+        backgroundColor:'red',
     },
     thumbnailText:{
         fontSize:20,
         textAlign: 'center',
-        textAlignVertical: 'center'
+        textAlignVertical: 'center',
     },
 });

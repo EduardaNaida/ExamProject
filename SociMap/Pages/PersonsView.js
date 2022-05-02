@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
-import { Bold, Feather } from 'react-native-feather';
+import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
 
 
@@ -162,15 +162,16 @@ export default PersonsView = ({path, navigation, route}) =>
                         placeholder='Search' 
                         value={state.text} 
                         onChangeText={(text) => dispatch({type:'set text', data:text})}/>
+                        <Search style={styles.searchIcon}/>
                     </View>
                 <View style={styles.buttonView}>
                 <Pressable style={styles.buttonStyle} onPress={() => {
                     navigation.navigate('Person', {isCreatingNew:true});}}>
-                        
-                        <Text style={styles.buttonText}>{'Add new'}</Text>
+                        <Plus style={styles.addButton}/>
                             </Pressable>
                             </View>
                             </View>
+                
             
             <FlatList
                 style={styles.listSection}
@@ -181,6 +182,7 @@ export default PersonsView = ({path, navigation, route}) =>
    </ImageBackground >);
 }
 
+// TODO: Changed Button to Pressable style on row 167
 // <Button
 //title='Add'
 //style={styles.btnStyle}
@@ -223,16 +225,14 @@ const styles = StyleSheet.create({
         marginBottom:-90, 
         flexDirection:'row',
         justifyContent:'space-between',
-        alignContent:'center',
     },
     inputView:{
-        flex:1, 
+        flex:1,
         paddingLeft:50,
-        //paddingRight:10,
         flexDirection: 'row',
         justifyContent: 'center',
-//        alignItems: 'center',
         backgroundColor: '#fff',
+        alignContent:'center',
     },
     textInput:{
         fontSize:20,
@@ -245,15 +245,25 @@ const styles = StyleSheet.create({
         width:220,
     },
     searchIcon:{
-        padding:10,
-        position:'absolute',
+        //padding:10,
+        color:'grey',
+        //position:'absolute',
+        marginLeft: -35,
+        height:20,
+        marginTop:7.5,
+        alignSelf:'flex-start',
     },
     buttonView:{
         flex:1, 
         //paddingRight:10,
     },
+    addButton:{
+        marginLeft:25,
+        color:'black',
+        height:40,
+    },
     buttonStyle:{
-        width:100,
+        width:70,
         height:40,
         borderRadius:10,
         justifyContent:'center',
