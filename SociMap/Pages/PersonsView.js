@@ -150,7 +150,8 @@ export default PersonsView = ({path, navigation, route}) =>
         />)
         :
         (  <ImageBackground
-            source={{uri: 'https://wallpaperaccess.com/full/1159055.png'}}
+            source={require('./img./background.png')} 
+                //'https://wallpaperaccess.com/full/1159055.png'}}
             style={styles.image}
           >
         <Text style={styles.header}>{header_name}</Text>
