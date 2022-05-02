@@ -1,9 +1,10 @@
 
+import { StackActions } from '@react-navigation/native';
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
-
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
 
 async function addTemp(name){
@@ -99,7 +100,8 @@ export default PersonsView = ({path, navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
-    const header_name = "SociMap";
+    const header_name = "People";
+    const Stack = createNativeStackNavigator();
 
     useEffect(async ()=>{
         //console.log('fetching...')
@@ -149,38 +151,37 @@ export default PersonsView = ({path, navigation, route}) =>
             color='blue'
         />)
         :
-        (  <ImageBackground
-            source={require('./img./background.png')} 
-                //'https://wallpaperaccess.com/full/1159055.png'}}
-            style={styles.image}
-          >
-        <Text style={styles.header}>{header_name}</Text>
-            <View style={styles.container}>
-                <View style={styles.menuBar}>
-                    <View style={styles.inputView}>
-                    <TextInput
-                        style={styles.textInput} 
-                        placeholder='Search' 
-                        value={state.text} 
-                        onChangeText={(text) => dispatch({type:'set text', data:text})}/>
-                        <Search style={styles.searchIcon}/>
-                    </View>
-                <View style={styles.buttonView}>
-                <Pressable style={styles.buttonStyle} onPress={() => {
-                    navigation.navigate('Person', {isCreatingNew:true});}}>
-                        <Plus style={styles.addButton}/>
+        (  
+            <ImageBackground 
+                source={require('./img/header.png')}
+                style={styles.image}>
+                    <Text style={styles.header}>{header_name}</Text>
+                <View style={styles.container}>
+                    <View style={styles.menuBar}>
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder='Search'
+                                value={state.text}
+                                onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
+                            <Search style={styles.searchIcon} />
+                        </View>
+                        <View style={styles.buttonView}>
+                            <Pressable style={styles.buttonStyle} onPress={() => {
+                                navigation.navigate('Person', { isCreatingNew: true });
+                            } }>
+                                <Plus style={styles.addButton} />
                             </Pressable>
-                            </View>
-                            </View>
-                
-            
-            <FlatList
-                style={styles.listSection}
-                data={state.filtered}
-                renderItem={renderWidget}
-                keyExtractor={(_, index) => index}
-            /></View>
-   </ImageBackground >);
+                        </View>
+                    </View>
+
+
+                    <FlatList
+                        style={styles.listSection}
+                        data={state.filtered}
+                        renderItem={renderWidget}
+                        keyExtractor={(_, index) => index} /></View>
+                        </ImageBackground>);
 }
 
 // TODO: Changed Button to Pressable style on row 167
@@ -200,25 +201,28 @@ const styles = StyleSheet.create({
         marginBottom:-20,
         fontSize: 40,
         textAlign:'center',
-    },
-    container:{
-        flex: 1,
-        alignItems:'center',
-        justifyContent:'center',
-        //flex: 3,
-        backgroundColor:'#ffffff',
-        width:'100%',
-        height:'70%',
-        left:0,
-        justifyContent:'center',
-        top:60,
-        borderRadius:50,
-        opacity:0.85,
+        marginLeft:-150,
+        color:'#fff',
+        fontFamily:'Inter'
     },
     image:{
         flex:1, 
         width:null,
-        height:null,
+        height:'30%',
+    },
+    container:{
+        flex: 1,
+        alignItems:'center',
+        //justifyContent:'center',
+        //flex: 3,
+        backgroundColor:'#ffffff',
+        width:'100%',
+        height:'60%',
+        left:0,
+        //justifyContent:'center',
+        top:'10%',
+        marginLeft:0,
+        borderRadius:60,
     },
     menuBar:{
         flex: 1, 
@@ -232,7 +236,7 @@ const styles = StyleSheet.create({
         paddingLeft:50,
         flexDirection: 'row',
         justifyContent: 'center',
-        backgroundColor: '#fff',
+        backgroundColor: 'transparent',
         alignContent:'center',
     },
     textInput:{
@@ -246,9 +250,7 @@ const styles = StyleSheet.create({
         width:220,
     },
     searchIcon:{
-        //padding:10,
         color:'grey',
-        //position:'absolute',
         marginLeft: -35,
         height:20,
         marginTop:7.5,
@@ -256,7 +258,6 @@ const styles = StyleSheet.create({
     },
     buttonView:{
         flex:1, 
-        //paddingRight:10,
     },
     addButton:{
         marginLeft:25,
@@ -285,19 +286,14 @@ const styles = StyleSheet.create({
     listItem:{
         margin: 7.5,
         padding:5,
-        //position:'absolute',
         flexDirection: 'row',
         backgroundColor:'#f2caaa', // TODO: background color of the items should be depending on what group+group color?
-        //padding:10,
         borderRadius:10,
         width:319,
         justifyContent:'flex-start',
-//        alignSelf:'center',
     },
     itemText:{
         fontSize:20,
-        //width:10,
-        //textAlignVertical:'center',
         textAlign:'center',
         marginLeft:'5%',
         alignSelf:'center',

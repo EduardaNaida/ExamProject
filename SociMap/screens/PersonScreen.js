@@ -88,7 +88,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                 adding ?
                     <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                 :
+                <View style={styles.buttonStyle}>
                     <Button title='Add value' onPress={buttonClicked}/>
+                    </View>
             }
         </View>
     );
@@ -237,7 +239,7 @@ export default function PersonView({navigation, route}) {
         }
 
         return (
-            <Button title='Save' onPress={pressed}/>
+            <Button style={styles.saveButton} title='Save' onPress={pressed}/>
         );
     }
 
@@ -336,7 +338,12 @@ export default function PersonView({navigation, route}) {
                     adding ?
                         <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                     :
-                        <Button title='Add note' onPress={() => buttonClicked(input, setAdding)}/>
+                    <View style={styles.buttonView}>
+                        <Button 
+                        style={styles.addNoteButton}
+                        title='Add note' 
+                        onPress={() => buttonClicked(input, setAdding)}/>
+                        </View>
                 }
             </ScrollView>
         </View>
@@ -355,5 +362,22 @@ const styles = StyleSheet.create({
         fontSize:20,
         textAlign: 'center',
         textAlignVertical: 'center',
+    },
+    saveButtonn:{
+        backgroundColor:'red',
+
+    },
+    buttonView:{
+        flex:1,
+        backgroundColor:'red',
+    },
+    buttonStyle:{
+        flex:1,
+        borderRadius:20,
+        backgroundColor:'red'
+    },
+    addNoteButton:{
+        backgroundColor:'red',
+
     },
 });
