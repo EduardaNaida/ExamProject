@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator, Pressable, ImageBackground } from 'react-native';
-import { Edit, Trash, Delete, Plus, Save,FilePlus} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground } from 'react-native';
+import { Edit, Trash, Delete, Plus, X, Save, FilePlus} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,6 +21,7 @@ const PersonThumbnail = ({personData}) =>
         return (
             <Image style={styles.thumbnail}
             source={{uri:personData.img}}/>
+            
         );
     }
 
@@ -30,7 +31,9 @@ const PersonThumbnail = ({personData}) =>
             ...styles.thumbnailText
         }}>
             {acro}
-        </Text>);
+            
+        </Text>
+        );
 }
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
@@ -69,19 +72,19 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     }
 
     return (
-        // TODO: Remove <View>
-        <View style={{flexDirection:'column'}}> 
-            <View style={styles.headlineContainer}>
-                <Text style={styles.txtHeadline}>{sectionData.headline}</Text>
-                
+        <View style={{flexDirection:'column',alignItems:'center'}}> 
+            <View style={styles.categoryContainer}>
+                <Text style={styles.categoryText}>{sectionData.headline}</Text>
                 <Pressable  
-                    onPress={removeNote}>
-                        <Trash style={styles.deleteButton}/>
+                    onPress={removeNote}
+                    styles={styles.button}>
+                        <X style={styles.deleteButton} title='remove category'/>
                         </Pressable>
                         </View>
             {
                 sectionData.values.map(note => 
                 <Note 
+                    style={styles.txtContainer}
                     key={note.id} 
                     value={note} 
                     dispatch={dispatch} 
@@ -133,7 +136,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
     };
 
     return (
-        <View style={{flexDirection:'row'}}>
+        <View style={styles.txtContainer}>
             {
                 editable ? 
                 <TextInput 
@@ -145,8 +148,8 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                     onChangeText={setText}
                     multiline={true}/>
                 :
-                <View style={styles.txtContainer}>
-                <Text style={styles.txtValues}>{text}</Text></View>
+                
+                <Text style={styles.valuesText}>{text}</Text>
             }
             <Pressable 
                 onPress={() => {setEditable(true); 
@@ -320,7 +323,7 @@ export default function PersonView({navigation, route}) {
 
 
     if(state == null)
-        return(<ActivityIndicator size='large'/>)
+        return(<ActivityIndicator style={styles.indicator} size='large'/>)
 
     //console.log(state.name);
 
@@ -329,14 +332,14 @@ export default function PersonView({navigation, route}) {
         <View style={{flex:1}}>
             <ImageBackground 
                 source={require('../Pages/img/header.png')}
-                style={styles.image}><Text style={styles.header}>{"SociMap"}</Text>
+                style={styles.headerImg}><Text style={styles.header}>{"SociMap"}</Text>
                 </ImageBackground>
             <View style={styles.container}>
-            <ScrollView>
+                <ScrollView style={styles.scroller}>
                     <TouchableOpacity onPress={setImage}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
-                    <View style={{flex:1}}>
+
                     {
                         editingName ?
                             <TextInput
@@ -346,17 +349,19 @@ export default function PersonView({navigation, route}) {
                                 onBlur={nameFinished}
                             />
                             :
-                            <Text style={styles.txtName}>{state.name}</Text>
+                            <>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.nameText}>{state.name}</Text>
+                                <Pressable 
+                                    onPress={() => 
+                                    buttonClicked(nameInput, setEditingName)}>
+                                    <Edit
+                                        style={styles.editButton}/>
+                                </Pressable>
+                            </View></>
                     }
-                    <View style={{flex:1}}>
-                    <Pressable 
-                        onPress={() => 
-                        buttonClicked(nameInput, setEditingName)}>
-                            <Edit
-                                style={styles.nameEditButton}/>
-                            </Pressable>
-                            </View>
-                    </View>
+                    
+                    
 
                 {
                     state.notes.map(section => 
@@ -372,24 +377,34 @@ export default function PersonView({navigation, route}) {
                 
                 {
                     adding ?
-                        <TextInput 
+                    <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryText}>{'Notes:'}</Text>
+                        <TextInput style={styles.txtInputView}
                         ref={input} 
                         onChangeText={setText} 
                         onBlur={textFinished}></TextInput>
+                        </View>
                     :
+                    <>
+                    
                         <Pressable 
-                            title='Add note' 
-                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add note'}</Text>
+                            title='Add headline' 
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.categoryText}>{'Add new category'}</Text>
                             </Pressable> 
+                            </>
                 }
         </ScrollView>
-        </View>      
+        </View>        
     </View>
     );
 };
 
 const styles = StyleSheet.create({
     // TODO: Same as in PersonsView, move to global 
+    indicator:{
+        marginTop:'50%',
+
+    },
     header:{
         //marginTop: 80,
         marginBottom:0,
@@ -400,7 +415,12 @@ const styles = StyleSheet.create({
         color:'#fff',
         marginBottom:10,
     },
-    image:{
+    scroller:{
+        flexGrow:1,
+        height:800,
+        width:'100%'
+    },
+    headerImg:{
         marginTop:0,
         //flex:1, 
         width:null,
@@ -417,57 +437,78 @@ const styles = StyleSheet.create({
         fontSize:20,
         backgroundColor:'lightblue',
         textAlignVertical: 'center',
-        marginBottom:'60%',
+        marginBottom:-40,
     },
     container:{
-        flex: 1,
+        //flex: 1,
         padding:10,
         //alignItems:'center',
         backgroundColor:'#ffffff',
         width:'100%',
-        height:'200%',
+        //height:'100%',
         top:'-40%',
         borderRadius:60,
         flexDirection:'column',
-        justifyContent:'space-evenly'
+        justifyContent:'space-evenly',
+        marginBottom:'-200%',
+        paddingBottom:60,
         //alignItems:'center',
     }, 
     txtContainer:{
         //flex:1,
         margin:10,
-        height:40,
-        backgroundColor:'#FFB6C1', // TODO: The color of user-choice (from group)
-        flexDirection:'column',
-        justifyContent:'center',
-        borderRadius:20,
-        width:'80%',
+        //height:40,
+        padding:7,
+        flexDirection:'row',
+        backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
+        //justifyContent:'center',
+        borderRadius:10,
+        width:319,
     },
     txtInputView:{
         backgroundColor:'#e3e3e3',
-        borderRadius:30,
-        padding:5,
-        height:40,
+        borderRadius:10,
+        padding:10,
         width:220,
+        alignSelf:'center'
     },
-    txtHeadline:{
-        fontSize:25,
+    categoryText:{
+        fontSize:22,
+        color:'black',
+        textAlign:'center',
     },
-    headlineContainer:{
+    categoryContainer:{
         //backgroundColor:'lightgray',
+        flexDirection:'row',
         padding:5,
-        alignSelf: 'flex-start',
-        marginLeft:'10%'
+        alignSelf: 'center',
+        alignContent:'space-between',
+        justifyContent:'center',
+
     },
-    txtName:{
+    nameContainer:{
+        flex:1,
+        flexDirection:'row',
+        alignSelf:'center',
+        alignContent:'space-between',
+        justifyContent:'center',
+        
+    },
+    nameText:{
         fontSize:30,
         color:'black',
-        marginLeft:10,
-        alignSelf:'center',
-    },
-    txtValues:{
-        fontSize:20,
+        margin:10,
         textAlign:'center',
-        padding:10,
+        //marginBottom:'10%',
+        borderBottomColor:'black',
+        borderBottomWidth:1,
+    },
+    valuesText:{
+        fontSize:18,
+        textAlign:'left',
+        alignSelf:'flex-start',
+        width:'90%'
+        //padding:10,
     },
     // TODO: Same as in PersonsView, move to global file? 
     // START ----- 
@@ -475,12 +516,23 @@ const styles = StyleSheet.create({
         backgroundColor:'#ADD8E6',
         borderRadius:10,
         width:'30%',
-        height:'20%',
+        margin:5,
         alignItems:'center',
-        justifyContent:'center',
+        flexDirection:'row',
+        justifyContent:'space-evenly',
         //alignSelf:'center',
     },
     button:{
+        height:30,
+        width:'20%',
+        backgroundColor:'lightgrey',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:30,
+        marginBottom:20,
+
+    },
+    iconButton:{
         height:40,
         width:40,
         color:'black',
@@ -489,31 +541,19 @@ const styles = StyleSheet.create({
         height:40,
         width:40,
         color:'grey',
-        marginTop:'-10%',
-        marginLeft:'60%',
+        alignSelf:'flex-end'
     },
     editButton:{
         height:40,
         width:40,
         color:'gray',
-        marginTop:15,
-        marginLeft:-50,
+        alignSelf:'flex-end',
     },
 
     addButton:{
-        height:40,
-        width:40,
         color:'gray',
-        marginTop:0,
-        marginLeft:20,
-    },
-    nameEditButton:{
-        height:40,
-        marginTop:-27,
-        marginRight:'15%',
-        alignSelf:'flex-end',
-        width:40,
-        color:'gray',
+        margin:10,
+        //marginLeft:20,
     },
     saveButton:{
         height:40,
