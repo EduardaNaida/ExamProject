@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground } from 'react-native';
-import { Edit, Trash, Delete, Plus, X, Save, FilePlus} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { Edit, Trash, Delete, Plus, X, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
@@ -35,6 +35,8 @@ const PersonThumbnail = ({personData}) =>
         </Text>
         );
 }
+
+
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     
@@ -71,15 +73,30 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
+    const createThreeButtonAlert = () =>
+    Alert.alert(
+      "What do you want to do?",
+      "",
+      [
+        {
+          text: "Edit category name", onPress: () => console.log("Cancel Pressed")
+        },
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Delete category", onPress: removeNote }
+      ]
+    );
+
     return (
         <View style={{flexDirection:'column',alignItems:'center'}}> 
             <View style={styles.categoryContainer}>
-                <Text style={styles.categoryText}>{sectionData.headline}</Text>
-                <Pressable  
-                    onPress={removeNote}
-                    styles={styles.button}>
-                        <X style={styles.deleteButton} title='remove category'/>
-                        </Pressable>
+                <TouchableOpacity onPress={createThreeButtonAlert}>
+                    <Text style={styles.categoryText}>{sectionData.headline}</Text>
+                    </TouchableOpacity>  
+                
                         </View>
             {
                 sectionData.values.map(note => 
@@ -104,7 +121,6 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     onPress={buttonClicked}><Plus style={styles.addButton}/>
                         </Pressable>
             }
-
         </View>
     );
 }
@@ -259,12 +275,10 @@ export default function PersonView({navigation, route}) {
         }
 
         return (
-            <View style={styles.buttonView}>
                 <Pressable  
                     onPress={pressed}>
                     <Save style={styles.saveButton}/>
                     </Pressable>
-            </View>
         );
     }
 
@@ -356,7 +370,7 @@ export default function PersonView({navigation, route}) {
                                     onPress={() => 
                                     buttonClicked(nameInput, setEditingName)}>
                                     <Edit
-                                        style={styles.editButton}/>
+                                        style={styles.nameEditButton}/>
                                 </Pressable>
                             </View></>
                     }
@@ -378,7 +392,7 @@ export default function PersonView({navigation, route}) {
                 {
                     adding ?
                     <View style={styles.categoryContainer}>
-                    <Text style={styles.categoryText}>{'Notes:'}</Text>
+                    <Text style={styles.categoryText}>{'Category name:'}</Text>
                         <TextInput style={styles.txtInputView}
                         ref={input} 
                         onChangeText={setText} 
@@ -389,7 +403,8 @@ export default function PersonView({navigation, route}) {
                     
                         <Pressable 
                             title='Add headline' 
-                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.categoryText}>{'Add new category'}</Text>
+                            style={styles.addCategoryStyle}
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'New category'}</Text>
                             </Pressable> 
                             </>
                 }
@@ -418,7 +433,8 @@ const styles = StyleSheet.create({
     scroller:{
         flexGrow:1,
         height:800,
-        width:'100%'
+        width:'100%',
+        paddingBottom:50,
     },
     headerImg:{
         marginTop:0,
@@ -461,30 +477,36 @@ const styles = StyleSheet.create({
         padding:7,
         flexDirection:'row',
         backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
-        //justifyContent:'center',
+        justifyContent:'center',
         borderRadius:10,
         width:319,
     },
     txtInputView:{
-        backgroundColor:'#e3e3e3',
+        backgroundColor:'orange',
+        fontSize:20,
+        height:40,
         borderRadius:10,
-        padding:10,
-        width:220,
-        alignSelf:'center'
+        paddingLeft:10,
+        margin:10,
+        width:319,
+        flexDirection:'row',
+        justifyContent:'flex-start'
     },
     categoryText:{
-        fontSize:22,
+        fontSize:24,
         color:'black',
-        textAlign:'center',
+        textAlign:'left',
     },
     categoryContainer:{
         //backgroundColor:'lightgray',
-        flexDirection:'row',
-        padding:5,
-        alignSelf: 'center',
-        alignContent:'space-between',
+        borderWidth:1,
+        borderColor:'black',
+        borderRadius:20,
+        alignSelf:'flex-start',
+        //alignSelf: 'center',
+//        alignContent:'space-between',
         justifyContent:'center',
-
+        paddingTop:20,
     },
     nameContainer:{
         flex:1,
@@ -492,21 +514,22 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         alignContent:'space-between',
         justifyContent:'center',
-        
     },
     nameText:{
         fontSize:30,
         color:'black',
-        margin:10,
+        marginLeft:40,
+        marginTop:10,
         textAlign:'center',
-        //marginBottom:'10%',
-        borderBottomColor:'black',
-        borderBottomWidth:1,
+        marginBottom:20,
     },
     valuesText:{
-        fontSize:18,
+        fontSize:19,
         textAlign:'left',
+        marginLeft:10,
+        marginRight:-10,
         alignSelf:'flex-start',
+        justifyContent:'center',
         width:'90%'
         //padding:10,
     },
@@ -524,12 +547,12 @@ const styles = StyleSheet.create({
     },
     button:{
         height:30,
-        width:'20%',
+        width:50,
         backgroundColor:'lightgrey',
+        //alignSelf:'center',
         justifyContent:'center',
         alignItems:'center',
         borderRadius:30,
-        marginBottom:20,
 
     },
     iconButton:{
@@ -541,18 +564,34 @@ const styles = StyleSheet.create({
         height:40,
         width:40,
         color:'grey',
-        alignSelf:'flex-end'
+        marginLeft:10,
+        //alignSelf:'flex-end'
+    },
+    nameEditButton:{
+        height:40,
+        width:40,
+        marginTop:15,
+        marginLeft:30,
+        color:'gray',
+//        alignSelf:'center',
     },
     editButton:{
         height:40,
         width:40,
         color:'gray',
-        alignSelf:'flex-end',
+//        alignSelf:'center',
     },
-
+    addCategoryStyle:{
+        backgroundColor:'lightgrey',
+        width:'35%',
+        padding:7.5,
+        marginTop:20,
+        borderRadius:20,
+    },
     addButton:{
         color:'gray',
         margin:10,
+        alignSelf:'center',
         //marginLeft:20,
     },
     saveButton:{
@@ -562,8 +601,7 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         fontSize:20,
-        backgroundColor:'lightgrey',
-        width:'20%',
+        alignSelf:'center',
         borderRadius:20,
     },
     buttonStyle:{
