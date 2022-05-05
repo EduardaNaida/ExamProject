@@ -65,7 +65,8 @@ export function SetAuthStateChangeCallback(callback){
 }
 
 export async function GetPersonsFromPath(path){
-    const ref = await getDocs(collection(db, path));
+    const p = `Users/${GetUid()}/${path}/People`.replace("//", '/');
+    const ref = await getDocs(collection(db, p));
     let ret = [];
     //let ids = Array.from(ref.docs, (d => d.id));
 
@@ -98,10 +99,33 @@ export async function GetPersonsFromPath(path){
 }
 
 export async function AddNewPerson(person){
-    const ref = await addDoc(collection(db, 'Users', GetUid(), 'People'), person);
-    console.log(ref.id);
-    return ref.id;
+
+    const notes = person.notes;
+    const img = person.img;
+
+    const personId = (await addDoc(collection(db, 'Users', GetUid(), 'People'), {name:person.name, img:'', color:person.color})).id;
+
+    for (let x = 0; x < notes.length; x++) {
+        const note = notes[x];
+        
+        const noteId = await AddNote(personId, note.headline);
+
+        const values =note.values;
+        for(let y = 0; y < values.length; y++){
+            const value = values[y].value;
+
+            await AddValueToNote(personId, noteId, value);
+        }
+    }
+
+    if(!img)
+        return [personId, ''];
+
+    const url = await SetPersonImage(personId, img);
+    
+    return [personId, url];
 }
+
 export function SendPasswordResetEmail(auth, email){
 
         const result = sendPasswordResetEmail(auth, email);
@@ -173,8 +197,11 @@ export async function RemoveNote(personId, noteId){
 }
 
 export async function AddNoteCustomId(personId, headline, noteId){
-    console.log(personId, headline, noteId);
     await setDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId), {headline:headline});
+}
+
+export async function AddNote(personId, headline){
+    return (await addDoc(collection(db, 'Users', GetUid(), 'People', personId, 'Notes'), {headline:headline})).id;
 }
 
 export async function SetPersonImage(personId, imageUri){
@@ -190,4 +217,40 @@ export async function SetPersonImage(personId, imageUri){
     updateDoc(doc(db, 'Users', GetUid(), 'People', personId), {img:url});
 
     return url;
+}
+
+export async function UpdatePersonFields(personId, obj){
+    await updateDoc(doc(db, 'Users', GetUid(), 'People', personId), obj);
+}
+
+export async function GetGroups(path){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+
+    const grps = await getDocs(collection(db, p));
+    return grps.docs.map(x => {
+        const dat = x.data();
+        return ({...dat, id:x.id});
+    })
+
+}
+
+export async function AddGroup(path, groupData){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+
+    const ref = await addDoc(collection(db, p), groupData);
+    return ref.id;
+}
+
+export async function AddGroupCustomId(path, groupData, groupId){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+    console.log('p:', p);
+    console.log('path:', path);
+    await setDoc(doc(db, p, groupId), groupData);
+}
+
+export async function AddPersonIdToCollection(path, id){
+    const p = `Users/${GetUid()}/${path}/People`.replace("//", "/");
+    console.log(p);
+
+    await setDoc(doc(db, p, id), {});
 }

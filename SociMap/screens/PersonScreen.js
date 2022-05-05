@@ -1,13 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator } from 'react-native';
 import { Edit, Trash, Delete} from 'react-native-feather';
-import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage } from '../FirebaseInterface';
+import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
+        if(!personData.name)
+            return '';
+
         const str = personData.name + '';
         const matches = str.match(/\b(\w)/g);
         const acronym = matches.join('').substring(0,2); 
@@ -29,7 +32,7 @@ const PersonThumbnail = ({personData}) =>
         </Text>);
 }
 
-const Section = ({dispatch, sectionData, personId}) => {
+const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
@@ -46,7 +49,9 @@ const Section = ({dispatch, sectionData, personId}) => {
         if(text != ''){
             console.log('adding note:', text);
             const id = uuid.v4();
-            AddValueToNoteCustomId(personId, sectionData.id, text, id);
+
+            if(!isCreatingNew)
+                AddValueToNoteCustomId(personId, sectionData.id, text, id);
             const v = {
                 value:text,
                 id:id
@@ -57,7 +62,8 @@ const Section = ({dispatch, sectionData, personId}) => {
     }
 
     const removeNote = () => {
-        RemoveNote(personId, sectionData.id);
+        if(!isCreatingNew)
+            RemoveNote(personId, sectionData.id);
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
@@ -68,7 +74,15 @@ const Section = ({dispatch, sectionData, personId}) => {
                 <Button title='remove' onPress={removeNote}/>
             </View>
             {
-                sectionData.values.map(note => <Note key={note.id} value={note} dispatch={dispatch} personId={personId} noteId={sectionData.id}></Note>)
+                sectionData.values.map(note => 
+                <Note 
+                    key={note.id} 
+                    value={note} 
+                    dispatch={dispatch} 
+                    personId={personId} 
+                    noteId={sectionData.id}
+                    isCreatingNew={isCreatingNew}
+                />)
             }
             {
                 adding ?
@@ -80,7 +94,7 @@ const Section = ({dispatch, sectionData, personId}) => {
     );
 }
 
-const Note = ({dispatch, value, personId, noteId}) => {
+const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
     //console.log(value);
     const input = useRef();
     const [text, setText] = useState(value.value);
@@ -94,11 +108,14 @@ const Note = ({dispatch, value, personId, noteId}) => {
             return;
 
         if(text == ''){
-            RemoveValueFromNote(personId, noteId, value.id);
+            if(!isCreatingNew)
+                RemoveValueFromNote(personId, noteId, value.id);
             dispatch({type:'remove value', noteId: noteId, valueId:value.id});
             return;
         }
-        UpdateValueOfNote(personId, noteId, value.id, text);
+        
+        if(!isCreatingNew)
+            UpdateValueOfNote(personId, noteId, value.id, text);
         dispatch({type:'update value', noteId: noteId, valueId:value.id, newValue:text});
     };
 
@@ -152,6 +169,11 @@ function stateUpdater(state, action) {
                 ...state,
                 img:action.url
             };
+        case 'update name':
+            return {
+                ...state,
+                name:action.name
+            };
         default:
             break;
     }
@@ -169,21 +191,71 @@ export default function PersonView({navigation, route}) {
     const [name, setName] = useState('');
     const nameInput = useRef();
 
-    console.log('params', route.params);
-
     const personId = route.params.personId;
+    const isCreatingNew = route.params.isCreatingNew;
 
+    
+    const [prev, _] = useState(() => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+
+        console.log(prevRoute.name);
+        return prevRoute.name;
+    })
  
 
     useEffect(()=>{
-        GetPersonData(personId).then(x=>{
-            dispatch({type:'init', data:x});
-        })
+        
+        if(!isCreatingNew){
+            GetPersonData(personId).then(x=>{
+                dispatch({type:'init', data:x});
+            })
+            return;
+        }
+
+        dispatch({type:'init', data:{
+            name:'',
+            img:'',
+            color:'red',
+            notes:[]
+        }});
     }, []);
+
+    useEffect(()=>{
+        //console.log(state);
+        
+        navigation.setOptions({
+            headerRight: () => SaveButton(state), 
+        });
+    }, [state]);
+
+    const SaveButton = (stat) => {
+        const pressed = () => {
+            //console.log(stat);
+            if(!stat?.name){
+                alert('No name!');
+                navigation.pop();
+                return;
+            }
+
+            console.log(prev);
+
+            navigation.navigate({
+                name: prev,
+                params: { Post: JSON.stringify(stat) },
+                merge: true,
+            });
+        }
+
+        return (
+            <Button title='Save' onPress={pressed}/>
+        );
+    }
+
     
-    const buttonClicked = () => {
-        setAdding(true);
-        setTimeout(() => input.current.focus(), 10);
+    const buttonClicked = (i, setter) => {
+        setter(true);
+        setTimeout(() => i.current.focus(), 10);
     };
 
     
@@ -193,11 +265,23 @@ export default function PersonView({navigation, route}) {
         if(text != ''){
             console.log('adding note:', text);
             const id = uuid.v4();
-            AddNoteCustomId(state.id, text, id);
+            if(!isCreatingNew)
+                AddNoteCustomId(state.id, text, id);
             
             setText('');
             dispatch({type:'add note', note:{id:id, headline:text, values:[]}});
         }
+    };
+
+    const nameFinished = async () => {
+        nameInput.current.blur();
+        setEditingName(false);
+        
+        if(!isCreatingNew)
+            UpdatePersonFields(personId, {name:name});
+
+        dispatch({type:'update name', name:name});
+        setName('');
     };
 
     const setImage = async () => {
@@ -208,13 +292,24 @@ export default function PersonView({navigation, route}) {
             quality: 0.3,
         });
 
-        const uri = await SetPersonImage(state.id, result.uri);
+        if(result.cancelled)
+            return;
 
-        dispatch({type:'update img', url:uri});
+        if(!isCreatingNew){
+            const uri = await SetPersonImage(state.id, result.uri);
+            dispatch({type:'update img', url:uri});
+            return;
+        }
+
+        dispatch({type:'update img', url:result.uri});
     };
+
+
 
     if(state == null)
         return(<ActivityIndicator size='large'/>)
+
+    //console.log(state.name);
 
     return (
         <View>
@@ -222,17 +317,37 @@ export default function PersonView({navigation, route}) {
                 <TouchableOpacity onPress={setImage}>
                     <PersonThumbnail personData={state}/>
                 </TouchableOpacity>
-                <Text>{state.name}</Text>
+                <View style={{flexDirection:'row'}}>
+                    {
+                        editingName ?
+                            <TextInput
+                                ref={nameInput}
+                                onChangeText={setName}
+                                onBlur={nameFinished}
+                            />
+                            :
+                            <Text>{state.name}</Text>
+                    }
+                    <Button title='Change Name' onPress={() => buttonClicked(nameInput, setEditingName)}/>
+                </View>
 
                 {
-                    state.notes.map(section => <Section key={section.id} sectionData={section} dispatch={dispatch} personId={state.id}></Section>)
+                    state.notes.map(section => 
+                        <Section 
+                            key={section.id} 
+                            sectionData={section} 
+                            dispatch={dispatch} 
+                            personId={state.id}
+                            isCreatingNew={isCreatingNew}
+                            />
+                        )
                 }
                 
                 {
                     adding ?
                         <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                     :
-                        <Button title='Add note' onPress={buttonClicked}/>
+                        <Button title='Add note' onPress={() => buttonClicked(input, setAdding)}/>
                 }
             </ScrollView>
         </View>
