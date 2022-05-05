@@ -193,6 +193,15 @@ export default function PersonView({navigation, route}) {
 
     const personId = route.params.personId;
     const isCreatingNew = route.params.isCreatingNew;
+
+    
+    const [prev, _] = useState(() => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+
+        console.log(prevRoute.name);
+        return prevRoute.name;
+    })
  
 
     useEffect(()=>{
@@ -229,8 +238,10 @@ export default function PersonView({navigation, route}) {
                 return;
             }
 
+            console.log(prev);
+
             navigation.navigate({
-                name: 'PersonsNested',
+                name: prev,
                 params: { Post: JSON.stringify(stat) },
                 merge: true,
             });
