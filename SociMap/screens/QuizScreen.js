@@ -1,8 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { useEffect, useState } from 'react';
-import { AttemptSignIn } from './FirebaseInterface';
-import { createQuiz } from './QuizAlgorithm';
+import { AttemptSignIn } from '../FirebaseInterface';
+import { createQuiz } from '../QuizAlgorithm';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+const Stack = createNativeStackNavigator();
+
+export default QuizScreen = () =>
+{
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name='QuizView' component={QuizView}/>
+        </Stack.Navigator>
+    );
+}
 
 export const QuizView = () =>
 {
@@ -38,7 +50,7 @@ export const QuizView = () =>
     const [currentQuestion, setCurrentQuestion] = useState(0);
 
     //!TODO set lA33tHQiCCb88nQzkIax to a group this id is just for testing
-    const allQuestions = createQuiz('lA33tHQiCCb88nQzkIax');
+    const allQuestions = createQuiz();
     const amountOfQuestions = allQuestions[1].length;
     const [questionData, setQuestionData] = useState(allQuestions[currentQuestion]);
     let buttons = buttonList(questionData);

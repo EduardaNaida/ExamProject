@@ -4,6 +4,7 @@ import { Text, ActivityIndicator } from 'react-native';
 
 import PersonsScreen from '../screens/PersonsScreen';
 import GroupScreen from '../screens/GroupScreen';
+import QuizScreen from '../screens/QuizScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,7 +27,7 @@ export default MainView = ({}) => {
             <Tab.Navigator screenOptions={{headerShown:false}}>
                 <Tab.Screen name='Persons' component={PersonsScreen}/>
                 <Tab.Screen name='Groups' component={GroupScreen}/>
-                <Tab.Screen name='Quiz' component={Blank}/>
+                <Tab.Screen name='Quiz' component={QuizScreen}/>
             </Tab.Navigator>
         </NavigationContainer>
     );

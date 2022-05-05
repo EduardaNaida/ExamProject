@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { TextInput, View, Button } from "react-native";
-import ColorPicker from "react-native-wheel-color-picker";
+import { ColorPicker } from "react-native-wheel-color-picker";
 
 const handleChange = (state, action) => {
     switch (action.type) {

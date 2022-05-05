@@ -1,13 +1,14 @@
 import { GetPersonData, GetPersonsFromPath } from "./FirebaseInterface";
 //!THE TOPICS THAT ARE USED IN createQuestion NEEDS TO HAVE CASES IN createTopicDictionary, yesOrNoQuestion and multipleChoiceQuestion
-export function createQuiz(id)
+export function createQuiz()
 {
     //!TODO change to multiple people this is just testing
-    const people = [GetPersonData(id)];
+    const people = GetPersonData(id);
+    console.log(people);
     var topicDictionary = createTopicDictionary(people);
     const numberOfQuestions = 10;
 
-    console.log(people);
+    console.log(topicDictionary);
     
     var quiz = [];
     for (var i in numberOfQuestions)
@@ -131,7 +132,7 @@ function createTopicDictionary(people)
             if (header != person[id])
             {
                 switch (header) {
-                    case ['work', 'job'].some(s => header.toLowerCase.includes(s)):
+                    case ['work', 'job'].some(s => header.toLowerCase.indexOf(s) !== -1):
                         createListOrPush(dict, "work");
                         break;
                                         
