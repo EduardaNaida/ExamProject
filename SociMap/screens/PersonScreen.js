@@ -10,11 +10,19 @@ import { Row } from 'react-native-table-component';
 // import styles from './Stylesheet'
 
 /** TODO: ändra funktionen createAlert --> byt till en popup-meny? 
+ *        används för att ta bort en hel kategori 
  *  till denna kanske? https://morioh.com/p/425dc0fcdf7d 
  *  eller denna: https://hartaniyassir.medium.com/how-to-create-a-popup-menu-in-react-native-d2fc8908e932
+ *  eller denna: https://reactnativecode.com/popup-menu-overflow-menu-in-react-navigation/ 
  *  tanke: onClick - få upp popup-meny 
  */
 
+ /** 
+ *  TODO: Ändra storlek på text när man lägger till ny kategori 
+ *  TODO: Ändra design på textInput
+ *  TODO: Ändra kategori-titeln så den är flexDir:'row', settings-knappen bredvid 
+ *  
+ */
 
 const PersonThumbnail = ({personData}) =>
 {
