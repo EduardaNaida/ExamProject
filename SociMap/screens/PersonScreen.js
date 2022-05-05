@@ -4,6 +4,16 @@ import { Edit, Trash, Delete, Plus, X, Save, Settings} from 'react-native-feathe
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
+import { Row } from 'react-native-table-component';
+
+// TODO: lägg över alla stylesheets i Stylesheet   
+// import styles from './Stylesheet'
+
+/** TODO: ändra funktionen createAlert --> byt till en popup-meny? 
+ *  till denna kanske? https://morioh.com/p/425dc0fcdf7d 
+ *  eller denna: https://hartaniyassir.medium.com/how-to-create-a-popup-menu-in-react-native-d2fc8908e932
+ *  tanke: onClick - få upp popup-meny 
+ */
 
 
 const PersonThumbnail = ({personData}) =>
@@ -73,13 +83,14 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
-    const createThreeButtonAlert = () =>
+    const createAlert = () =>
     Alert.alert(
       "What do you want to do?",
       "",
       [
         {
-          text: "Edit category name", onPress: () => console.log("Cancel Pressed")
+          text: "Edit category name", 
+          onPress: () => console.log("Cancel Pressed")
         },
         {
           text: "Cancel",
@@ -93,8 +104,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     return (
         <View style={{flexDirection:'column',alignItems:'center'}}> 
             <View style={styles.categoryContainer}>
-                <TouchableOpacity onPress={createThreeButtonAlert}>
+                <TouchableOpacity onPress={createAlert}>
                     <Text style={styles.categoryText}>{sectionData.headline}</Text>
+                    <Settings style={styles.deleteButton}/>
                     </TouchableOpacity>  
                 
                         </View>
@@ -502,6 +514,7 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:'black',
         borderRadius:20,
+        flexDirection:'row',
         alignSelf:'flex-start',
         //alignSelf: 'center',
 //        alignContent:'space-between',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
-class Splash extends React.Component{
+class HeaderPage extends React.Component{
     render(){
         return(
             <View style={styles.imgContainer}>
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Header;
+export default HeaderPage;
