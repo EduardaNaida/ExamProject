@@ -1,11 +1,11 @@
 import React from 'react';
-import {Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import {Alert, StyleSheet, Text, View, TouchableOpacity, Button, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GetCurrentUser, SignOut } from '../FirebaseInterface';
 
 function SettingsPage(props) {
 
-    const navigation = useNavigation();
+    const {navigation} = props;
 
     const handleSignOut = async () => {
         try {
@@ -16,19 +16,45 @@ function SettingsPage(props) {
             }
         }
         catch(err){
-            alert('Error log out');
+           
         }
     }
     return (
         <View style={styles.container}>
-            <Text style={styles.welcome}>Settings</Text>
-            
-         <View style={styles.btnContainer}>
-            <TouchableOpacity onPress={() => handleSignOut()}
-                style={styles.userBtn}>
-                 <Text style={styles.btnTxt}>Log out</Text>
-            </TouchableOpacity>
-         </View>
+            <View style={styles.welcome}>
+              <Text style={styles.txtSet}>Settings</Text>
+              </View>
+           <View style={styles.info}> 
+                   <View style={styles.headerInfo}>
+                     <Text style={styles.headerInfoTxt}> Your email address</Text>
+                   </View>
+
+                   <View style={styles.menuInfo}>
+                   <Pressable style={styles.userBtn}>
+                     <Text style={styles.infoBtn}>Account</Text>
+                   </Pressable>
+
+                   <Pressable style={styles.userBtn}>
+                      <Text style={styles.infoBtn}>Language</Text>
+                   </Pressable>
+
+                   <Pressable style={styles.userBtn} onPress={() => navigation.navigate('ResetPasswordScreen')}>
+                      <Text style={styles.infoBtn}>Reset a password</Text>
+                   </Pressable>
+
+                   <Pressable style={styles.userBtn}>
+                      <Text style={styles.infoBtn}>Help and Support</Text>
+                   </Pressable>
+                   
+                   <Pressable style={styles.userBtn}>
+                      <Text style={styles.infoBtn}>About</Text>
+                   </Pressable>
+                   <Pressable style={styles.userBtn} onPress={() => handleSignOut()}>
+                      <Text style={styles.infoBtn1} >Log out</Text>
+                   </Pressable>
+                   </View>
+                   
+              </View>
         </View>
 
                   );
@@ -39,34 +65,66 @@ export default SettingsPage;
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: 'grey',
+      //alignItems: 'center',
+      //justifyContent: 'center',
     },
-    welcome: {
-      height: 150,
-      fontSize: 30,
+    txtSet:{
+      fontSize: 40,
       textAlign: 'center',
-      margin: 10,
-      color: '#FF38E2',
+      margin: 30,
+      color: 'black',
       fontFamily: "Cochin"
     },
+    welcome: {
+      margin: 50,
+    },
+    info:{
+      display: 'flex',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'white',
+      borderTopLeftRadius: 70,
+      borderTopRightRadius: 70
+    },
     btnContainer:{
-        flexDirection: 'row',
-        justifyContent: "space-between",
-        width: "75%",
+      flexDirection: 'row',
+      justifyContent: "center",
+      width: "75%",
+      marginTop: 380,
+      opacity: 0.8,
+      padding: 10,
+    },
+    headerInfo: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 60,
+      marginBottom: 90,
+    },
+    menuInfo:{
+      marginRight: 62,
+      marginLeft: 62,
     },
     userBtn:{
-        borderRadius: 25,
-        backgroundColor: "#FF38E2",
-        padding: 15,
-        width: "45%"
+      textAlign:'center',
+      alignItems: 'center',
+      borderBottomColor: '#d5d7dd',
+      borderBottomWidth: 1,
+      marginTop: 20,
       },
-      btnTxt:{
-        fontSize: 16,
-        textAlign: "center",
+    infoBtn:{
+      fontSize: 18,
+      },
+    infoBtn1:{
+      fontSize: 18,
+      color: 'red',
+    },
+    headerInfoTxt:{
+      fontSize: 23,
+    }
 
-      },
 
 })
