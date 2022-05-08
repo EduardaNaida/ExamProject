@@ -1,20 +1,24 @@
 /**
  *  Project style sheets for common styles 
  */
+'use strict';
 import { StyleSheet } from 'react-native';
 
 // TODO: change folder --> ./assets? 
 export default StyleSheet.create({
-    container: {
-      flex: 1
-    },
-    welcome: {
-      fontSize: 20
-    },
-    button: {
-        fontSize: 12,
-        color: '#000',
-    },
+  header:{
+    marginBottom:0,
+    marginTop:30,
+    marginLeft:30,
+    fontSize: 40,
+    color:'#fff',
+    marginBottom:10,
+  },
+  headerImg:{
+    marginTop:0,
+    width:null,
+    height:'60%',
+  },
   });
 
 /** 

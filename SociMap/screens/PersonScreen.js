@@ -1,14 +1,12 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
 import { Edit, Plus, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import { Row } from 'react-native-table-component';
 
-// For the overflow menu 
-import { Layout, MenuItem, OverFlowMenu } from '@ui-kitten/components';
-
+import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -29,38 +27,17 @@ import { Layout, MenuItem, OverFlowMenu } from '@ui-kitten/components';
  *  
  */
 
- /**
-  * For menu
-  * 
-  */
-
-const [selectedIndex, setSelectedIndex] = React.useState(null);
-const [visible, setVisible] = React.useState(false);
-
-const onItemSelect = (index) => {
-    setSelectedIndex(index);
-    setVisible(false);
-};
-
-const renderToggleButton = () => (
-<Button onPress={() => setVisible(true)}>
-    TOGGLE MENU
-    </Button>
-);
+/** 
+ * OVERFLOW MENU
+ */
 
 
 
-
-
-
-
- /**    MENU END */
-  ////// 
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
         if(!personData.name)
-            return '';
+            return 'empty';
 
         const str = personData.name + '';
         const matches = str.match(/\b(\w)/g);
@@ -122,32 +99,50 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
-    const createAlert = () =>
+    const alertDeletion = () =>
     Alert.alert(
-      "What do you want to do?",
-      "",
-      [
-        {
-          text: "Edit category name", 
-          onPress: () => console.log("Cancel Pressed")
-        },
-        {
-          text: "Cancel",
-          onPress: () => console.log("Cancel Pressed"),
-          style: "cancel"
-        },
-        { text: "Delete category", onPress: removeNote }
-      ]
+        // Alert messages 
+        "Are you sure you want to delete this category?",
+        "This will delete all entries in the category.",
+      [{
+          text: "Yes", onPress: removeNote 
+        },{
+          text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel"
+        }]
     );
 
+    const alertMsg = () => 
+    Alert.alert(
+        "Edit category name not implemented.",
+        "",
+        [{
+                text: 'Return', onPress: () => console.log('Return pressed'), style: 'cancel'
+            }])
+
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
+
     return (
-                <View style={{flexDirection:'column',alignItems:'center'}}> 
-                    <View style={styles.categoryContainer}>
-                        <TouchableOpacity style={{flexDirection:'row'}} onPress={createAlert}>
-                            <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                            <Settings style={styles.settingsButton}/></TouchableOpacity>
-                    </View>
-            {
+            <View style={styles.categoryView}> 
+                <View style={styles.categoryContainer}>
+                    <Provider>
+                        <Menu 
+                            style={styles.menu}
+                            visible={visible}
+                            onDismiss={closeMenu}
+                            anchor={
+                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
+                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                                <Settings style={styles.settingsButton}/>
+                                </TouchableOpacity>}>
+                                    <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                                    <Divider/>
+                                    <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
+                        </Menu>
+                    </Provider>
+                </View>
+                {
                 sectionData.values.map(note => 
                 <Note 
                     style={styles.txtContainer}
@@ -162,8 +157,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
             
             {
                 adding ?
+                <View style={styles.txtContainer}>
                     <TextInput style={styles.inputView}
-                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput></View>
                 :
                     <Pressable 
                     style={styles.button}
@@ -214,7 +210,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                     multiline={true}/>
                 :
                 
-                <Text style={styles.valuesText}>{text}</Text>
+                <Text style={styles.categoryText}>{text}</Text>
             }
             <Pressable 
                 onPress={() => {setEditable(true); 
@@ -324,10 +320,14 @@ export default function PersonView({navigation, route}) {
         }
 
         return (
+            <View style={{alignSelf:'flex-end'}}>
                 <Pressable  
                     onPress={pressed}>
-                    <Save style={styles.saveButton}/>
+                        
+                        <Save style={styles.saveButton}/>
+                        
                     </Pressable>
+                    </View>
         );
     }
 
@@ -442,12 +442,14 @@ export default function PersonView({navigation, route}) {
                 
                 {
                     adding ?
-                    <View style={styles.categoryContainer}>
+                    <View style={{flexDirection:'column', alignContent:'center'}}>
                         <Text style={styles.newTitle}>{'Category name:'}</Text>
+                            <View style={styles.categoryContainer}>
                         <TextInput style={styles.inputView}
                         ref={input} 
                         onChangeText={setText} 
                         onBlur={textFinished}></TextInput>
+                        </View>
                         </View>
                     :
                     <>
@@ -507,62 +509,97 @@ const styles = StyleSheet.create({
         marginBottom:-40,
     },
     container:{
-        //flex: 1,
         padding:10,
-        //alignItems:'center',
         backgroundColor:'#ffffff',
         width:'100%',
-        //height:'100%',
         top:'-40%',
         borderRadius:60,
-        flexDirection:'column',
-        justifyContent:'space-evenly',
+//        flexDirection:'column',
+//        justifyContent:'center',
         marginBottom:'-200%',
         paddingBottom:60,
-        //alignItems:'center',
     }, 
     txtContainer:{
         //flex:1,
         margin:10,
-        //height:40,
+        position:'relative',
         padding:7,
         flexDirection:'row',
         backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
         justifyContent:'center',
+        alignSelf:'center',
         borderRadius:10,
         width:319,
     },
     inputView:{
-        backgroundColor:'lightgray',
+        backgroundColor:'#00000000',
+        borderBottomColor:'black',
+        borderBottomWidth:1,
         fontSize:20,
         height:30,
-        borderRadius:10,
-        paddingLeft:10,
-        margin:10,
-        width:200,
-        flexDirection:'row',
-        justifyContent:'flex-start'
+        paddingLeft:15,
+        width:'90%',
+        alignSelf:'center',
+        textAlign:'center',
     },
     newTitle:{
         fontSize:20,
         color:'black',
         textAlign:'left',
     },
-    categoryTitle:{
-        fontSize:24,
-        color:'black',
-        textAlign:'left',
-        justifyContent:'center',
-        alignSelf:'center'
-    },    
+
+    menuContainer:{
+        //paddingTop:50,
+        flexDirection: 'row',
+        //justifyContent:'center',
+        zIndex:100,
+    },
+    menuItem:{
+        height:30,
+    },
+    menu:{
+        backgroundColor:'#fff',
+        borderRadius:20,
+        borderWidth:0,
+        top:-80,
+        left:0, 
+        position:'absolute',
+        zIndex:100,
+    },
+    categoryView:{
+        flexDirection:'column',
+        alignItems:'center',
+        alignSelf:'flex-start',
+    },
     categoryContainer:{
         flexDirection:'row',
+        marginTop:10,
         borderWidth:0.7,
         borderColor:'black',
         backgroundColor:'#ebebeb',
         borderRadius:10,
+        width:'60%',
         padding:7,
-        alignSelf:'flex-start',
+        alignSelf:'center',
+        marginBottom:10,
+    },
+    categoryTitle:{
+        fontSize:24,
+        color:'black',
+        textAlign:'center',
+        margin:5,
+        paddingLeft:50,
+        alignSelf:'center',
+        width:'90%',
+    },    
+    categoryText:{
+        fontSize:19,
+        //textAlign:'left',
+        marginLeft:10,
+        marginRight:-10,
+        justifyContent:'center',
+        alignSelf:'center',
+        width:'90%'
     },
     nameContainer:{
         flex:1,
@@ -579,28 +616,6 @@ const styles = StyleSheet.create({
         textAlign:'center',
         marginBottom:20,
     },
-    valuesText:{
-        fontSize:19,
-        textAlign:'left',
-        marginLeft:10,
-        marginRight:-10,
-        alignSelf:'flex-start',
-        justifyContent:'center',
-        width:'90%'
-        //padding:10,
-    },
-    // TODO: Same as in PersonsView, move to global file? 
-    // START ----- 
-    buttonView:{
-        backgroundColor:'#ADD8E6',
-        borderRadius:10,
-        width:'30%',
-        margin:5,
-        alignItems:'center',
-        flexDirection:'row',
-        justifyContent:'space-evenly',
-        //alignSelf:'center',
-    },
     button:{
         height:30,
         width:50,
@@ -609,7 +624,6 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         borderRadius:30,
-
     },
     iconButton:{
         height:40,
@@ -621,7 +635,8 @@ const styles = StyleSheet.create({
         width:40,
         color:'grey',
         marginLeft:10,
-        //alignSelf:'flex-end'
+        marginRight:40,
+        alignSelf:'center'
     },
     nameEditButton:{
         height:40,
@@ -638,22 +653,25 @@ const styles = StyleSheet.create({
 //        alignSelf:'center',
     },
     addCategoryStyle:{
-        backgroundColor:'lightgrey',
-        width:'35%',
+        backgroundColor:'#ebebeb',
+        //width:'35%',
         padding:7.5,
         marginTop:20,
-        borderRadius:20,
+        borderRadius:10,
     },
     addButton:{
-        color:'gray',
+        color:'black',
+        opacity:0.7,
         margin:10,
         alignSelf:'center',
+        width:'30',
         //marginLeft:20,
     },
     saveButton:{
         height:40,
         width:40,
         color:'black',
+        //alignSelf:'flex-start'
     },
     buttonText:{
         fontSize:20,

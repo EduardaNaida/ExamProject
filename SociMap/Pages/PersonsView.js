@@ -3,9 +3,11 @@ import { StackActions } from '@react-navigation/native';
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
-import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface'
+import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
+
+const globalStyle = require('../assets/Stylesheet');
 
 async function addTemp(name){
     const obj = {
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
         width:'100%',
         height:'60%',
         left:0,
-        top:'10%',
+        top:'8%',
         marginLeft:0,
         borderRadius:60,
     },
@@ -300,7 +302,6 @@ const styles = StyleSheet.create({
         textAlign:'center',
         marginLeft:'5%',
         alignSelf:'center',
-
     },
     thumbnail:{
         marginLeft:'2.5%',
