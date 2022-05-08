@@ -153,6 +153,7 @@ export default PersonsView = ({navigation, route}) =>
                         //setImmediate(() => filterPersons(filterText));
                     }}/>
             </View>
+            
             <FlatList
                 style={{padding:10}}
                 data={state.filtered}
