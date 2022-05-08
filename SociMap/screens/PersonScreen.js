@@ -7,8 +7,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Row } from 'react-native-table-component';
 
 // For the overflow menu 
-import { NavigationContainer } from '@react-navigation/native';
-import Menu from './screens/Menu';
+import { Layout, MenuItem, OverFlowMenu } from '@ui-kitten/components';
+
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -29,9 +29,32 @@ import Menu from './screens/Menu';
  *  
  */
 
- 
+ /**
+  * For menu
+  * 
+  */
+
+const [selectedIndex, setSelectedIndex] = React.useState(null);
+const [visible, setVisible] = React.useState(false);
+
+const onItemSelect = (index) => {
+    setSelectedIndex(index);
+    setVisible(false);
+};
+
+const renderToggleButton = () => (
+<Button onPress={() => setVisible(true)}>
+    TOGGLE MENU
+    </Button>
+);
 
 
+
+
+
+
+
+ /**    MENU END */
   ////// 
 const PersonThumbnail = ({personData}) =>
 {
@@ -118,22 +141,11 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     );
 
     return (
-        <NavigationContainer>
-            <PortalProvider>
                 <View style={{flexDirection:'column',alignItems:'center'}}> 
                     <View style={styles.categoryContainer}>
                         <TouchableOpacity style={{flexDirection:'row'}} onPress={createAlert}>
                             <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                            <Menu trigger={<Settings style={styles.settingsButton}/>}>
-                                <MenuItem 
-                                    text={'Test1'}
-                                    onPress={() => alert('option pressed')}/>
-                            </Menu>
-                        </TouchableOpacity>  
-                        <PortalHost name='menu' />
-                        <Stack.Navigator>
-                            <Stack.Screen name="Home" component={PersonScreen}/>
-                        </Stack.Navigator>
+                            <Settings style={styles.settingsButton}/></TouchableOpacity>
                     </View>
             {
                 sectionData.values.map(note => 
@@ -159,8 +171,6 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                         </Pressable>
             }
                 </View>
-            </PortalProvider>
-        </NavigationContainer>
     );
 }
 
