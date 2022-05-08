@@ -1,10 +1,14 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
-import { Edit, Trash, Delete, Plus, X, Save, Settings} from 'react-native-feather';
+import { Edit, Plus, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import { Row } from 'react-native-table-component';
+
+// For the overflow menu 
+import { NavigationContainer } from '@react-navigation/native';
+import Menu from './screens/Menu';
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -21,9 +25,14 @@ import { Row } from 'react-native-table-component';
  *  TODO: Ändra storlek på text när man lägger till ny kategori 
  *  TODO: Ändra design på textInput
  *  TODO: Ändra kategori-titeln så den är flexDir:'row', settings-knappen bredvid 
+ *  TODO: Formatera TextInput så att den öppnas i en 'alert'-liknade view och är placerad på samma ställe för alla typer av inputs 
  *  
  */
 
+ 
+
+
+  ////// 
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
@@ -53,7 +62,6 @@ const PersonThumbnail = ({personData}) =>
         </Text>
         );
 }
-
 
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
@@ -110,14 +118,23 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     );
 
     return (
-        <View style={{flexDirection:'column',alignItems:'center'}}> 
-            <View style={styles.categoryContainer}>
-                <TouchableOpacity onPress={createAlert}>
-                    <Text style={styles.categoryText}>{sectionData.headline}</Text>
-                    <Settings style={styles.deleteButton}/>
-                    </TouchableOpacity>  
-                
-                        </View>
+        <NavigationContainer>
+            <PortalProvider>
+                <View style={{flexDirection:'column',alignItems:'center'}}> 
+                    <View style={styles.categoryContainer}>
+                        <TouchableOpacity style={{flexDirection:'row'}} onPress={createAlert}>
+                            <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                            <Menu trigger={<Settings style={styles.settingsButton}/>}>
+                                <MenuItem 
+                                    text={'Test1'}
+                                    onPress={() => alert('option pressed')}/>
+                            </Menu>
+                        </TouchableOpacity>  
+                        <PortalHost name='menu' />
+                        <Stack.Navigator>
+                            <Stack.Screen name="Home" component={PersonScreen}/>
+                        </Stack.Navigator>
+                    </View>
             {
                 sectionData.values.map(note => 
                 <Note 
@@ -133,7 +150,7 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
             
             {
                 adding ?
-                    <TextInput style={styles.txtInputView}
+                    <TextInput style={styles.inputView}
                     ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
                 :
                     <Pressable 
@@ -141,7 +158,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     onPress={buttonClicked}><Plus style={styles.addButton}/>
                         </Pressable>
             }
-        </View>
+                </View>
+            </PortalProvider>
+        </NavigationContainer>
     );
 }
 
@@ -176,7 +195,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
             {
                 editable ? 
                 <TextInput 
-                    style={styles.txtInputView}
+                    style={styles.inputView}
                     onFocus={() => setEditable(true)} 
                     onBlur={updateText} 
                     value={text} 
@@ -244,14 +263,14 @@ export default function PersonView({navigation, route}) {
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
-
+    
     const [editingName, setEditingName] = useState(false);
     const [name, setName] = useState('');
     const nameInput = useRef();
-
+    
     const personId = route.params.personId;
     const isCreatingNew = route.params.isCreatingNew;
- 
+    
 
     useEffect(()=>{
         
@@ -369,7 +388,9 @@ export default function PersonView({navigation, route}) {
                 style={styles.headerImg}><Text style={styles.header}>{"SociMap"}</Text>
                 </ImageBackground>
             <View style={styles.container}>
-                <ScrollView style={styles.scroller}>
+                <ScrollView 
+                    style={styles.scroller}
+                    showsVerticalScrollIndicator={true}>
                     <TouchableOpacity onPress={setImage}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
@@ -377,7 +398,7 @@ export default function PersonView({navigation, route}) {
                     {
                         editingName ?
                             <TextInput
-                                style={styles.txtInputView}
+                                style={styles.inputView}
                                 ref={nameInput}
                                 onChangeText={setName}
                                 onBlur={nameFinished}
@@ -412,8 +433,8 @@ export default function PersonView({navigation, route}) {
                 {
                     adding ?
                     <View style={styles.categoryContainer}>
-                    <Text style={styles.categoryText}>{'Category name:'}</Text>
-                        <TextInput style={styles.txtInputView}
+                        <Text style={styles.newTitle}>{'Category name:'}</Text>
+                        <TextInput style={styles.inputView}
                         ref={input} 
                         onChangeText={setText} 
                         onBlur={textFinished}></TextInput>
@@ -501,33 +522,37 @@ const styles = StyleSheet.create({
         borderRadius:10,
         width:319,
     },
-    txtInputView:{
-        backgroundColor:'orange',
+    inputView:{
+        backgroundColor:'lightgray',
         fontSize:20,
-        height:40,
+        height:30,
         borderRadius:10,
         paddingLeft:10,
         margin:10,
-        width:319,
+        width:200,
         flexDirection:'row',
         justifyContent:'flex-start'
     },
-    categoryText:{
-        fontSize:24,
+    newTitle:{
+        fontSize:20,
         color:'black',
         textAlign:'left',
     },
-    categoryContainer:{
-        //backgroundColor:'lightgray',
-        borderWidth:1,
-        borderColor:'black',
-        borderRadius:20,
-        flexDirection:'row',
-        alignSelf:'flex-start',
-        //alignSelf: 'center',
-//        alignContent:'space-between',
+    categoryTitle:{
+        fontSize:24,
+        color:'black',
+        textAlign:'left',
         justifyContent:'center',
-        paddingTop:20,
+        alignSelf:'center'
+    },    
+    categoryContainer:{
+        flexDirection:'row',
+        borderWidth:0.7,
+        borderColor:'black',
+        backgroundColor:'#ebebeb',
+        borderRadius:10,
+        padding:7,
+        alignSelf:'flex-start',
     },
     nameContainer:{
         flex:1,
@@ -581,7 +606,7 @@ const styles = StyleSheet.create({
         width:40,
         color:'black',
     },
-    deleteButton:{
+    settingsButton:{
         height:40,
         width:40,
         color:'grey',

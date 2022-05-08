@@ -10,11 +10,13 @@
     "eject": "expo eject"
   },
   "dependencies": {
+    "@gorhom/portal": "^1.0.13",
     "@react-native-async-storage/async-storage": "^1.15.0",
     "@react-native-firebase/app": "^14.7.0",
     "@react-navigation/bottom-tabs": "^6.3.1",
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.1",
+    "@react-navigation/stack": "^6.2.1",
     "expo": "~44.0.0",
     "expo-image-picker": "^12.0.2",
     "expo-status-bar": "~1.2.0",
@@ -27,6 +29,7 @@
     "react-native-elements": "^3.4.2",
     "react-native-feather": "^1.1.2",
     "react-native-firebase": "^5.6.0",
+    "react-native-material-menu": "^2.0.0",
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "^3.10.1",
     "react-native-svg": "^12.3.0",
