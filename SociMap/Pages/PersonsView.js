@@ -7,7 +7,6 @@ import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../Fi
 
 
 const globalStyle = require('../assets/Stylesheet');
-const header = require('../img/header.png');
 
 
 const PersonThumbnail = ({personData}) =>
