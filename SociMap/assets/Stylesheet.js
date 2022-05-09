@@ -19,6 +19,22 @@ export default StyleSheet.create({
     width:null,
     height:'60%',
   },
+  container:{
+    //flex: 1,
+    padding:10,
+    //alignItems:'center',
+    backgroundColor:'#ffffff',
+    width:'100%',
+    //height:'100%',
+    top:'-40%',
+    borderRadius:60,
+    flexDirection:'column',
+    justifyContent:'space-evenly',
+    marginBottom:'-200%',
+    paddingBottom:60,
+    //alignItems:'center',
+}, 
+
   });
 
 /** 
