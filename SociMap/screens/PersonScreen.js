@@ -31,8 +31,6 @@ import { Menu, Divider, Provider, Button } from 'react-native-paper';
  */
 
 
-const header = require('../img/header.png');
-
 
 const PersonThumbnail = ({personData}) =>
 {
