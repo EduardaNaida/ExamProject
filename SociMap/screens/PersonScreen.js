@@ -4,7 +4,6 @@ import { Edit, Plus, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
-import { Row } from 'react-native-table-component';
 
 import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
 
@@ -32,12 +31,14 @@ import { Menu, Divider, Provider, Button } from 'react-native-paper';
  */
 
 
+const header = require('../img/header.png');
+
 
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
         if(!personData.name)
-            return 'empty';
+            return '';
 
         const str = personData.name + '';
         const matches = str.match(/\b(\w)/g);
@@ -166,7 +167,7 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     onPress={buttonClicked}><Plus style={styles.addButton}/>
                         </Pressable>
             }
-                </View>
+            </View>
     );
 }
 
@@ -265,7 +266,16 @@ function stateUpdater(state, action) {
 }
 
 export default function PersonView({navigation, route}) {
-    const [state, dispatch] = useReducer(stateUpdater, null);   
+
+    navigation.setOptions({
+        headerShown: true,
+        headerTransparent: true,
+        title:'',
+        headerTintColor: '#fff',
+      });
+
+
+    const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
@@ -276,7 +286,16 @@ export default function PersonView({navigation, route}) {
     
     const personId = route.params.personId;
     const isCreatingNew = route.params.isCreatingNew;
+
     
+    const [prev, _] = useState(() => {
+        const routes = navigation.getState()?.routes;
+        const prevRoute = routes[routes.length - 2];
+
+        console.log(prevRoute.name);
+        return prevRoute.name;
+    })
+ 
 
     useEffect(()=>{
         
@@ -312,8 +331,10 @@ export default function PersonView({navigation, route}) {
                 return;
             }
 
+            console.log(prev);
+
             navigation.navigate({
-                name: 'PersonsNested',
+                name: prev,
                 params: { Post: JSON.stringify(stat) },
                 merge: true,
             });
@@ -324,7 +345,7 @@ export default function PersonView({navigation, route}) {
                 <Pressable  
                     onPress={pressed}>
                         
-                        <Save style={styles.saveButton}/>
+                        <Save style={styles.saveButton} color='white'/>
                         
                     </Pressable>
                     </View>
@@ -384,24 +405,17 @@ export default function PersonView({navigation, route}) {
     };
 
 
-
-    if(state == null)
-        return(<ActivityIndicator style={styles.indicator} size='large'/>)
-
     //console.log(state.name);
 
     return (
         
         <View style={{flex:1}}>
-            <ImageBackground 
-                source={require('../Pages/img/header.png')}
-                style={styles.headerImg}><Text style={styles.header}>{"SociMap"}</Text>
-                </ImageBackground>
+            <Text style={styles.header}>{"SociMap"}</Text>
             <View style={styles.container}>
                 <ScrollView 
                     style={styles.scroller}
                     showsVerticalScrollIndicator={true}>
-                    <TouchableOpacity onPress={setImage}>
+                    <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
 
@@ -416,7 +430,7 @@ export default function PersonView({navigation, route}) {
                             :
                             <>
                             <View style={styles.nameContainer}>
-                                <Text style={styles.nameText}>{state.name}</Text>
+                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
                                 <Pressable 
                                     onPress={() => 
                                     buttonClicked(nameInput, setEditingName)}>
@@ -428,17 +442,19 @@ export default function PersonView({navigation, route}) {
                     
                     
 
-                {
-                    state.notes.map(section => 
-                        <Section 
-                            key={section.id} 
-                            sectionData={section} 
-                            dispatch={dispatch} 
-                            personId={state.id}
-                            isCreatingNew={isCreatingNew}
-                            />
-                        )
-                }
+                    <View style={{flex:1, justifyContent:'center'}}>
+                    {
+                        state.notes.map(section => 
+                            <Section 
+                                key={section.id} 
+                                sectionData={section} 
+                                dispatch={dispatch} 
+                                personId={state.id}
+                                isCreatingNew={isCreatingNew}
+                                />
+                            )
+                    }
+                    </View>
                 
                 {
                     adding ?
@@ -476,7 +492,7 @@ const styles = StyleSheet.create({
     header:{
         //marginTop: 80,
         marginBottom:0,
-        marginTop:30,
+        marginTop:50,
         marginLeft:30,
         fontSize: 40,
         //marginLeft:-150,
@@ -484,10 +500,6 @@ const styles = StyleSheet.create({
         marginBottom:10,
     },
     scroller:{
-        flexGrow:1,
-        height:800,
-        width:'100%',
-        paddingBottom:50,
     },
     headerImg:{
         marginTop:0,
@@ -497,7 +509,6 @@ const styles = StyleSheet.create({
     },
     thumbnail:{
         alignSelf:'center',
-        marginTop:20,
         width:70,
         height:70,
         borderRadius:35,
@@ -506,18 +517,15 @@ const styles = StyleSheet.create({
         fontSize:20,
         backgroundColor:'lightblue',
         textAlignVertical: 'center',
-        marginBottom:-40,
     },
     container:{
         padding:10,
         backgroundColor:'#ffffff',
-        width:'100%',
-        top:'-40%',
+        flex:1,
         borderRadius:60,
-//        flexDirection:'column',
-//        justifyContent:'center',
-        marginBottom:'-200%',
-        paddingBottom:60,
+        borderBottomEndRadius:0,
+        borderBottomStartRadius:0,
+        alignSelf:'stretch',
     }, 
     txtContainer:{
         //flex:1,
@@ -567,6 +575,7 @@ const styles = StyleSheet.create({
         zIndex:100,
     },
     categoryView:{
+        width:'100%',
         flexDirection:'column',
         alignItems:'center',
         alignSelf:'flex-start',
@@ -602,19 +611,19 @@ const styles = StyleSheet.create({
         width:'90%'
     },
     nameContainer:{
-        flex:1,
+        minWidth:150,
         flexDirection:'row',
         alignSelf:'center',
         alignContent:'space-between',
-        justifyContent:'center',
+        
+        alignItems:'center',
+        justifyContent:'center'
     },
     nameText:{
         fontSize:30,
         color:'black',
         marginLeft:40,
-        marginTop:10,
         textAlign:'center',
-        marginBottom:20,
     },
     button:{
         height:30,
@@ -641,7 +650,6 @@ const styles = StyleSheet.create({
     nameEditButton:{
         height:40,
         width:40,
-        marginTop:15,
         marginLeft:30,
         color:'gray',
 //        alignSelf:'center',

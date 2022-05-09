@@ -44,13 +44,6 @@ export default function App() {
     (<LoginView></LoginView>)
     :
     (<MainView></MainView>);
-
-  return (
-    <SafeAreaView style={{flex:1}}>
-        <StatusBar StatusBarStyle='light-content' ></StatusBar>
-        <PersonsView></PersonsView>
-    </SafeAreaView>
-    );
 }
 
 const styles = StyleSheet.create({

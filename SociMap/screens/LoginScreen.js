@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, Image } from 'react-native';
 import { Feather } from 'react-native-feather';
 import { AttemptSignIn, AttemptSignUp, GetCurrentUser } from "../FirebaseInterface"
+
+const background = require('../img/background.png');
 
 function LoginScreen({navigation}) {
 
@@ -59,21 +61,25 @@ function LoginScreen({navigation}) {
     }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcome}>SOCIMAP</Text>
+    <ImageBackground source={background} style={{width: '100%', height: '100%'}}>
+    <View style={styles.firstContainer}>
+      <Text style={styles.welcome}>SociMap</Text>
+      </View>
+      <Text style={styles.smallText}>Email</Text>
       <View style={styles.inputView}>
         <TextInput
           style={styles.TextInput}
-          placeholder="Username"
+          placeholder=""
           value={email}
           onChangeText={(text) => setEmail(text)}
           
       />
       </View>
+      <Text style={styles.smallText}>Password</Text>
       <View style={styles.inputView} >
         <TextInput
             style={styles.TextInput}
-            placeholder="Password"
+            placeholder=""
             value={password}
             secureTextEntry={data.secureTextEntry ? true : false}
             autoCapitalize='none'
@@ -98,7 +104,7 @@ function LoginScreen({navigation}) {
       <TouchableOpacity 
       onPress={handleSignUp}
       style={styles.userBtn}>
-        <Text style={styles.btnTxt}>SignUp</Text>
+        <Text style={styles.btnTxt}>Sign Up</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -116,61 +122,86 @@ function LoginScreen({navigation}) {
         </View>
       </TouchableOpacity>
      
-       <StatusBar style="auto" />  
-    </View>
+       <StatusBar style="auto" /> 
+    </ImageBackground> 
   );
 }
 
 export default LoginScreen;
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
+  container: {
+    flex: 1,
+    //justifyContent: 'center',
+  },
+    firstContainer: {
       alignItems: 'center',
-      justifyContent: 'center',
+      height: '40%'
+
     },
+    secondContainer: {
+      flex: 1,
+    },
+
     welcome: {
-      height: 150,
-      fontSize: 30,
+      fontSize: 64,
       textAlign: 'center',
-      margin: 10,
-      color: '#FF38E2',
-      fontFamily: "Cochin"
+      color: 'white',
+      //fontFamily: "Inter",
+      marginTop: 60
+
+    },
+    smallText: {
+      color: 'white',
+      fontSize: 22,
+      marginLeft: 80
     },
     inputView: {
       borderRadius: 25,
-      width: "90%",
-      backgroundColor: "#C4C4C480",
+      width: "60%",
+      backgroundColor: "white",
+      opacity: 0.7,
       padding: 15,
-      height: 45,
+      height: 33,
+      alignSelf: 'center',
+      alignItems: 'flex-start',
+      justifyContent: 'flex-start',
       marginBottom: 10
     },
     TextInput: {
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      textAlign: 'left',
       borderColor: 'black',
       height: 40,
-      //flex: 1,
-      padding: 10,
-      marginLeft: 10,
-      marginTop: -12,
+      marginTop: -17,
+      width:'100%',
     },
     btnContainer:{
       flexDirection: 'row',
-      justifyContent: "space-between",
+      justifyContent: "center",
       width: "75%",
+      alignSelf: 'center',
+      opacity: 0.8,
     },
     userBtn:{
-      borderRadius: 25,
+      borderRadius: 20,
       backgroundColor: "#FF38E2",
-      padding: 15,
-      width: "45%"
+      padding: 10,
+      width: "35%",
+      margin: 15
     },
     btnTxt:{
       fontSize: 16,
       textAlign: "center",
+      color: 'white',
+      opacity: 1,
     },
     forgot_button: {
       height: 30,
-      marginBottom: 30,
+      margin: 20,
+      color: 'white',
+      alignSelf: 'center',
+
     }
   });

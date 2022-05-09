@@ -1,27 +1,13 @@
-
-import { StackActions } from '@react-navigation/native';
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
-import { GetPersonsFromPath, GetUid, AddNewPerson } from '../FirebaseInterface';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { useIsFocused } from '@react-navigation/native';
+import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
 
 
 const globalStyle = require('../assets/Stylesheet');
-
-async function addTemp(name){
-    const obj = {
-        name: name + ' testson',
-        img: 'https://reactnative.dev/img/tiny_logo.png',
-        color:'green',
-    };
-    const id = await AddNewPerson(obj);
-
-    return ({
-        id:id,
-        ...obj
-    });
-}
+const header = require('../img/header.png');
 
 
 const PersonThumbnail = ({personData}) =>
@@ -32,7 +18,7 @@ const PersonThumbnail = ({personData}) =>
 
         const str = personData.name;
         const matches = str.match(/\b(\w)/g);
-        const acronym = matches.join('').substring(0,2); 
+        const acronym = matches.join('').substring(0,1); 
         return acronym;
     });
     if(personData.img != ''){
@@ -79,7 +65,7 @@ const stateUpdater = (state, action) => {
             delete dat.notes;
             const n = [...state.people, dat];
             const filt = filterPersons(state.text, n)
-            //console.log(n);
+            //console.log(filt);
             return {...state, people:n, filtered:filt};
         case 'set text':
             return {...state, text:action.data, filtered:filterPersons(action.data, state.people)};
@@ -98,19 +84,25 @@ const filterPersons = (text, arr) => {
     }));
 };
 
-export default PersonsView = ({path, navigation, route}) =>
+export default PersonsView = ({navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
     const header_name = "People";
     //const Stack = createNativeStackNavigator();
+    const isFocused = useIsFocused();
+
+    const path = route.params?.Path;
 
     useEffect(async ()=>{
         //console.log('fetching...')
+        if(!isFocused || route.params?.Post)
+            return;
 
-        const p = path == null ? `Users/${GetUid()}/People` : path;
+        const p = path ? path : '';
         
         GetPersonsFromPath(p).then(ret => {
+
             dispatch({type:'init', data:ret});
 
             setLoading(false);
@@ -122,22 +114,25 @@ export default PersonsView = ({path, navigation, route}) =>
 
             setLoading(false);
         });
-    }, [path]);
+    }, [path, isFocused]);
 
     useEffect(async ()=>{
-        
         if(!route.params?.Post)
             return;
-        
-        const obj = JSON.parse(route.params?.Post);
-        
-        const [id, url] = await AddNewPerson(obj);
 
-        console.log(id,url);
+        const obj = JSON.parse(route.params?.Post);
+            
+        const [id, url] = await AddNewPerson(obj);
+        if(path)
+            AddPersonIdToCollection(path, id);
+            
+        navigation.setParams({...route.params, Post:''});
+
+        //console.log(id,url);
 
         const nObj = {...obj, id:id, img:url};
 
-        dispatch({type:'add', data:nObj});
+        setImmediate(() => dispatch({type:'add', data:nObj}));
     }, [route.params?.Post])
 
     const renderWidget = ({item}) =>{
@@ -154,10 +149,8 @@ export default PersonsView = ({path, navigation, route}) =>
         />)
         :
         (  
-            <ImageBackground 
-                source={require('./img/header.png')}
-                style={styles.image}>
-                    <Text style={styles.header}>{header_name}</Text>
+            <View style={{flex:1}}>
+                <Text style={styles.header}>{header_name}</Text>
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
                         <View style={styles.inputView}>
@@ -179,14 +172,15 @@ export default PersonsView = ({path, navigation, route}) =>
                     </View>
 
                     <View style={styles.listContainer}>
-                    <FlatList
-                        style={styles.listSection}
-                        data={state.filtered}
-                        renderItem={renderWidget}
-                        keyExtractor={(_, index) => index} /></View>
-                        </View>
-                        </ImageBackground>);
-
+                        <FlatList
+                            style={styles.listSection}
+                            data={state.filtered}
+                            renderItem={renderWidget}
+                            keyExtractor={(_, index) => index} />
+                    </View>
+                </View>
+            </View>
+        );
 }
 
 // TODO: Changed Button to Pressable style on row 167
@@ -202,33 +196,25 @@ export default PersonsView = ({path, navigation, route}) =>
 
 const styles = StyleSheet.create({
     header:{
-        marginTop: 80,
-        marginBottom:-20,
+        marginTop: 40,
+        marginBottom: 10,
+        marginLeft:40,
         fontSize: 40,
-        textAlign:'center',
-        marginLeft:-150,
+        
         color:'#fff',
     },
-    image:{
-        flex:1, 
-        width:null,
-        height:'30%',
-    },
     container:{
-        flex: 1,
         alignItems:'center',
-        backgroundColor:'#ffffff',
-        width:'100%',
-        height:'60%',
-        left:0,
-        top:'8%',
+        backgroundColor:'white',
         marginLeft:0,
         borderRadius:60,
+        borderBottomEndRadius:0,
+        borderBottomStartRadius:0,
+        flex:1,
+        alignSelf:'stretch'
     },
     menuBar:{
-        flex: 1, 
         marginTop:20, 
-        marginBottom:-80, 
         flexDirection:'row',
         justifyContent:'space-between',
     },
@@ -294,8 +280,7 @@ const styles = StyleSheet.create({
         justifyContent:'flex-start',
     },
     listContainer:{
-        flex:3,
-        marginBottom:'20%',
+        flex:1,
     },
     itemText:{
         fontSize:20,
@@ -308,7 +293,6 @@ const styles = StyleSheet.create({
         backgroundColor:'#ffffff',
         width:35,
         height:35,
-        padding:5,
         opacity:0.8,
         borderRadius:35,
     },
