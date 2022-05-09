@@ -247,14 +247,14 @@ const styles = StyleSheet.create({
         textAlign:'center',
         borderRadius: 10,
         padding:5,
-        height:40,
+        height:35,
         width:220,
     },
     searchIcon:{
         color:'grey',
         marginLeft: -35,
         height:20,
-        marginTop:7.5,
+        marginTop:6,
         alignSelf:'flex-start',
     },
     buttonView:{
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     },
     buttonStyle:{
         width:60,
-        height:40,
+        height:35,
         borderRadius:80,
         justifyContent:'center',
         alignSelf:'center',
