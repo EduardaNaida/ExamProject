@@ -28,9 +28,11 @@ const FirstView = ({route, navigation}) => {
 
 const SubView = ({route, navigation}) => {
     return (
-        <ScrollView>
-            <GroupView route={route} navigation={navigation}></GroupView>
+        <ScrollView style={{backgroundColor:'white', flex:1}}>
             <View>
+                <GroupView route={route} navigation={navigation}></GroupView>
+            </View>
+            <View style={{flex:1, alignSelf:'stretch'}}>
                 <PersonsView route={route} navigation={navigation}></PersonsView>
             </View>
         </ScrollView>

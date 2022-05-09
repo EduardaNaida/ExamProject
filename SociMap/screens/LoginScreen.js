@@ -4,6 +4,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground, I
 import { Feather } from 'react-native-feather';
 import { AttemptSignIn, AttemptSignUp, GetCurrentUser } from "../FirebaseInterface"
 
+const background = require('../img/background.png');
+
 function LoginScreen({navigation}) {
 
     const [email, setEmail] = useState('');
@@ -59,7 +61,7 @@ function LoginScreen({navigation}) {
     }
 
   return (
-    <ImageBackground source={require('./background.png')} style={{width: '100%', height: '100%'}}>
+    <ImageBackground source={background} style={{width: '100%', height: '100%'}}>
     <View style={styles.firstContainer}>
       <Text style={styles.welcome}>SociMap</Text>
       </View>
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
       fontSize: 64,
       textAlign: 'center',
       color: 'white',
-      fontFamily: "Inter",
+      //fontFamily: "Inter",
       marginTop: 60
 
     },
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
       borderColor: 'black',
       height: 40,
       marginTop: -17,
+      width:'100%',
     },
     btnContainer:{
       flexDirection: 'row',
