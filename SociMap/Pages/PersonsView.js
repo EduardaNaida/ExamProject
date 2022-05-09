@@ -305,14 +305,15 @@ const styles = StyleSheet.create({
     },
     thumbnail:{
         marginLeft:'2.5%',
-        width:40,
-        height:40,
+        backgroundColor:'#ffffff',
+        width:35,
+        height:35,
         padding:5,
+        opacity:0.8,
         borderRadius:35,
     },
     thumbnailText:{
-        fontSize:30,
+        fontSize:27,
         textAlign: 'center',
-        textAlignVertical: 'center',
     },
 });
