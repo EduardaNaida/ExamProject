@@ -101,7 +101,7 @@ export async function AddNewPerson(person){
     console.log(ref.id);
     return ref.id;
 }
-export function SendPasswordResetEmail(auth, email){
+export function SendPasswordResetEmail(email){
 
         const result = sendPasswordResetEmail(auth, email);
           // Redirect user to your login screen

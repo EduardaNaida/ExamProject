@@ -2,10 +2,9 @@ import React from 'react';
 import {Alert, StyleSheet, Text, View, TouchableOpacity, Button, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GetCurrentUser, SignOut } from '../FirebaseInterface';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-function SettingsPage(props) {
-
-    const {navigation} = props;
+function SettingsPageAux({navigation}) {
 
     const handleSignOut = async () => {
         try {
@@ -61,6 +60,19 @@ function SettingsPage(props) {
 }
 
 export default SettingsPage;
+
+const Stack = createNativeStackNavigator();
+
+function SettingsPage(){
+  
+
+  return (
+    <Stack.Navigator initialRouteName='Settings'>
+      <Stack.Screen options={{headerShown: false}} name='Settings' component={SettingsPageAux}/>
+      <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen}/>
+    </Stack.Navigator>
+  );
+}
 
 
 const styles = StyleSheet.create({
