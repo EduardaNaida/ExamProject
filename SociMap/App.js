@@ -40,12 +40,14 @@ export default function App() {
     return(<SplashView></SplashView>);
 
 
-
   return !logged ? 
     (<LoginView></LoginView>)
     :
     (<MainView></MainView>);
+<<<<<<< HEAD
 
+=======
+>>>>>>> main
 }
 
 const styles = StyleSheet.create({

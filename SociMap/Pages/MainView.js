@@ -1,9 +1,10 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text } from 'react-native';
-import PersonsView from './PersonsView';
-import SettingsPage from '../screens/SettingsPage'
+import { Text, ActivityIndicator, ImageBackground } from 'react-native';
 
+import PersonsScreen from '../screens/PersonsScreen';
+import GroupScreen from '../screens/GroupScreen';
+import SettingsPage from '../screens/SettingsPage';
 
 const Tab = createBottomTabNavigator();
 
@@ -15,17 +16,36 @@ const Blank = () => {
     );
 };
 
-export default MainView = ({SetLogged}) => {
+
+const background = require('../img/background.png');
+
+const navTheme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: 'transparent',
+    },
+  };
+
+export default MainView = ({}) => {
     
 
+
     return (
-        <NavigationContainer>    
-            <Tab.Navigator>
-                <Tab.Screen name='Persons' component={PersonsView} options={{ headerShown: false}}/>
-                <Tab.Screen name='Groups' component={Blank} options={{ headerShown: false}}/>
-                <Tab.Screen name='Quiz' component={Blank} options={{ headerShown: false}}/>
-                <Tab.Screen name='Settings' component={SettingsPage} options={{ headerShown: false}}/>
-            </Tab.Navigator>
-        </NavigationContainer>
+        <ImageBackground source={background} style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0}}>
+            <NavigationContainer theme={navTheme}>
+                <Tab.Navigator screenOptions={{headerShown:false}}>
+                    <Tab.Screen name='Persons' component={PersonsScreen}/>
+                    <Tab.Screen name='Groups' component={GroupScreen}/>
+                    <Tab.Screen name='Quiz' component={Blank}/>
+                    <Tab.Screen name='Settings' component={SettingsPage} options={{ headerShown: false}}/>
+                </Tab.Navigator>
+            </NavigationContainer>
+        </ImageBackground>
     );
 }

@@ -1,11 +1,13 @@
 
+import { async } from '@firebase/util';
 import { initializeApp } from 'firebase/app';
 import { 
     getAuth, signInWithEmailAndPassword, setPersistence, 
     createUserWithEmailAndPassword, signOut, 
     reactNativeLocalPersistence, sendPasswordResetEmail, 
     onAuthStateChanged } from 'firebase/auth/react-native';
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc} from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc} from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const app = initializeApp({
   apiKey: "AIzaSyARq36sGLC1ltpfqVMeMjgx-v5nbm7Ev5w",
@@ -18,6 +20,7 @@ const app = initializeApp({
 });
 const auth = getAuth();
 const db = getFirestore();
+const storage = getStorage();
 
 export async function AttemptSignIn(email, password){
     //try{
@@ -64,7 +67,8 @@ export function SetAuthStateChangeCallback(callback){
 }
 
 export async function GetPersonsFromPath(path){
-    const ref = await getDocs(collection(db, path));
+    const p = `Users/${GetUid()}/${path}/People`.replace("//", '/');
+    const ref = await getDocs(collection(db, p));
     let ret = [];
     //let ids = Array.from(ref.docs, (d => d.id));
 
@@ -97,9 +101,31 @@ export async function GetPersonsFromPath(path){
 }
 
 export async function AddNewPerson(person){
-    const ref = await addDoc(collection(db, 'Users', GetUid(), 'People'), person);
-    console.log(ref.id);
-    return ref.id;
+
+    const notes = person.notes;
+    const img = person.img;
+
+    const personId = (await addDoc(collection(db, 'Users', GetUid(), 'People'), {name:person.name, img:'', color:person.color})).id;
+
+    for (let x = 0; x < notes.length; x++) {
+        const note = notes[x];
+        
+        const noteId = await AddNote(personId, note.headline);
+
+        const values =note.values;
+        for(let y = 0; y < values.length; y++){
+            const value = values[y].value;
+
+            await AddValueToNote(personId, noteId, value);
+        }
+    }
+
+    if(!img)
+        return [personId, ''];
+
+    const url = await SetPersonImage(personId, img);
+    
+    return [personId, url];
 }
 export function SendPasswordResetEmail(email){
 
@@ -115,3 +141,117 @@ export function SendPasswordResetEmail(email){
     //   };
 }
 
+export async function GetPersonData(personId){
+    const refGeneral = await getDoc(doc(db, 'Users', GetUid(), 'People', personId));
+    const refHeadlines = await getDocs(collection(db, 'Users', GetUid(), 'People', personId, 'Notes'));
+
+    const notes = [];
+
+    for(const x of refHeadlines.docs){
+        const refValues = await getDocs(collection(db, 'Users', GetUid(), 'People', personId, 'Notes', x.id, 'Values'));
+        
+        notes.push({
+            id: x.id,
+            ...x.data(),
+            values: refValues.docs.map(x => ({
+                value: x.get('value'),
+                id: x.id
+            }))
+        })
+    }
+
+    const ret = {
+        ...refGeneral.data(),
+        notes: notes,
+        id:refGeneral.id
+    };
+
+
+    return ret;
+}
+
+export async function AddValueToNote(personId, noteId, value){
+    const col = collection(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values');
+    const ref = await addDoc(col, {value:value});
+    
+    return ({value: value, id: ref.id});
+}
+
+
+export async function AddValueToNoteCustomId(personId, noteId, value, valueId){
+    const col = doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId);
+    await setDoc(col, {value:value});
+    
+    return ({value: value, id: valueId});
+}
+
+export async function RemoveValueFromNote(personId, noteId, valueId){
+    await deleteDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId));
+}
+
+export async function UpdateValueOfNote(personId, noteId, valueId, newValue){
+    await updateDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId, 'Values', valueId), {value: newValue});
+}
+
+export async function RemoveNote(personId, noteId){
+    await deleteDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId));
+}
+
+export async function AddNoteCustomId(personId, headline, noteId){
+    await setDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId), {headline:headline});
+}
+
+export async function AddNote(personId, headline){
+    return (await addDoc(collection(db, 'Users', GetUid(), 'People', personId, 'Notes'), {headline:headline})).id;
+}
+
+export async function SetPersonImage(personId, imageUri){
+    const blob = await (await fetch(imageUri)).blob();
+    
+    //const type = imageUri.split(/[#?]/)[0].split('.').pop().trim();
+    const path = `Users/${GetUid()}/PeoplePics/${personId}`;
+
+    const imageRef = await uploadBytes(ref(storage, path), blob);
+
+    const url = await getDownloadURL(imageRef.ref);
+    console.log(url);
+    updateDoc(doc(db, 'Users', GetUid(), 'People', personId), {img:url});
+
+    return url;
+}
+
+export async function UpdatePersonFields(personId, obj){
+    await updateDoc(doc(db, 'Users', GetUid(), 'People', personId), obj);
+}
+
+export async function GetGroups(path){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+
+    const grps = await getDocs(collection(db, p));
+    return grps.docs.map(x => {
+        const dat = x.data();
+        return ({...dat, id:x.id});
+    })
+
+}
+
+export async function AddGroup(path, groupData){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+
+    const ref = await addDoc(collection(db, p), groupData);
+    return ref.id;
+}
+
+export async function AddGroupCustomId(path, groupData, groupId){
+    const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
+    console.log('p:', p);
+    console.log('path:', path);
+    await setDoc(doc(db, p, groupId), groupData);
+}
+
+export async function AddPersonIdToCollection(path, id){
+    const p = `Users/${GetUid()}/${path}/People`.replace("//", "/");
+    console.log(p);
+
+    await setDoc(doc(db, p, id), {});
+}
