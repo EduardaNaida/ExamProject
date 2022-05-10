@@ -209,7 +209,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
             } }>
                 <Edit 
                     width={20}
-                    alignSelf={'flex-end'}
+                    alignSelf={'center'}
                     color={'grey'}
                 /></Pressable>
         
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
         textAlign:'left',
     },
     newTitle:{
-        fontSize:20,
+        fontSize:24,
         fontFamily:'Avenir-Book',
         color:'black',
         textAlign:'left',
@@ -576,7 +576,6 @@ const styles = StyleSheet.create({
         width:'100%',
         flexDirection:'column',
         alignItems:'center',
-        paddingBottom:'5%',
     },
     categoryContainer:{
         flexDirection:'row',
@@ -597,7 +596,7 @@ const styles = StyleSheet.create({
         width:'90%',
     },    
     categoryText:{
-        fontSize:19,
+        fontSize:20,
         fontFamily:'Avenir-Book',
         //justifyContent:'center',
         alignSelf:'center',
@@ -614,13 +613,14 @@ const styles = StyleSheet.create({
     addCategoryStyle:{
         backgroundColor:'#ebebeb',
         padding:7.5,
-        width:'50%',
+        width:'40%',
         alignSelf:'center',
         marginTop:20,
         borderRadius:10,
+        opacity:0.7,
     },
     buttonText:{
-        fontSize:22,
+        fontSize:16,
         alignSelf:'center',
         borderRadius:20,
         fontFamily:'Avenir-Book',
