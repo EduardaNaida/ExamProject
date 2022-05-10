@@ -44,10 +44,6 @@ export default function App() {
     (<LoginView></LoginView>)
     :
     (<MainView></MainView>);
-<<<<<<< HEAD
-
-=======
->>>>>>> main
 }
 
 const styles = StyleSheet.create({

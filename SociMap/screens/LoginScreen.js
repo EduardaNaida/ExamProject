@@ -103,15 +103,9 @@ function LoginScreen({navigation}) {
       </View>
      <View style={styles.btnContainer}>
       <TouchableOpacity 
-<<<<<<< HEAD
-        onPress={handleSignUp}
-        style={styles.userBtn}>
-        <Text style={styles.btnTxt}>SignUp</Text>
-=======
       onPress={handleSignUp}
       style={styles.userBtn}>
         <Text style={styles.btnTxt}>Sign Up</Text>
->>>>>>> main
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -129,14 +123,9 @@ function LoginScreen({navigation}) {
         
         </View>
       </TouchableOpacity>
-<<<<<<< HEAD
-      <StatusBar style="auto" />  
-    </View>
-=======
      
        <StatusBar style="auto" /> 
     </ImageBackground> 
->>>>>>> main
   );
 }
 

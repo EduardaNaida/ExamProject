@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Alert, StyleSheet, Text, View, TouchableOpacity, Button, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { GetCurrentUser, SignOut } from '../FirebaseInterface';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import NewPasswordScreen from './NewPasswordScreen';
+
 function SettingsPageAux({navigation}) {
+
+    const [email, _] = useState(() =>{
+      return GetCurrentUser().email;
+    }); 
 
     const handleSignOut = async () => {
         try {
@@ -25,7 +31,7 @@ function SettingsPageAux({navigation}) {
               </View>
            <View style={styles.info}> 
                    <View style={styles.headerInfo}>
-                     <Text style={styles.headerInfoTxt}> Your email address</Text>
+                     <Text style={styles.headerInfoTxt}>{email}</Text>
                    </View>
 
                    <View style={styles.menuInfo}>
@@ -37,8 +43,8 @@ function SettingsPageAux({navigation}) {
                       <Text style={styles.infoBtn}>Language</Text>
                    </Pressable>
 
-                   <Pressable style={styles.userBtn} onPress={() => navigation.navigate('ResetPasswordScreen')}>
-                      <Text style={styles.infoBtn}>Reset a password</Text>
+                   <Pressable style={styles.userBtn} onPress={() => navigation.navigate('NewPasswordScreen')}>
+                      <Text style={styles.infoBtn}>Change password</Text>
                    </Pressable>
 
                    <Pressable style={styles.userBtn}>
@@ -68,8 +74,8 @@ function SettingsPage(){
 
   return (
     <Stack.Navigator initialRouteName='Settings'>
-      <Stack.Screen options={{headerShown: false}} name='Settings' component={SettingsPageAux}/>
-      <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen}/>
+      <Stack.Screen options={{headerShown: false}} name='SettingsNested' component={SettingsPageAux}/>
+      <Stack.Screen name='NewPasswordScreen' component={NewPasswordScreen}/>
     </Stack.Navigator>
   );
 }
@@ -79,7 +85,7 @@ const styles = StyleSheet.create({
     container: {
       display: 'flex',
       flexDirection: 'column',
-      backgroundColor: 'grey',
+      backgroundColor: 'transparent',
       //alignItems: 'center',
       //justifyContent: 'center',
     },
@@ -87,7 +93,7 @@ const styles = StyleSheet.create({
       fontSize: 40,
       textAlign: 'center',
       margin: 30,
-      color: 'black',
+      color: 'white',
       fontFamily: "Cochin"
     },
     welcome: {

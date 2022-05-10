@@ -5,7 +5,10 @@ import {
     getAuth, signInWithEmailAndPassword, setPersistence, 
     createUserWithEmailAndPassword, signOut, 
     reactNativeLocalPersistence, sendPasswordResetEmail, 
-    onAuthStateChanged } from 'firebase/auth/react-native';
+    onAuthStateChanged, 
+    reauthenticateWithCredential,
+    EmailAuthProvider,
+    updatePassword} from 'firebase/auth/react-native';
 import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc} from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
@@ -254,4 +257,32 @@ export async function AddPersonIdToCollection(path, id){
     console.log(p);
 
     await setDoc(doc(db, p, id), {});
+}
+
+export async function SetNewPassword(currentPassword, newPassword){
+    const credential = EmailAuthProvider.credential(
+        GetCurrentUser().email,
+        currentPassword
+    );
+
+    
+    await reauthenticateWithCredential(GetCurrentUser(), credential);
+    await updatePassword(GetCurrentUser(), newPassword);
+    /*try{
+        await reauthenticateWithCredential(GetCurrentUser(), credential);
+    }
+    catch(err){
+        console.log(err);
+        return 'incorrect';
+    }
+
+    try{
+        await updatePassword(GetCurrentUser(), newPassword);
+    }
+    catch(err){
+        console.log(err);
+        return 'invalid';
+    }
+
+    return 'sucess';*/
 }
