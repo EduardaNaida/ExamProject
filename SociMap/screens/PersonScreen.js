@@ -1,22 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Pressable, Alert } from 'react-native';
 import { Edit, Plus, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 
 import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
-
-// TODO: lägg över alla stylesheets i Stylesheet   
-// import styles from './Stylesheet'
-
-/** TODO: ändra funktionen createAlert --> byt till en popup-meny? 
- *        används för att ta bort en hel kategori 
- *  till denna kanske? https://morioh.com/p/425dc0fcdf7d 
- *  eller denna: https://hartaniyassir.medium.com/how-to-create-a-popup-menu-in-react-native-d2fc8908e932
- *  eller denna: https://reactnativecode.com/popup-menu-overflow-menu-in-react-navigation/ 
- *  tanke: onClick - få upp popup-meny 
- */
 
  /** 
  *  TODO: Ändra storlek på text när man lägger till ny kategori 
@@ -25,12 +14,6 @@ import { Menu, Divider, Provider, Button } from 'react-native-paper';
  *  TODO: Formatera TextInput så att den öppnas i en 'alert'-liknade view och är placerad på samma ställe för alla typer av inputs 
  *  
  */
-
-/** 
- * OVERFLOW MENU
- */
-
-
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -125,19 +108,23 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     return (
             <View style={styles.categoryView}> 
                 <View style={styles.categoryContainer}>
+                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
                     <Provider>
                         <Menu 
                             style={styles.menu}
                             visible={visible}
                             onDismiss={closeMenu}
                             anchor={
-                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
-                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                                <Settings style={styles.settingsButton}/>
+                            <TouchableOpacity style={{flexDirection:'row'}}onPress={openMenu}>
+                                <Settings 
+                                    width={20}
+                                    alignSelf={'center'}
+                                    color={'lightgrey'}/>
                                 </TouchableOpacity>}>
-                                    <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
-                                    <Divider/>
-                                    <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
+                                    
+                                        <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                                        <Divider/>
+                                        <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
                         </Menu>
                     </Provider>
                 </View>
@@ -162,7 +149,12 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                 :
                     <Pressable 
                     style={styles.button}
-                    onPress={buttonClicked}><Plus style={styles.addButton}/>
+                    onPress={buttonClicked}>
+                        <Plus 
+                            width={15}
+                            height={25}
+                            size={10}
+                            color={"black"}/>
                         </Pressable>
             }
             </View>
@@ -215,7 +207,11 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                 onPress={() => {setEditable(true); 
                 setTimeout(() => input.current.focus(), 10);
             } }>
-                <Edit style={styles.editButton}/></Pressable>
+                <Edit 
+                    width={20}
+                    alignSelf={'flex-end'}
+                    color={'grey'}
+                /></Pressable>
         
         </View>
     );
@@ -342,9 +338,9 @@ export default function PersonView({navigation, route}) {
             <View style={{alignSelf:'flex-end'}}>
                 <Pressable  
                     onPress={pressed}>
-                        
-                        <Save style={styles.saveButton} color='white'/>
-                        
+                        <Save 
+                            width={30}
+                            color='white'/>
                     </Pressable>
                     </View>
         );
@@ -407,13 +403,12 @@ export default function PersonView({navigation, route}) {
 
     return (
         
-        <View style={{flex:1}}>
-            <Text style={styles.header}>{"SociMap"}</Text>
+        <View style={{flex:1,flexDirection:'column'}}>
+            <Text style={styles.header}>{"People"}</Text>
             <View style={styles.container}>
                 <ScrollView 
-                    style={styles.scroller}
                     showsVerticalScrollIndicator={true}>
-                    <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}}>
+                    <TouchableOpacity onPress={setImage} style={styles.thumbnailImg}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
 
@@ -427,13 +422,15 @@ export default function PersonView({navigation, route}) {
                             />
                             :
                             <>
-                            <View style={styles.nameContainer}>
-                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
+                            <View style={styles.thumbnailContainer}>
+                                <Text style={styles.thumbnailText}>{state?.name ? state?.name : ''}</Text>
                                 <Pressable 
                                     onPress={() => 
                                     buttonClicked(nameInput, setEditingName)}>
                                     <Edit
-                                        style={styles.nameEditButton}/>
+                                        marginLeft={20}
+                                        width={20}
+                                        color={"lightgrey"}/>
                                 </Pressable>
                             </View></>
                     }
@@ -471,7 +468,7 @@ export default function PersonView({navigation, route}) {
                         <Pressable 
                             title='Add headline' 
                             style={styles.addCategoryStyle}
-                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'New category'}</Text>
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add category'}</Text>
                             </Pressable> 
                             </>
                 }
@@ -482,39 +479,49 @@ export default function PersonView({navigation, route}) {
 };
 
 const styles = StyleSheet.create({
-    // TODO: Same as in PersonsView, move to global 
     indicator:{
         marginTop:'50%',
-
     },
     header:{
-        //marginTop: 80,
-        marginBottom:0,
-        marginTop:50,
-        marginLeft:30,
         fontSize: 40,
-        //marginLeft:-150,
+        fontFamily:'Avenir-Medium',
         color:'#fff',
-        marginBottom:10,
+        textAlign:'center',
+        alignItems:'flex-start',
+        marginTop:'22%',
+        height:'10%',
     },
-    scroller:{
-    },
-    headerImg:{
-        marginTop:0,
-        //flex:1, 
-        width:null,
-        height:'60%',
-    },
-    thumbnail:{
+    thumbnailContainer:{
+        minWidth:'90%',
+        padding:5,
+        flexDirection:'row',
         alignSelf:'center',
+        alignItems:'center',
+        justifyContent:'center',
+        borderBottomColor:'lightgrey',
+        borderBottomWidth:1,
+    },
+    thumbnailImg:{
         width:70,
         height:70,
         borderRadius:35,
+        alignSelf:'center',
+        marginTop:10,
+    },
+    thumbnail:{
+        width:70,
+        height:70,
+        borderRadius:35,
+        backgroundColor:'gray',
+        overflow:'hidden',
+        borderWidth:1,
     },
     thumbnailText:{
-        fontSize:20,
-        backgroundColor:'lightblue',
-        textAlignVertical: 'center',
+        fontSize:30,
+        paddingRight:'5%',
+        paddingLeft:'15%',
+        color:'black',
+        fontFamily:'Avenir-Book',
     },
     container:{
         padding:10,
@@ -525,50 +532,43 @@ const styles = StyleSheet.create({
         borderBottomStartRadius:0,
         alignSelf:'stretch',
     }, 
+    // Entries in categories
     txtContainer:{
-        //flex:1,
         margin:10,
-        position:'relative',
         padding:7,
         flexDirection:'row',
-        backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
+        backgroundColor:'#ebebeb', // TODO: The color of user-choice (from group)
         justifyContent:'center',
         alignSelf:'center',
         borderRadius:10,
-        width:319,
+        width:'90%',
     },
     inputView:{
         backgroundColor:'#00000000',
         borderBottomColor:'black',
         borderBottomWidth:1,
         fontSize:20,
+        fontFamily:'Avenir-Book',
         height:30,
-        paddingLeft:15,
+        //paddingLeft:15,
         width:'90%',
         alignSelf:'center',
-        textAlign:'center',
+        textAlign:'left',
     },
     newTitle:{
         fontSize:20,
+        fontFamily:'Avenir-Book',
         color:'black',
         textAlign:'left',
     },
-
-    menuContainer:{
-        //paddingTop:50,
-        flexDirection: 'row',
-        //justifyContent:'center',
-        zIndex:100,
-    },
     menuItem:{
         height:30,
+        fontFamily:'Avenir-Book',
     },
     menu:{
-        backgroundColor:'#fff',
-        borderRadius:20,
-        borderWidth:0,
-        top:-80,
-        left:0, 
+        borderRadius:10,
+        top:'-160%',
+        left:'60%',
         position:'absolute',
         zIndex:100,
     },
@@ -576,121 +576,53 @@ const styles = StyleSheet.create({
         width:'100%',
         flexDirection:'column',
         alignItems:'center',
-        alignSelf:'flex-start',
+        paddingBottom:'5%',
     },
     categoryContainer:{
         flexDirection:'row',
-        marginTop:10,
-        borderWidth:0.7,
-        borderColor:'black',
-        backgroundColor:'#ebebeb',
+        backgroundColor:'#00000000',
         borderRadius:10,
-        width:'60%',
+        width:'100%',
         padding:7,
-        alignSelf:'center',
-        marginBottom:10,
+        //alignSelf:'center',
+        //marginTop:'5%',
+        marginBottom:'-4%',
     },
     categoryTitle:{
+        fontFamily:'Avenir-Book',
         fontSize:24,
         color:'black',
-        textAlign:'center',
+        textAlign:'left',
         margin:5,
-        paddingLeft:50,
-        alignSelf:'center',
         width:'90%',
     },    
     categoryText:{
         fontSize:19,
-        //textAlign:'left',
-        marginLeft:10,
-        marginRight:-10,
-        justifyContent:'center',
+        fontFamily:'Avenir-Book',
+        //justifyContent:'center',
         alignSelf:'center',
-        width:'90%'
-    },
-    nameContainer:{
-        minWidth:150,
-        flexDirection:'row',
-        alignSelf:'center',
-        alignContent:'space-between',
-        
-        alignItems:'center',
-        justifyContent:'center'
-    },
-    nameText:{
-        fontSize:30,
-        color:'black',
-        marginLeft:40,
         textAlign:'center',
+        width:'80%'
     },
     button:{
-        height:30,
-        width:50,
-        backgroundColor:'lightgrey',
-        //alignSelf:'center',
-        justifyContent:'center',
+        width:'15%',
+        backgroundColor:'#ADD8E6',
         alignItems:'center',
         borderRadius:30,
-    },
-    iconButton:{
-        height:40,
-        width:40,
-        color:'black',
-    },
-    settingsButton:{
-        height:40,
-        width:40,
-        color:'grey',
-        marginLeft:10,
-        marginRight:40,
-        alignSelf:'center'
-    },
-    nameEditButton:{
-        height:40,
-        width:40,
-        marginLeft:30,
-        color:'gray',
-//        alignSelf:'center',
-    },
-    editButton:{
-        height:40,
-        width:40,
-        color:'gray',
-//        alignSelf:'center',
+        marginTop:'2%',
     },
     addCategoryStyle:{
         backgroundColor:'#ebebeb',
-        //width:'35%',
         padding:7.5,
+        width:'50%',
+        alignSelf:'center',
         marginTop:20,
         borderRadius:10,
     },
-    addButton:{
-        color:'black',
-        opacity:0.7,
-        margin:10,
-        alignSelf:'center',
-        width:'30',
-        //marginLeft:20,
-    },
-    saveButton:{
-        height:40,
-        width:40,
-        color:'black',
-        //alignSelf:'flex-start'
-    },
     buttonText:{
-        fontSize:20,
+        fontSize:22,
         alignSelf:'center',
         borderRadius:20,
+        fontFamily:'Avenir-Book',
     },
-    buttonStyle:{
-        width:70,
-        height:40,
-        borderRadius:10,
-        alignSelf:'flex-start',
-        backgroundColor:'#ADD8E6',
-        opacity:0.8,
-    },
-    /// ------- END
 });

@@ -191,8 +191,6 @@ export default PersonsView = ({navigation, route}) =>
     //setImmediate(() => filterPersons(filterText));
 //}}><Text style={styles.btnTxt}>Add</Text></Button>
 
-
-
 const styles = StyleSheet.create({
     header:{
         marginTop: 40,
@@ -273,7 +271,7 @@ const styles = StyleSheet.create({
         margin: 7.5,
         padding:5,
         flexDirection: 'row',
-        backgroundColor:'#D2F2CB', // TODO: background color of the items should be depending on what group+group color?
+        backgroundColor:'#ebebeb', // TODO: background color of the items should be depending on what group+group color?
         borderRadius:10,
         width:319,
         justifyContent:'flex-start',
@@ -294,6 +292,7 @@ const styles = StyleSheet.create({
         height:35,
         opacity:0.8,
         borderRadius:35,
+//        overflow:'hidden',
     },
     thumbnailText:{
         fontSize:27,
