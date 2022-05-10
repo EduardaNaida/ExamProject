@@ -1,9 +1,36 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, TextInput, Image, ActivityIndicator } from 'react-native';
-import { Edit, Trash, Delete} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { Edit, Plus, Save, Settings} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
+
+import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
+
+// TODO: lägg över alla stylesheets i Stylesheet   
+// import styles from './Stylesheet'
+
+/** TODO: ändra funktionen createAlert --> byt till en popup-meny? 
+ *        används för att ta bort en hel kategori 
+ *  till denna kanske? https://morioh.com/p/425dc0fcdf7d 
+ *  eller denna: https://hartaniyassir.medium.com/how-to-create-a-popup-menu-in-react-native-d2fc8908e932
+ *  eller denna: https://reactnativecode.com/popup-menu-overflow-menu-in-react-navigation/ 
+ *  tanke: onClick - få upp popup-meny 
+ */
+
+ /** 
+ *  TODO: Ändra storlek på text när man lägger till ny kategori 
+ *  TODO: Ändra design på textInput
+ *  TODO: Ändra kategori-titeln så den är flexDir:'row', settings-knappen bredvid 
+ *  TODO: Formatera TextInput så att den öppnas i en 'alert'-liknade view och är placerad på samma ställe för alla typer av inputs 
+ *  
+ */
+
+/** 
+ * OVERFLOW MENU
+ */
+
+
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -20,6 +47,7 @@ const PersonThumbnail = ({personData}) =>
         return (
             <Image style={styles.thumbnail}
             source={{uri:personData.img}}/>
+            
         );
     }
 
@@ -29,8 +57,11 @@ const PersonThumbnail = ({personData}) =>
             ...styles.thumbnailText
         }}>
             {acro}
-        </Text>);
+            
+        </Text>
+        );
 }
+
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
     
@@ -67,15 +98,53 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
+    const alertDeletion = () =>
+    Alert.alert(
+        // Alert messages 
+        "Are you sure you want to delete this category?",
+        "This will delete all entries in the category.",
+      [{
+          text: "Yes", onPress: removeNote 
+        },{
+          text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel"
+        }]
+    );
+
+    const alertMsg = () => 
+    Alert.alert(
+        "Edit category name not implemented.",
+        "",
+        [{
+                text: 'Return', onPress: () => console.log('Return pressed'), style: 'cancel'
+            }])
+
+    const [visible, setVisible] = React.useState(false);
+    const openMenu = () => setVisible(true);
+    const closeMenu = () => setVisible(false);
+
     return (
-        <View>
-            <View style={{flexDirection:'row'}}>
-                <Text>{sectionData.headline}</Text>
-                <Button title='remove' onPress={removeNote}/>
-            </View>
-            {
+            <View style={styles.categoryView}> 
+                <View style={styles.categoryContainer}>
+                    <Provider>
+                        <Menu 
+                            style={styles.menu}
+                            visible={visible}
+                            onDismiss={closeMenu}
+                            anchor={
+                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
+                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                                <Settings style={styles.settingsButton}/>
+                                </TouchableOpacity>}>
+                                    <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                                    <Divider/>
+                                    <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
+                        </Menu>
+                    </Provider>
+                </View>
+                {
                 sectionData.values.map(note => 
                 <Note 
+                    style={styles.txtContainer}
                     key={note.id} 
                     value={note} 
                     dispatch={dispatch} 
@@ -84,13 +153,19 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     isCreatingNew={isCreatingNew}
                 />)
             }
+            
             {
                 adding ?
-                    <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                <View style={styles.txtContainer}>
+                    <TextInput style={styles.inputView}
+                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput></View>
                 :
-                    <Button title='Add value' onPress={buttonClicked}/>
+                    <Pressable 
+                    style={styles.button}
+                    onPress={buttonClicked}><Plus style={styles.addButton}/>
+                        </Pressable>
             }
-        </View>
+            </View>
     );
 }
 
@@ -100,6 +175,7 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
     const [text, setText] = useState(value.value);
     const [editable, setEditable] = useState(false);
     //console.log(editable);
+    const header_name = "People";
 
     const updateText = async () => {
         setEditable(false);
@@ -120,10 +196,11 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
     };
 
     return (
-        <View style={{flexDirection:'row'}}>
+        <View style={styles.txtContainer}>
             {
                 editable ? 
                 <TextInput 
+                    style={styles.inputView}
                     onFocus={() => setEditable(true)} 
                     onBlur={updateText} 
                     value={text} 
@@ -131,10 +208,15 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                     onChangeText={setText}
                     multiline={true}/>
                 :
-                <Text>{text}</Text>
+                
+                <Text style={styles.categoryText}>{text}</Text>
             }
-
-            <Button onPress={() => {setEditable(true); setTimeout(() => input.current.focus(), 10);} } title='edit'></Button>
+            <Pressable 
+                onPress={() => {setEditable(true); 
+                setTimeout(() => input.current.focus(), 10);
+            } }>
+                <Edit style={styles.editButton}/></Pressable>
+        
         </View>
     );
 }
@@ -182,15 +264,24 @@ function stateUpdater(state, action) {
 }
 
 export default function PersonView({navigation, route}) {
-    const [state, dispatch] = useReducer(stateUpdater, null);   
+
+    navigation.setOptions({
+        headerShown: true,
+        headerTransparent: true,
+        title:'',
+        headerTintColor: '#fff',
+      });
+
+
+    const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
-
+    
     const [editingName, setEditingName] = useState(false);
     const [name, setName] = useState('');
     const nameInput = useRef();
-
+    
     const personId = route.params.personId;
     const isCreatingNew = route.params.isCreatingNew;
 
@@ -248,7 +339,14 @@ export default function PersonView({navigation, route}) {
         }
 
         return (
-            <Button title='Save' onPress={pressed}/>
+            <View style={{alignSelf:'flex-end'}}>
+                <Pressable  
+                    onPress={pressed}>
+                        
+                        <Save style={styles.saveButton} color='white'/>
+                        
+                    </Pressable>
+                    </View>
         );
     }
 
@@ -305,65 +403,294 @@ export default function PersonView({navigation, route}) {
     };
 
 
-
-    if(state == null)
-        return(<ActivityIndicator size='large'/>)
-
     //console.log(state.name);
 
     return (
-        <View>
-            <ScrollView>
-                <TouchableOpacity onPress={setImage}>
-                    <PersonThumbnail personData={state}/>
-                </TouchableOpacity>
-                <View style={{flexDirection:'row'}}>
+        
+        <View style={{flex:1}}>
+            <Text style={styles.header}>{"SociMap"}</Text>
+            <View style={styles.container}>
+                <ScrollView 
+                    style={styles.scroller}
+                    showsVerticalScrollIndicator={true}>
+                    <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}}>
+                        <PersonThumbnail personData={state}/>
+                    </TouchableOpacity>
+
                     {
                         editingName ?
                             <TextInput
+                                style={styles.inputView}
                                 ref={nameInput}
                                 onChangeText={setName}
                                 onBlur={nameFinished}
                             />
                             :
-                            <Text>{state.name}</Text>
+                            <>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
+                                <Pressable 
+                                    onPress={() => 
+                                    buttonClicked(nameInput, setEditingName)}>
+                                    <Edit
+                                        style={styles.nameEditButton}/>
+                                </Pressable>
+                            </View></>
                     }
-                    <Button title='Change Name' onPress={() => buttonClicked(nameInput, setEditingName)}/>
-                </View>
+                    
+                    
 
-                {
-                    state.notes.map(section => 
-                        <Section 
-                            key={section.id} 
-                            sectionData={section} 
-                            dispatch={dispatch} 
-                            personId={state.id}
-                            isCreatingNew={isCreatingNew}
-                            />
-                        )
-                }
+                    <View style={{flex:1, justifyContent:'center'}}>
+                    {
+                        state.notes.map(section => 
+                            <Section 
+                                key={section.id} 
+                                sectionData={section} 
+                                dispatch={dispatch} 
+                                personId={state.id}
+                                isCreatingNew={isCreatingNew}
+                                />
+                            )
+                    }
+                    </View>
                 
                 {
                     adding ?
-                        <TextInput ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                    <View style={{flexDirection:'column', alignContent:'center'}}>
+                        <Text style={styles.newTitle}>{'Category name:'}</Text>
+                            <View style={styles.categoryContainer}>
+                        <TextInput style={styles.inputView}
+                        ref={input} 
+                        onChangeText={setText} 
+                        onBlur={textFinished}></TextInput>
+                        </View>
+                        </View>
                     :
-                        <Button title='Add note' onPress={() => buttonClicked(input, setAdding)}/>
+                    <>
+                    
+                        <Pressable 
+                            title='Add headline' 
+                            style={styles.addCategoryStyle}
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'New category'}</Text>
+                            </Pressable> 
+                            </>
                 }
-            </ScrollView>
-        </View>
+        </ScrollView>
+        </View>        
+    </View>
     );
 };
 
 const styles = StyleSheet.create({
-    
+    // TODO: Same as in PersonsView, move to global 
+    indicator:{
+        marginTop:'50%',
+
+    },
+    header:{
+        //marginTop: 80,
+        marginBottom:0,
+        marginTop:50,
+        marginLeft:30,
+        fontSize: 40,
+        //marginLeft:-150,
+        color:'#fff',
+        marginBottom:10,
+    },
+    scroller:{
+    },
+    headerImg:{
+        marginTop:0,
+        //flex:1, 
+        width:null,
+        height:'60%',
+    },
     thumbnail:{
+        alignSelf:'center',
         width:70,
         height:70,
         borderRadius:35,
     },
     thumbnailText:{
-        fontSize:30,
-        textAlign: 'center',
+        fontSize:20,
+        backgroundColor:'lightblue',
         textAlignVertical: 'center',
     },
+    container:{
+        padding:10,
+        backgroundColor:'#ffffff',
+        flex:1,
+        borderRadius:60,
+        borderBottomEndRadius:0,
+        borderBottomStartRadius:0,
+        alignSelf:'stretch',
+    }, 
+    txtContainer:{
+        //flex:1,
+        margin:10,
+        position:'relative',
+        padding:7,
+        flexDirection:'row',
+        backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
+        justifyContent:'center',
+        alignSelf:'center',
+        borderRadius:10,
+        width:319,
+    },
+    inputView:{
+        backgroundColor:'#00000000',
+        borderBottomColor:'black',
+        borderBottomWidth:1,
+        fontSize:20,
+        height:30,
+        paddingLeft:15,
+        width:'90%',
+        alignSelf:'center',
+        textAlign:'center',
+    },
+    newTitle:{
+        fontSize:20,
+        color:'black',
+        textAlign:'left',
+    },
+
+    menuContainer:{
+        //paddingTop:50,
+        flexDirection: 'row',
+        //justifyContent:'center',
+        zIndex:100,
+    },
+    menuItem:{
+        height:30,
+    },
+    menu:{
+        backgroundColor:'#fff',
+        borderRadius:20,
+        borderWidth:0,
+        top:-80,
+        left:0, 
+        position:'absolute',
+        zIndex:100,
+    },
+    categoryView:{
+        width:'100%',
+        flexDirection:'column',
+        alignItems:'center',
+        alignSelf:'flex-start',
+    },
+    categoryContainer:{
+        flexDirection:'row',
+        marginTop:10,
+        borderWidth:0.7,
+        borderColor:'black',
+        backgroundColor:'#ebebeb',
+        borderRadius:10,
+        width:'60%',
+        padding:7,
+        alignSelf:'center',
+        marginBottom:10,
+    },
+    categoryTitle:{
+        fontSize:24,
+        color:'black',
+        textAlign:'center',
+        margin:5,
+        paddingLeft:50,
+        alignSelf:'center',
+        width:'90%',
+    },    
+    categoryText:{
+        fontSize:19,
+        //textAlign:'left',
+        marginLeft:10,
+        marginRight:-10,
+        justifyContent:'center',
+        alignSelf:'center',
+        width:'90%'
+    },
+    nameContainer:{
+        minWidth:150,
+        flexDirection:'row',
+        alignSelf:'center',
+        alignContent:'space-between',
+        
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    nameText:{
+        fontSize:30,
+        color:'black',
+        marginLeft:40,
+        textAlign:'center',
+    },
+    button:{
+        height:30,
+        width:50,
+        backgroundColor:'lightgrey',
+        //alignSelf:'center',
+        justifyContent:'center',
+        alignItems:'center',
+        borderRadius:30,
+    },
+    iconButton:{
+        height:40,
+        width:40,
+        color:'black',
+    },
+    settingsButton:{
+        height:40,
+        width:40,
+        color:'grey',
+        marginLeft:10,
+        marginRight:40,
+        alignSelf:'center'
+    },
+    nameEditButton:{
+        height:40,
+        width:40,
+        marginLeft:30,
+        color:'gray',
+//        alignSelf:'center',
+    },
+    editButton:{
+        height:40,
+        width:40,
+        color:'gray',
+//        alignSelf:'center',
+    },
+    addCategoryStyle:{
+        backgroundColor:'#ebebeb',
+        //width:'35%',
+        padding:7.5,
+        marginTop:20,
+        borderRadius:10,
+    },
+    addButton:{
+        color:'black',
+        opacity:0.7,
+        margin:10,
+        alignSelf:'center',
+        width:'30',
+        //marginLeft:20,
+    },
+    saveButton:{
+        height:40,
+        width:40,
+        color:'black',
+        //alignSelf:'flex-start'
+    },
+    buttonText:{
+        fontSize:20,
+        alignSelf:'center',
+        borderRadius:20,
+    },
+    buttonStyle:{
+        width:70,
+        height:40,
+        borderRadius:10,
+        alignSelf:'flex-start',
+        backgroundColor:'#ADD8E6',
+        opacity:0.8,
+    },
+    /// ------- END
 });

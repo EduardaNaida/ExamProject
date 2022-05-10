@@ -1,8 +1,13 @@
-
-import { useIsFocused } from '@react-navigation/native';
 import { useState, useEffect, useReducer } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
+import { Bold, Feather, Plus, Search  } from 'react-native-feather';
+//import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
+
+
+const globalStyle = require('../assets/Stylesheet');
+
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -12,7 +17,7 @@ const PersonThumbnail = ({personData}) =>
 
         const str = personData.name;
         const matches = str.match(/\b(\w)/g);
-        const acronym = matches.join('').substring(0,2); 
+        const acronym = matches.join('').substring(0,1); 
         return acronym;
     });
     if(personData.img != ''){
@@ -39,9 +44,11 @@ const PersonWidget = ({personData, navigation}) =>
 
     return (
         <TouchableOpacity onPress={navToPerson}>
-            <View style={styles.widgetContainer}>
-                <PersonThumbnail personData={personData}/>
-                <Text style={styles.widgetText}>{personData.name}</Text>
+            
+                <View style={styles.listItem}>
+                    <PersonThumbnail personData={personData}/>
+                    <Text style={styles.itemText}>{personData.name}</Text>
+            
             </View>
         </TouchableOpacity>
     );
@@ -80,6 +87,8 @@ export default PersonsView = ({navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
+    const header_name = "People";
+    //const Stack = createNativeStackNavigator();
     const isFocused = useIsFocused();
 
     const path = route.params?.Path;
@@ -132,75 +141,162 @@ export default PersonsView = ({navigation, route}) =>
     };
 
 
-    return loading ? 
+    return loading ?
         (<ActivityIndicator
             size='large'
             color='blue'
         />)
         :
-        (<View>
-            <View style={{flexDirection:'row', }}>
-                <TextInput 
-                    style={styles.filter} 
-                    placeholder='Filter' 
-                    value={state.text} 
-                    onChangeText={(text) => dispatch({type:'set text', data:text})}/>
-                <Button
-                    title='Add'
-                    style='buttonStyle'
-                    onPress={() =>{
-                        navigation.push('Person', {isCreatingNew:true});
-                        //setImmediate(() => filterPersons(filterText));
-                    }}/>
+        (  
+            <View style={{flex:1}}>
+                <Text style={styles.header}>{header_name}</Text>
+                <View style={styles.container}>
+                    <View style={styles.menuBar}>
+                        <View style={styles.inputView}>
+                            <TextInput
+                                style={styles.textInput}
+                                placeholder='Search'
+                                value={state.text}
+                                onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
+                            <Search style={styles.searchIcon} />
+                        </View>
+                        <View style={styles.buttonView}>
+                            <Pressable style={styles.buttonStyle} 
+                            onPress={() => {
+                                navigation.navigate('Person', { isCreatingNew: true });
+                            } }>
+                                <Plus style={styles.addButton} />
+                            </Pressable>
+                        </View>
+                    </View>
+
+                    <View style={styles.listContainer}>
+                        <FlatList
+                            style={styles.listSection}
+                            data={state.filtered}
+                            renderItem={renderWidget}
+                            keyExtractor={(_, index) => index} />
+                    </View>
+                </View>
             </View>
-            <FlatList
-                style={{padding:10}}
-                data={state.filtered}
-                renderItem={renderWidget}
-                keyExtractor={(_, index) => index}
-            />
-        </View>);
+        );
 }
+
+// TODO: Changed Button to Pressable style on row 167
+// <Button
+//title='Add'
+//style={styles.btnStyle}
+//onPress={() =>{
+//    navigation.navigate('Person', {isCreatingNew:true});
+    //setImmediate(() => filterPersons(filterText));
+//}}><Text style={styles.btnTxt}>Add</Text></Button>
 
 
 
 const styles = StyleSheet.create({
-    widgetContainer:{
-        flexDirection: 'row',
-        flex:1,
-        marginBottom:5,
-        backgroundColor:'#b5b5b5',
-        padding:10,
-        borderRadius:10,
+    header:{
+        marginTop: 40,
+        marginBottom: 10,
+        marginLeft:40,
+        fontSize: 40,
+        
+        color:'#fff',
     },
-    widgetText:{
-        fontSize:40,
-        textAlignVertical:'center',
-        marginLeft:10
-    },
-    thumbnail:{
-        width:70,
-        height:70,
-        borderRadius:35,
-    },
-    thumbnailText:{
-        fontSize:30,
-        textAlign: 'center',
-        textAlignVertical: 'center',
-    },
-    filter:{
-        height:70,
-        fontSize:30,
-        margin:10,
-        borderWidth:1,
-        borderColor:'#b5b5b5',
+    container:{
+        alignItems:'center',
+        backgroundColor:'white',
+        marginLeft:0,
+        borderRadius:60,
+        borderBottomEndRadius:0,
+        borderBottomStartRadius:0,
         flex:1,
         alignSelf:'stretch'
     },
+    menuBar:{
+        marginTop:20, 
+        flexDirection:'row',
+        justifyContent:'space-between',
+    },
+    inputView:{
+        flex:1,
+        paddingLeft:60,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        alignContent:'center',
+    },
+    textInput:{
+        fontSize:20,
+        backgroundColor:'#e3e3e3',
+        borderColor:'#b5b5b5',
+        textAlign:'center',
+        borderRadius: 10,
+        padding:5,
+        height:35,
+        width:220,
+    },
+    searchIcon:{
+        color:'grey',
+        marginLeft: -35,
+        height:20,
+        marginTop:6,
+        alignSelf:'flex-start',
+    },
+    buttonView:{
+        flex:1, 
+    },
+    addButton:{
+        alignSelf:'center',
+        color:'black',
+        height:40,
+    },
     buttonStyle:{
-        margin: 10,
-        width:40,
-        textAlignVertical:'center',
-        backgroundColor: 'blue',
-    }
+        width:60,
+        height:35,
+        borderRadius:80,
+        justifyContent:'center',
+        alignSelf:'center',
+        backgroundColor:'#ADD8E6',
+        opacity:0.8,
+    },
+    buttonText:{
+        fontSize:15,
+        padding:10,
+        color:'black',
+        textAlign:'center',
+    },
+    listSection:{
+        padding:5,
+        margin:10,
+    },
+    listItem:{
+        margin: 7.5,
+        padding:5,
+        flexDirection: 'row',
+        backgroundColor:'#D2F2CB', // TODO: background color of the items should be depending on what group+group color?
+        borderRadius:10,
+        width:319,
+        justifyContent:'flex-start',
+    },
+    listContainer:{
+        flex:1,
+    },
+    itemText:{
+        fontSize:20,
+        textAlign:'center',
+        marginLeft:'5%',
+        alignSelf:'center',
+    },
+    thumbnail:{
+        marginLeft:'2.5%',
+        backgroundColor:'#ffffff',
+        width:35,
+        height:35,
+        opacity:0.8,
+        borderRadius:35,
+    },
+    thumbnailText:{
+        fontSize:27,
+        textAlign: 'center',
+    },
 });
