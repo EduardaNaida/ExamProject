@@ -37,10 +37,8 @@ function LoginScreen({navigation}) {
     }
 
     const handleSignIn = async () =>{
-      
-      // input validation
 
-      try{
+      try {
         const signIn = await AttemptSignIn(email, password);
         setLogged(true);
       }
@@ -48,6 +46,9 @@ function LoginScreen({navigation}) {
         if ( err.code === 'auth/wrong-password' ) {
             alert('Wrong password. Please try again');
           }
+        else if( err.code === 'auth/missing-email'||  err.code === 'auth/missing-password' ) {
+          alert('Please enter your email or password');
+        }
         
       }
 
@@ -108,17 +109,18 @@ function LoginScreen({navigation}) {
       </TouchableOpacity>
 
       <TouchableOpacity 
-      onPress={handleSignIn}
-      style={styles.userBtn}>
+        onPress={handleSignIn}
+        style={styles.userBtn}>
         <Text style={styles.btnTxt}>Login</Text>
       </TouchableOpacity> 
 
       </View>
 
-      <TouchableOpacity
-      onPress={() => navigation.navigate('ResetPasswordScreen')}>
+      <TouchableOpacity 
+        onPress={() => navigation.navigate('ResetPasswordScreen')}>
         <View>
         <Text style={styles.forgot_button}>Forgot Password?</Text>
+        
         </View>
       </TouchableOpacity>
      

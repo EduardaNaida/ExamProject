@@ -1,16 +1,12 @@
 import React, { useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
 import {SendPasswordResetEmail} from "../FirebaseInterface"
 import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { getAuth } from 'firebase/auth'
 
-function ResetPasswordScreen(props) {
+function ResetPasswordScreen({navigation}) {
     const [email, setEmail] = useState('');
-    const auth = getAuth();
-    const navigation = useNavigation();
 
     const resetPassword = async () =>{        // auth/missing-email
-         const reset = await SendPasswordResetEmail(auth, email);
+         const reset = await SendPasswordResetEmail(email);
          alert(`Please check ${email} to proceed with password reset.`,
         );
          navigation.navigate('LoginScreen');

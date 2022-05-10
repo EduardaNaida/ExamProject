@@ -4,6 +4,7 @@ import { Text, ActivityIndicator, ImageBackground } from 'react-native';
 
 import PersonsScreen from '../screens/PersonsScreen';
 import GroupScreen from '../screens/GroupScreen';
+import SettingsPage from '../screens/SettingsPage';
 
 const Tab = createBottomTabNavigator();
 
@@ -42,6 +43,7 @@ export default MainView = ({}) => {
                     <Tab.Screen name='Persons' component={PersonsScreen}/>
                     <Tab.Screen name='Groups' component={GroupScreen}/>
                     <Tab.Screen name='Quiz' component={Blank}/>
+                    <Tab.Screen name='Settings' component={SettingsPage} options={{ headerShown: false}}/>
                 </Tab.Navigator>
             </NavigationContainer>
         </ImageBackground>
