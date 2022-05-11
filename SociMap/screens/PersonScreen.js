@@ -517,7 +517,7 @@ export default function PersonView({navigation, route}) {
      */
     return (
         <View style={{flex:1,flexDirection:'column'}}>
-            <Text style={styles.header}>{"People"}</Text>
+            <Text style={styles.header}>{"SociMap"}</Text>
                 <View style={styles.container}>
                     <ScrollView 
                         showsVerticalScrollIndicator={true}>
@@ -604,6 +604,9 @@ export default function PersonView({navigation, route}) {
     );
 };
 
+/**
+ * Stylesheets for PersonPage 
+ */
 const styles = StyleSheet.create({
     indicator:{
         marginTop:'50%',
@@ -659,12 +662,13 @@ const styles = StyleSheet.create({
         margin:10,
         padding:7,
         flexDirection:'row',
-        backgroundColor:'#ebebeb', // TODO: The color of user-choice (from group)
+        backgroundColor:'#ebebeb',      // TODO: The color of user-choice (from group)
         justifyContent:'space-between',
         alignSelf:'center',
         borderRadius:10,
         width:'90%',
     },
+    // <TextInput>
     inputView:{
         backgroundColor:'#00000000',
         borderBottomColor:'black',
@@ -676,6 +680,7 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         textAlign:'left',
     },
+    // Add new category
     newTitle:{
         fontSize:24,
         fontFamily:'Avenir-Book',

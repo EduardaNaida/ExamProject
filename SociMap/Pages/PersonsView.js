@@ -1,17 +1,13 @@
 import { useState, useEffect, useReducer } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
-import { Bold, Feather, Plus, Search  } from 'react-native-feather';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, Image, TextInput, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
+import { Plus, Search  } from 'react-native-feather';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
 
+
 // TODO: Add global stylesheet 
 // const globalStyle = require('../assets/Stylesheet');
-
-/**
- * TODO: Centrera texten i thumbnailen 
- * TODO: Fixa förstoringsglaset 
- */
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -91,7 +87,7 @@ export default PersonsView = ({navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
-    const header_name = "People";
+    const header_name = "SociMap";
     //const Stack = createNativeStackNavigator();
     const isFocused = useIsFocused();
 
@@ -153,34 +149,32 @@ export default PersonsView = ({navigation, route}) =>
         :
         (  
             <View style={{flex:1}}>
-                <Text style={styles.header}>{header_name}</Text>
+                <Text style={styles.header}>{"SociMap"}</Text>
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
-                        <View style={styles.searchSection}>
-                            <Search 
-                                width={20}
-                                color={'gray'}
-                                alignSelf={'flex-start'} />
+                        <View style={styles.textInput}>
                             <TextInput
-                                style={styles.textInput}
+                                theme={{colors:{primary:'transparent'}}}
+                                height={20}
+                                textAlign={'center'}
+                                fontSize={20}
+                                selectionColor={'gray'}
                                 placeholder='Search'
                                 value={state.text}
                                 onChangeText={(text) => dispatch({ type: 'set text', data: text })}/>
-                            
-                        </View>
-                        <View style={styles.buttonView}>
+                            </View>
                             <Pressable style={styles.buttonStyle} 
                             onPress={() => {
                                 navigation.navigate('Person', { isCreatingNew: true });
                             } }>
                                 <Plus 
-                                    width={20}
+                                    width={15}
                                     color={'black'}
                                     alignSelf={'center'}
 
                              />
                             </Pressable>
-                        </View>
+                     
                     </View>
 
                     <View style={styles.listContainer}>
@@ -195,22 +189,14 @@ export default PersonsView = ({navigation, route}) =>
         );
 }
 
-// TODO: Changed Button to Pressable style on row 167
-// <Button
-//title='Add'
-//style={styles.btnStyle}
-//onPress={() =>{
-//    navigation.navigate('Person', {isCreatingNew:true});
-    //setImmediate(() => filterPersons(filterText));
-//}}><Text style={styles.btnTxt}>Add</Text></Button>
-
 const styles = StyleSheet.create({
     header:{
-        marginTop: 40,
-        marginBottom: 10,
-        marginLeft:40,
         fontSize: 40,
-        
+        fontFamily:'Avenir-Medium',
+        textAlign:'center',
+        //alignItems:'flex-start',
+        marginTop:'22%',
+        height:'10%',
         color:'#fff',
     },
     container:{
@@ -224,47 +210,24 @@ const styles = StyleSheet.create({
         alignSelf:'stretch'
     },
     menuBar:{
-        marginTop:20, 
+        marginTop:'5%', 
         flexDirection:'row',
         justifyContent:'space-between',
     },
-    searchSection:{
-        flex:1,
-        paddingLeft:60,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        backgroundColor: 'transparent',
-        alignContent:'center',
-    },
     textInput:{
         fontSize:20,
+        fontFamily:'Avenir-Book',
         backgroundColor:'#e3e3e3',
-        borderColor:'#b5b5b5',
-        textAlign:'center',
         borderRadius: 10,
         padding:5,
-        height:35,
-        width:220,
-    },
-    searchIcon:{
-        color:'grey',
-        marginLeft: -35,
-        height:20,
-        marginTop:6,
-        alignSelf:'flex-start',
-    },
-    buttonView:{
-        flex:1, 
-    },
-    addButton:{
-        alignSelf:'center',
-        color:'black',
-        height:40,
+        height:'110%',
+        width:'65%',
+        marginRight:'2%',
     },
     buttonStyle:{
         width:60,
-        height:35,
-        borderRadius:80,
+        height:25,
+        borderRadius:20,
         justifyContent:'center',
         alignSelf:'center',
         backgroundColor:'#ADD8E6',
@@ -272,6 +235,7 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         fontSize:15,
+        fontFamily:'Avenir-Book',
         padding:10,
         color:'black',
         textAlign:'center',
@@ -294,6 +258,7 @@ const styles = StyleSheet.create({
     },
     itemText:{
         fontSize:20,
+        fontFamily:'Avenir-Book',
         textAlign:'center',
         marginLeft:'5%',
         alignSelf:'center',
@@ -308,8 +273,8 @@ const styles = StyleSheet.create({
         overflow:'hidden',
     },
     thumbnailText:{
-        fontSize:27,
+        fontSize:24,
+        fontFamily:'Avenir-Book',
         textAlign: 'center',
-        //textAlignVertical:'center',
     },
 });
