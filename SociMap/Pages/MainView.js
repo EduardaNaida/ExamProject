@@ -42,7 +42,7 @@ export default MainView = ({}) => {
                 <Tab.Navigator screenOptions={{headerShown:false}}>
                     <Tab.Screen name='Persons' component={PersonsScreen}/>
                     <Tab.Screen name='Groups' component={GroupScreen}/>
-                    <Tab.Screen name='Quiz' component={Blank}/>
+                    <Tab.Screen name='Quiz' component={QuizScreen}/>
                 </Tab.Navigator>
             </NavigationContainer>
         </ImageBackground>

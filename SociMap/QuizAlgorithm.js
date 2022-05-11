@@ -1,23 +1,22 @@
-import { GetPersonData, GetPersonsFromPath } from "./FirebaseInterface";
-//!THE TOPICS THAT ARE USED IN createQuestion NEEDS TO HAVE CASES IN createTopicDictionary, yesOrNoQuestion and multipleChoiceQuestion
-export function createQuiz()
+import { GetPersonData, GetPersonsData, GetPersonsFromPath } from "./FirebaseInterface";
+//!THE TOPICS THAT ARE USED IN createQuestion NEEDS TO HAVE CASES IN createTopicDictionary, yesOrNoQuestion and multipleChoiceQuestion oterwise they will be unspecified questions
+export async function createQuiz(id)
 {
     //!TODO change to multiple people this is just testing
-    const people = GetPersonData(id);
-    console.log(people);
+    const people = await GetPersonsData(id);
     var topicDictionary = createTopicDictionary(people);
     const numberOfQuestions = 10;
 
-    console.log(topicDictionary);
-    
     var quiz = [];
-    for (var i in numberOfQuestions)
+    var topics = ['work', 'unspecified'];
+    for (var i = 0; i <= numberOfQuestions; i++)
     {
-        var question = createQuestion(topicDictionary);
+        var question = createQuestion(topicDictionary, topics);
         if (question != null)
         {
             quiz.push(question);
         }
+  
         
     }
 
@@ -27,11 +26,9 @@ export function createQuiz()
 function createQuestion(dict, topics)
 {
     if(topics.length == 0) return null;
-    //! needs to be the same topics that are used in createTopicDictionary for getting specified questions
-    var topics = ['work', 'unspecified']
     var topic = topics[Math.floor(Math.random() * topics.length)];
     const rand = Math.random() < 0.5;
-    if(dict[topic].length > 2)
+    if(dict[topic] && dict[topic].length > 2)
     {
         if (rand)
         {
@@ -39,18 +36,16 @@ function createQuestion(dict, topics)
         }
         return multipleChoiceQuestion(dict[topic], topic);
     }
-
-    topics.splice(indexOf(topic), 1);
+    topics.splice(topics.indexOf(topic), 1);
     createQuestion(dict, topics);
 }
 
 function yesOrNoQuestion(choices, topic)
 {
-    //!TODO lookup the person connected to personid perhaps, dont know the structure
     var choice = choices[Math.floor(Math.random() * choices.length)];
-    var person = choice[id];
-    var correctAnswer = choice[value];
-    var questionAnswer = choices[Math.floor(Math.random() * choices.length)][value];
+    var person = choice.name;
+    var correctAnswers = choice.value;
+    var questionAnswer = choices[Math.floor(Math.random() * choices.length)].value[Math.floor(Math.random() * choice.value.length)];
 
     var text;
     //!TODO add more topics and cases
@@ -60,11 +55,11 @@ function yesOrNoQuestion(choices, topic)
             break;
     
         default:
-            text = 'Does the note ' + questionAnswer + 'belong to ' + person + '?';
+            text = 'Does the note ' + questionAnswer + ' belong to ' + person + '?';
             break;
     }
 
-    if (questionAnswer == correctAnswer)
+    if (correctAnswers.includes(questionAnswer))
     {
         answers = [{text:'Yes', correct:true}, {text:'No', correct:false}];
     }
@@ -72,8 +67,6 @@ function yesOrNoQuestion(choices, topic)
     {
         answers = [{text:'Yes', correct:false}, {text:'No', correct:true}];
     }
-    
-
 
     return {type:'yesorno', text:text, answers:answers};
 }
@@ -81,34 +74,31 @@ function yesOrNoQuestion(choices, topic)
 function multipleChoiceQuestion(choices, topic)
 {
     var choice = choices[Math.floor(Math.random() * choices.length)];
-    var person = choice[id];
-    var correctAnswer = choice[value];
-
+    var person = choice.name;
+    var correctAnswer = choice.value[Math.floor(Math.random() * choice.value.length)];
+    choices.splice(choices.indexOf(choice), 1);
+    var text;
     switch (topic) {
         case 'work':
             text = 'Where does ' + person + 'work/what does ' + person + 'work with?';
             break;
     
         default:
-            text = 'Which note is under ' + person + '?';
+            text = 'Which note is for ' + person + '?';
             break;
     }
 
-    answers = [{text:correctAnswer, correct:true}];
+    var answers = [{text:correctAnswer, correct:true}];
 
-    for (var i = 0; i < choices.length && i < 4; i++)
+    for (var i = 0; i < choices.length && i < 3; i++)
     {
-        answer = choices[Math.floor(Math.random() * choices.length)][value];
-        if(answer == correctAnswer)
-        {
-            answers.push({text:answer, correct:true});
-        }
-        else
-        {
-            answers.push({text:answer, correct:false});
-        }
+        var wrongAnswer = choices[Math.floor(Math.random() * choices.length)];
+        var answer = wrongAnswer.value[Math.floor(Math.random() * wrongAnswer.value.length)];
+        answers.push({text:answer, correct:false});
+        
     }
-    return {type:'multiplechoice', text:text, answers:shuffleArray(answers)}
+    shuffleArray(answers);
+    return {type:'multiplechoice', text:text, answers:answers}
 }
 
 function shuffleArray(array)
@@ -124,35 +114,39 @@ function shuffleArray(array)
 function createTopicDictionary(people)
 {
     var dict = {}
-    for (const person in people)
+    for (const index in people)
     {
-        for (const header in person)
+        const person = people[index];
+        for (const h in person.notes)
         {
-            //TODO fix person[id] to correct name/id and add a metric shitton of keywords to sort by
-            if (header != person[id])
-            {
-                switch (header) {
-                    case ['work', 'job'].some(s => header.toLowerCase.indexOf(s) !== -1):
-                        createListOrPush(dict, "work");
-                        break;
-                                        
-                    default:
-                        createListOrPush(dict, "unspecified")
-                        break;
-                }
+            const note = person.notes[h];
+            const headline = note.headline;
+            switch (headline) {
+                case ['work', 'job'].some(s => headline.toLowerCase().includes(s)):
+                    createListOrPush(dict, "work", person, note);
+                    break;
+                                    
+                default:
+                    createListOrPush(dict, "unspecified", person, note);
+                    break;
             }
         }
     }
+    return dict;
 }
 
-function createListOrPush(dict, tag)
+function createListOrPush(dict, tag, person, note)
 {
-    if (dict[tag] != null)
+    if (note.values.length)
     {
-        dict[tag].push({id:person[id], value:person[header]})
-    }
-    else
-    {
-        dict[tag] = [{id:person[id], value:person[header]}]
+        const questionObject = {name:person.name, value:note.values.map(element => element.value)};
+        if (dict[tag] != null)
+        {
+            dict[tag].push(questionObject);
+        }
+        else
+        {
+            dict[tag] = [questionObject];
+        }
     }
 }
