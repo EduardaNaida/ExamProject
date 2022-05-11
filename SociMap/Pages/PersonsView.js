@@ -5,9 +5,13 @@ import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
 
+// TODO: Add global stylesheet 
+// const globalStyle = require('../assets/Stylesheet');
 
-const globalStyle = require('../assets/Stylesheet');
-
+/**
+ * TODO: Centrera texten i thumbnailen 
+ * TODO: Fixa förstoringsglaset 
+ */
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -152,20 +156,29 @@ export default PersonsView = ({navigation, route}) =>
                 <Text style={styles.header}>{header_name}</Text>
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
-                        <View style={styles.inputView}>
+                        <View style={styles.searchSection}>
+                            <Search 
+                                width={20}
+                                color={'gray'}
+                                alignSelf={'flex-start'} />
                             <TextInput
                                 style={styles.textInput}
                                 placeholder='Search'
                                 value={state.text}
-                                onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
-                            <Search style={styles.searchIcon} />
+                                onChangeText={(text) => dispatch({ type: 'set text', data: text })}/>
+                            
                         </View>
                         <View style={styles.buttonView}>
                             <Pressable style={styles.buttonStyle} 
                             onPress={() => {
                                 navigation.navigate('Person', { isCreatingNew: true });
                             } }>
-                                <Plus style={styles.addButton} />
+                                <Plus 
+                                    width={20}
+                                    color={'black'}
+                                    alignSelf={'center'}
+
+                             />
                             </Pressable>
                         </View>
                     </View>
@@ -215,7 +228,7 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'space-between',
     },
-    inputView:{
+    searchSection:{
         flex:1,
         paddingLeft:60,
         flexDirection: 'row',
@@ -286,16 +299,17 @@ const styles = StyleSheet.create({
         alignSelf:'center',
     },
     thumbnail:{
-        marginLeft:'2.5%',
+        padding:5,
         backgroundColor:'#ffffff',
         width:35,
         height:35,
         opacity:0.8,
-        borderRadius:35,
-//        overflow:'hidden',
+        borderRadius:18,
+        overflow:'hidden',
     },
     thumbnailText:{
         fontSize:27,
         textAlign: 'center',
+        //textAlignVertical:'center',
     },
 });
