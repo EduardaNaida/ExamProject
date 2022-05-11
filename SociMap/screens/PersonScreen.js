@@ -117,11 +117,13 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
                             visible={visible}
                             onDismiss={closeMenu}
                             anchor={
-                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
-                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                            <TouchableOpacity style={{flexDirection:'row'}} onPress={openMenu}>
                                 {
                                     editing ?
-                                    <Settings style={styles.settingsButton}/>
+                                    <Settings 
+                                        width={20}
+                                        alignSelf={'baseline'}
+                                        color={'lightgrey'}/>
                                     :
                                     <></>
                                 }
@@ -157,7 +159,11 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
                     editing ?
                     <Pressable 
                         style={styles.button}
-                        onPress={buttonClicked}><Plus style={styles.addButton}/>
+                        onPress={buttonClicked}>
+                            <Plus 
+                                color={'black'}
+                                width={15}
+                                />
                     </Pressable>
                     :
                     <></>
@@ -215,7 +221,10 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
                     onPress={() => {setEditable(true); 
                     setTimeout(() => input.current.focus(), 10);
                 } }>
-                    <Edit style={styles.editButton}/>
+                    <Edit 
+                        width={20}
+                        color={"lightgrey"}
+                        />
                 </Pressable>
                 :
                 <></>
@@ -350,9 +359,9 @@ export default function PersonView({navigation, route}) {
             <View style={{alignSelf:'flex-end'}}>
                 <Pressable  
                     onPress={() => set(true)}>
-                        
-                    <Settings style={styles.saveButton} color='white'/>
-                        
+                    <Settings 
+                        width={30}
+                        color={'white'}/>
                 </Pressable>
             </View>
         );
@@ -447,10 +456,10 @@ export default function PersonView({navigation, route}) {
         
         <View style={{flex:1,flexDirection:'column'}}>
             <Text style={styles.header}>{"People"}</Text>
-            <View style={styles.container}>
-                <ScrollView 
-                    showsVerticalScrollIndicator={true}>
-                    <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}} disabled={!editing}>
+                <View style={styles.container}>
+                    <ScrollView 
+                        showsVerticalScrollIndicator={true}>
+                    <TouchableOpacity onPress={setImage} style={styles.thumbnailImg} disabled={!editing}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
 
@@ -464,15 +473,16 @@ export default function PersonView({navigation, route}) {
                             />
                             :
                             <>
-                            <View style={styles.nameContainer}>
-                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
+                            <View style={styles.thumbnailContainer}>
+                                <Text style={styles.thumbnailText}>{state?.name ? state?.name : ''}</Text>
                                 {
                                     editing ? 
                                         <Pressable 
                                         onPress={() => 
                                         buttonClicked(nameInput, setEditingName)}>
                                         <Edit
-                                            style={styles.nameEditButton}/>
+                                            width={20}
+                                            color={"lightgrey"}/>
                                         </Pressable>
                                         :
                                         <></>
@@ -553,9 +563,10 @@ const styles = StyleSheet.create({
         borderBottomWidth:1,
     },
     thumbnailImg:{
-        width:70,
-        height:70,
-        borderRadius:35,
+        // TODO: remove?
+        //width:70,
+        //height:70,
+        //borderRadius:35,
         alignSelf:'center',
         marginTop:10,
     },
@@ -563,14 +574,16 @@ const styles = StyleSheet.create({
         width:70,
         height:70,
         borderRadius:35,
+        alignSelf:'center',
         backgroundColor:'gray',
         overflow:'hidden',
         borderWidth:1,
     },
     thumbnailText:{
         fontSize:30,
-        paddingRight:'5%',
-        paddingLeft:'15%',
+        paddingTop:'2%',
+        //paddingRight:'5%',
+        //paddingLeft:'15%',
         color:'black',
         fontFamily:'Avenir-Book',
     },
@@ -644,13 +657,10 @@ const styles = StyleSheet.create({
         color:'black',
         textAlign:'left',
         margin:5,
-        alignSelf:'center',
+        width:'90%',
     },    
     categoryText:{
         fontSize:19,
-        //textAlign:'left',
-        //marginLeft:10,
-        //marginRight:-10,
         justifyContent:'center',
         alignSelf:'center',
     },
@@ -691,12 +701,6 @@ const styles = StyleSheet.create({
         height:40,
         width:40,
         marginLeft:10,
-        color:'gray',
-//        alignSelf:'center',
-    },
-    editButton:{
-        height:40,
-        width:40,
         color:'gray',
 //        alignSelf:'center',
     },
