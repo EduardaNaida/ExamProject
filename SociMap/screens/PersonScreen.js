@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Pressable, Alert } from 'react-native';
-import { Edit, Plus, Save, Settings} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { Edit, Plus, Save, Settings, Check} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
@@ -46,7 +46,7 @@ const PersonThumbnail = ({personData}) =>
 }
 
 
-const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
+const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
@@ -102,7 +102,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
             }])
 
     const [visible, setVisible] = React.useState(false);
-    const openMenu = () => setVisible(true);
+    const openMenu = () => {
+        if(editing) setVisible(true);
+    };
     const closeMenu = () => setVisible(false);
 
     return (
@@ -115,16 +117,18 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                             visible={visible}
                             onDismiss={closeMenu}
                             anchor={
-                            <TouchableOpacity style={{flexDirection:'row'}}onPress={openMenu}>
-                                <Settings 
-                                    width={20}
-                                    alignSelf={'center'}
-                                    color={'lightgrey'}/>
-                                </TouchableOpacity>}>
-                                    
-                                        <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
-                                        <Divider/>
-                                        <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
+                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
+                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                                {
+                                    editing ?
+                                    <Settings style={styles.settingsButton}/>
+                                    :
+                                    <></>
+                                }
+                            </TouchableOpacity>}>
+                            <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                            <Divider/>
+                            <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
                         </Menu>
                     </Provider>
                 </View>
@@ -138,6 +142,7 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                     personId={personId} 
                     noteId={sectionData.id}
                     isCreatingNew={isCreatingNew}
+                    editing={editing}
                 />)
             }
             
@@ -145,23 +150,24 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew}) => {
                 adding ?
                 <View style={styles.txtContainer}>
                     <TextInput style={styles.inputView}
-                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput></View>
+                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                </View>
                 :
+                (
+                    editing ?
                     <Pressable 
-                    style={styles.button}
-                    onPress={buttonClicked}>
-                        <Plus 
-                            width={15}
-                            height={25}
-                            size={10}
-                            color={"black"}/>
-                        </Pressable>
+                        style={styles.button}
+                        onPress={buttonClicked}><Plus style={styles.addButton}/>
+                    </Pressable>
+                    :
+                    <></>
+                )
             }
             </View>
     );
 }
 
-const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
+const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     //console.log(value);
     const input = useRef();
     const [text, setText] = useState(value.value);
@@ -203,15 +209,17 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew}) => {
                 
                 <Text style={styles.categoryText}>{text}</Text>
             }
-            <Pressable 
-                onPress={() => {setEditable(true); 
-                setTimeout(() => input.current.focus(), 10);
-            } }>
-                <Edit 
-                    width={20}
-                    alignSelf={'center'}
-                    color={'grey'}
-                /></Pressable>
+            {
+                editing ?
+                <Pressable 
+                    onPress={() => {setEditable(true); 
+                    setTimeout(() => input.current.focus(), 10);
+                } }>
+                    <Edit style={styles.editButton}/>
+                </Pressable>
+                :
+                <></>
+            }
         
         </View>
     );
@@ -268,6 +276,7 @@ export default function PersonView({navigation, route}) {
         headerTintColor: '#fff',
       });
 
+    const [editing, setEditing] = useState(false);
 
     const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
@@ -310,11 +319,44 @@ export default function PersonView({navigation, route}) {
 
     useEffect(()=>{
         //console.log(state);
-        
+        if(isCreatingNew){
+            navigation.setOptions({
+                headerRight: () => SaveButton(state), 
+            });
+            return;
+        }
+
         navigation.setOptions({
-            headerRight: () => SaveButton(state), 
+            headerRight: () => ConfigureButton(editing, setEditing), 
         });
-    }, [state]);
+
+    }, [state, route.params, editing]);
+
+    const ConfigureButton = (edit, set) => {
+        if(edit){
+            return (
+                <View style={{alignSelf:'flex-end'}}>
+                    <Pressable  
+                        onPress={() => set(false)}>
+                            
+                        <Check style={styles.saveButton} color='white'/>
+                            
+                    </Pressable>
+                </View>
+            );
+        }
+
+        return(
+            <View style={{alignSelf:'flex-end'}}>
+                <Pressable  
+                    onPress={() => set(true)}>
+                        
+                    <Settings style={styles.saveButton} color='white'/>
+                        
+                </Pressable>
+            </View>
+        );
+    }
 
     const SaveButton = (stat) => {
         const pressed = () => {
@@ -338,11 +380,11 @@ export default function PersonView({navigation, route}) {
             <View style={{alignSelf:'flex-end'}}>
                 <Pressable  
                     onPress={pressed}>
-                        <Save 
-                            width={30}
-                            color='white'/>
-                    </Pressable>
-                    </View>
+                        
+                    <Save style={styles.saveButton} color='white'/>
+                        
+                </Pressable>
+            </View>
         );
     }
 
@@ -408,7 +450,7 @@ export default function PersonView({navigation, route}) {
             <View style={styles.container}>
                 <ScrollView 
                     showsVerticalScrollIndicator={true}>
-                    <TouchableOpacity onPress={setImage} style={styles.thumbnailImg}>
+                    <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}} disabled={!editing}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
 
@@ -422,16 +464,20 @@ export default function PersonView({navigation, route}) {
                             />
                             :
                             <>
-                            <View style={styles.thumbnailContainer}>
-                                <Text style={styles.thumbnailText}>{state?.name ? state?.name : ''}</Text>
-                                <Pressable 
-                                    onPress={() => 
-                                    buttonClicked(nameInput, setEditingName)}>
-                                    <Edit
-                                        marginLeft={20}
-                                        width={20}
-                                        color={"lightgrey"}/>
-                                </Pressable>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
+                                {
+                                    editing ? 
+                                        <Pressable 
+                                        onPress={() => 
+                                        buttonClicked(nameInput, setEditingName)}>
+                                        <Edit
+                                            style={styles.nameEditButton}/>
+                                        </Pressable>
+                                        :
+                                        <></>
+                                }
+                                
                             </View></>
                     }
                     
@@ -446,6 +492,7 @@ export default function PersonView({navigation, route}) {
                                 dispatch={dispatch} 
                                 personId={state.id}
                                 isCreatingNew={isCreatingNew}
+                                editing={editing}
                                 />
                             )
                     }
@@ -464,13 +511,17 @@ export default function PersonView({navigation, route}) {
                         </View>
                     :
                     <>
-                    
+                    {
+                        editing ? 
                         <Pressable 
                             title='Add headline' 
                             style={styles.addCategoryStyle}
-                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add category'}</Text>
-                            </Pressable> 
-                            </>
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'New category'}</Text>
+                        </Pressable>
+                        :
+                        <></> 
+                    }
+                    </>
                 }
         </ScrollView>
         </View>        
@@ -593,13 +644,35 @@ const styles = StyleSheet.create({
         color:'black',
         textAlign:'left',
         margin:5,
-        width:'90%',
+        alignSelf:'center',
     },    
     categoryText:{
-        fontSize:20,
-        fontFamily:'Avenir-Book',
-        //justifyContent:'center',
+        fontSize:19,
+        //textAlign:'left',
+        //marginLeft:10,
+        //marginRight:-10,
+        justifyContent:'center',
         alignSelf:'center',
+    },
+    settingsButton:{
+        height:40,
+        width:40,
+        color:'grey',
+        alignSelf:'center',
+    },
+    nameContainer:{
+        minWidth:150,
+        flexDirection:'row',
+        alignSelf:'center',
+        alignContent:'space-between',
+        
+        alignItems:'center',
+        justifyContent:'center',
+        //backgroundColor:'blue'
+    },
+    nameText:{
+        fontSize:30,
+        color:'black',
         textAlign:'center',
         width:'80%'
     },
@@ -608,7 +681,24 @@ const styles = StyleSheet.create({
         backgroundColor:'#ADD8E6',
         alignItems:'center',
         borderRadius:30,
-        marginTop:'2%',
+    },
+    iconButton:{
+        height:40,
+        width:40,
+        color:'black',
+    },
+    nameEditButton:{
+        height:40,
+        width:40,
+        marginLeft:10,
+        color:'gray',
+//        alignSelf:'center',
+    },
+    editButton:{
+        height:40,
+        width:40,
+        color:'gray',
+//        alignSelf:'center',
     },
     addCategoryStyle:{
         backgroundColor:'#ebebeb',

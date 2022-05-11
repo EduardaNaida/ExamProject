@@ -12,6 +12,7 @@ export default LoginView = ({SetLogged}) => {
       <Stack.Navigator initialRouteName='LoginScreen'>
         <Stack.Screen options={{ headerShown: false}} name="LoginScreen" component={LoginScreen} initialParams={{UpdateLogged: SetLogged}}/>
         <Stack.Screen options={{ headerShown: false}} name="ResetPasswordScreen" component={ResetPasswordScreen} />
+     
       </Stack.Navigator>
     </NavigationContainer>);
 };
