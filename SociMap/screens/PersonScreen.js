@@ -1,20 +1,22 @@
+/**
+ * 
+ * Functionality for the PersonScreen 
+ *
+*/
+
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
-import { Edit, Plus, Save, Settings, Check} from 'react-native-feather';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput, Image, Pressable, Alert } from 'react-native';
+import { Plus, Save, Settings, Check, CornerDownLeft,ChevronUp} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
+import { Menu, Divider, Provider } from 'react-native-paper'; 
 
-import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
-
- /** 
- *  TODO: Ändra storlek på text när man lägger till ny kategori 
- *  TODO: Ändra design på textInput
- *  TODO: Ändra kategori-titeln så den är flexDir:'row', settings-knappen bredvid 
- *  TODO: Formatera TextInput så att den öppnas i en 'alert'-liknade view och är placerad på samma ställe för alla typer av inputs 
- *  
+/**
+ * Generates a person thumbnail with stored data from database  
+ * @param {Data} personData - stored data on current person 
+ *
  */
-
 const PersonThumbnail = ({personData}) =>
 {
     const [acro, _] = useState(() => {
@@ -34,6 +36,7 @@ const PersonThumbnail = ({personData}) =>
         );
     }
 
+    // Determines style preferences for thumbnail 
     return (<Text style={{
             backgroundColor:personData.color, 
             ...styles.thumbnail,
@@ -45,18 +48,30 @@ const PersonThumbnail = ({personData}) =>
         );
 }
 
-
+/**
+ * @param  {array} dispatch - Contains information on what action is taken 
+ * @param  {string} sectionData - Data stored on person
+ * @param  {} personId - Assigned ID of person                     
+ * @param  {Boolean} isCreatingNew - True if new person is created 
+ * @param  {Boolean} editing - True if view is in editing mode
+ */
 const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
 
+    /**
+     * Action for when button is clicke
+     */
     const buttonClicked = () => {
         setAdding(true);
         setTimeout(() => input.current.focus(), 10);
     };
 
+    /**
+     * Adds a new value from TextInput 
+     */
     const textFinished = async () => {
         input.current.blur();
         setAdding(false);
@@ -75,12 +90,18 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         }
     }
 
+    /**
+     * Removes a note 
+     */
     const removeNote = () => {
         if(!isCreatingNew)
             RemoveNote(personId, sectionData.id);
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
+    /**
+     * Creates alert message for deletion 
+     */
     const alertDeletion = () =>
     Alert.alert(
         // Alert messages 
@@ -91,8 +112,10 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         },{
           text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel"
         }]
-    );
-
+    ); 
+    /**
+     * Creates alert message 
+     */
     const alertMsg = () => 
     Alert.alert(
         "Edit category name not implemented.",
@@ -101,12 +124,18 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
                 text: 'Return', onPress: () => console.log('Return pressed'), style: 'cancel'
             }])
 
+    /**
+     * Functions for drop down menu
+    */
     const [visible, setVisible] = React.useState(false);
     const openMenu = () => {
         if(editing) setVisible(true);
     };
     const closeMenu = () => setVisible(false);
 
+    /**
+     * Style preferences for PersonPage
+     */
     return (
             <View style={styles.categoryView}> 
                 <View style={styles.categoryContainer}>
@@ -117,13 +146,16 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
                             visible={visible}
                             onDismiss={closeMenu}
                             anchor={
-                            <TouchableOpacity style={{flexDirection:'row'}} onPress={openMenu}>
+                            <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignSelf:'flex-start'}} onPress={openMenu}>
                                 {
                                     editing ?
-                                    <Settings 
+                                    <ChevronUp 
                                         width={20}
-                                        alignSelf={'baseline'}
-                                        color={'lightgrey'}/>
+                                        height={20}
+                                        color={'lightgrey'}
+                                        margin={10}
+                                        marginLeft={0}
+                                        alignSelf={'center'}/>
                                     :
                                     <></>
                                 }
@@ -173,13 +205,19 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     );
 }
 
+/**
+ * @param  {array} dispatch         - Contains information on what action is taken 
+ * @param  {object} value           - ID and value of objects stored on person
+ * @param  {string} personId        - Person ID 
+ * @param  {string} noteId          - Note ID
+ * @param  {Boolean} isCreatingNew  - True if creating new person 
+ * @param  {Boolean} editing        - True if editing person
+ */
 const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
-    //console.log(value);
     const input = useRef();
     const [text, setText] = useState(value.value);
     const [editable, setEditable] = useState(false);
-    //console.log(editable);
-    const header_name = "People";
+
 
     const updateText = async () => {
         setEditable(false);
@@ -199,6 +237,9 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
         dispatch({type:'update value', noteId: noteId, valueId:value.id, newValue:text});
     };
 
+    /**
+     * Returns style preferences for PersonPage 
+     */     
     return (
         <View style={styles.txtContainer}>
             {
@@ -221,9 +262,10 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
                     onPress={() => {setEditable(true); 
                     setTimeout(() => input.current.focus(), 10);
                 } }>
-                    <Edit 
+                    <CornerDownLeft 
                         width={20}
                         color={"lightgrey"}
+                        marginLeft={-20}
                         />
                 </Pressable>
                 :
@@ -234,6 +276,12 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     );
 }
 
+/**
+ * 
+ * @param {*} state     - Current state of system
+ * @param {*} action    - Current action 
+ * @returns 
+ */
 function stateUpdater(state, action) {
     switch (action.type) {
         case 'init':
@@ -275,9 +323,11 @@ function stateUpdater(state, action) {
     console.log('unkown action');
     return state;
 }
-
+/**
+ * @param  {object} navigation   - Navigation functions
+ * @param  {object} route        - Current route
+ */
 export default function PersonView({navigation, route}) {
-
     navigation.setOptions({
         headerShown: true,
         headerTransparent: true,
@@ -286,7 +336,6 @@ export default function PersonView({navigation, route}) {
       });
 
     const [editing, setEditing] = useState(false);
-
     const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
@@ -341,6 +390,14 @@ export default function PersonView({navigation, route}) {
 
     }, [state, route.params, editing]);
 
+    
+
+    /**
+     * 
+     * @param {Boolean} edit    - True if edit mode
+     * @param {Function} set    -
+     * @returns                 - If (edit) Save-button else Settings button 
+     */
     const ConfigureButton = (edit, set) => {
         if(edit){
             return (
@@ -348,7 +405,10 @@ export default function PersonView({navigation, route}) {
                     <Pressable  
                         onPress={() => set(false)}>
                             
-                        <Check style={styles.saveButton} color='white'/>
+                        <Check 
+                            width={30}
+                            height={30} 
+                            color='white'/>
                             
                     </Pressable>
                 </View>
@@ -452,14 +512,16 @@ export default function PersonView({navigation, route}) {
 
     //console.log(state.name);
 
+    /**
+     * Main view for PersonPage
+     */
     return (
-        
         <View style={{flex:1,flexDirection:'column'}}>
             <Text style={styles.header}>{"People"}</Text>
                 <View style={styles.container}>
                     <ScrollView 
                         showsVerticalScrollIndicator={true}>
-                    <TouchableOpacity onPress={setImage} style={styles.thumbnailImg} disabled={!editing}>
+                    <TouchableOpacity onPress={setImage} style={styles.thumbnail} disabled={!editing}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
 
@@ -480,9 +542,12 @@ export default function PersonView({navigation, route}) {
                                         <Pressable 
                                         onPress={() => 
                                         buttonClicked(nameInput, setEditingName)}>
-                                        <Edit
+                                        <CornerDownLeft
                                             width={20}
-                                            color={"lightgrey"}/>
+                                            height={20}
+                                            color={"lightgrey"}
+                                            alignSelf={'flex-end'}
+                                            />
                                         </Pressable>
                                         :
                                         <></>
@@ -556,19 +621,11 @@ const styles = StyleSheet.create({
         minWidth:'90%',
         padding:5,
         flexDirection:'row',
+        justifyContent:'space-around',
         alignSelf:'center',
         alignItems:'center',
-        justifyContent:'center',
         borderBottomColor:'lightgrey',
         borderBottomWidth:1,
-    },
-    thumbnailImg:{
-        // TODO: remove?
-        //width:70,
-        //height:70,
-        //borderRadius:35,
-        alignSelf:'center',
-        marginTop:10,
     },
     thumbnail:{
         width:70,
@@ -577,15 +634,16 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         backgroundColor:'gray',
         overflow:'hidden',
-        borderWidth:1,
     },
     thumbnailText:{
         fontSize:30,
         paddingTop:'2%',
-        //paddingRight:'5%',
-        //paddingLeft:'15%',
+        paddingBottom:'2%',
+        textAlign:'center',
+        width:'80%',
         color:'black',
         fontFamily:'Avenir-Book',
+        paddingLeft:'5%',
     },
     container:{
         padding:10,
@@ -602,7 +660,7 @@ const styles = StyleSheet.create({
         padding:7,
         flexDirection:'row',
         backgroundColor:'#ebebeb', // TODO: The color of user-choice (from group)
-        justifyContent:'center',
+        justifyContent:'space-between',
         alignSelf:'center',
         borderRadius:10,
         width:'90%',
@@ -614,7 +672,6 @@ const styles = StyleSheet.create({
         fontSize:20,
         fontFamily:'Avenir-Book',
         height:30,
-        //paddingLeft:15,
         width:'90%',
         alignSelf:'center',
         textAlign:'left',
@@ -631,9 +688,8 @@ const styles = StyleSheet.create({
     },
     menu:{
         borderRadius:10,
-        top:'-160%',
-        left:'60%',
-        position:'absolute',
+        top:'-120%',
+        left:'5%',
         zIndex:100,
     },
     categoryView:{
@@ -647,8 +703,6 @@ const styles = StyleSheet.create({
         borderRadius:10,
         width:'100%',
         padding:7,
-        //alignSelf:'center',
-        //marginTop:'5%',
         marginBottom:'-4%',
     },
     categoryTitle:{
@@ -657,12 +711,15 @@ const styles = StyleSheet.create({
         color:'black',
         textAlign:'left',
         margin:5,
-        width:'90%',
+        //width:'90%',
     },    
     categoryText:{
         fontSize:19,
+        fontFamily:'Avenir-Book',
         justifyContent:'center',
         alignSelf:'center',
+        textAlign:'center',
+        width:'95%',
     },
     settingsButton:{
         height:40,
