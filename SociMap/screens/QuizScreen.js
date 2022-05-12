@@ -18,11 +18,11 @@ export default QuizScreen = () =>
 
 export const QuizView = () =>
 {
-    function buttonList()
+    function buttonList(data)
     {
-        if (questionData != null)
+        if (data != null)
         {
-            return questionData['answers'].map((element, _) =>
+            return data.map((element, _) =>
             {
                 return <CustomButton title={element.text} correct={element.correct}/>
             });
@@ -61,10 +61,14 @@ export const QuizView = () =>
     useEffect(async () => {
         const q = await createQuiz('');
         setAllQuestions(q);
-        setAmountOfQuestions(allQuestions.length);
-        setQuestionData(allQuestions[0]);
-        setButtons(buttonList);
-        setQuestionText(questionData.text);
+        setAmountOfQuestions(q.length);
+        if (q.length)
+        {
+            const firstElement = q[0];
+            setQuestionData(firstElement);
+            setButtons(buttonList(firstElement.answers));
+            setQuestionText(firstElement.text);
+        }
         setFirstRender(false);
     }, []);
 
@@ -74,8 +78,9 @@ export const QuizView = () =>
         if(firstRender == false && currentQuestion < amountOfQuestions)
         {
             setQuestionData(allQuestions[currentQuestion]);
-            setButtons(buttonList);
+            setButtons(buttonList(questionData.answers));
             setQuestionText(questionData.text);
+
         }
     }, [currentQuestion]);
 
