@@ -10,10 +10,10 @@ const Stack = createNativeStackNavigator();
 export default GroupScreen = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen options={{ headerShown: false}} name="FirstView" component={FirstView}/>
-            <Stack.Screen  name="SubView" component={SubView}/>
-            <Stack.Screen  name="NewGroup" component={NewGroupView}/>
-            <Stack.Screen options={{ headerShown: false}} name="Person" component={PersonScreen}/>
+            <Stack.Screen  options={{ headerShown: false}} name="FirstView" component={FirstView}/>
+            <Stack.Screen  options={{ headerShown: false}} name="SubView" component={SubView}/>
+            <Stack.Screen  options={{ headerShown: false}} name="NewGroup" component={NewGroupView}/>
+            <Stack.Screen  options={{ headerShown: false}} name="Person" component={PersonScreen}/>
         </Stack.Navigator>
     );
 }
@@ -28,11 +28,9 @@ const FirstView = ({route, navigation}) => {
 
 const SubView = ({route, navigation}) => {
     return (
-        <ScrollView style={{backgroundColor:'white', flex:1}}>
+        <ScrollView>
+            <GroupView route={route} navigation={navigation}></GroupView>
             <View>
-                <GroupView route={route} navigation={navigation}></GroupView>
-            </View>
-            <View style={{flex:1, alignSelf:'stretch'}}>
                 <PersonsView route={route} navigation={navigation}></PersonsView>
             </View>
         </ScrollView>
