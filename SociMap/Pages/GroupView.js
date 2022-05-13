@@ -61,19 +61,13 @@ export default GroupView = ({route, navigation}) => {
         return <ActivityIndicator size='large'/>
 
     return (
-        <View style={styles.container}>
-        {/*<ImageBackground source={require('../assets/background.png')} style={styles.backgroundImage}/> */}
-            <View style={styles.welcome}>
-             <Text style={styles.txtSet}>Groups</Text>
-            </View>
-        <View style={styles.info}> 
-             <Pressable  style={styles.userBtn} 
-                 onPress={() => navigation.navigate('NewGroup')}>
+        <View> 
+            <Pressable  style={styles.userBtn} 
+                onPress={() => navigation.navigate('NewGroup')}>
                 <Text style={styles.infoBtn}>Add a new group</Text>
-             </Pressable>
+            </Pressable>
 
-        <View style={styles.groupContainer}>
-            
+            <View style={styles.groupContainer}>
             {
                 state.map(
                     x => 
@@ -89,61 +83,32 @@ export default GroupView = ({route, navigation}) => {
             
             </View>
         </View>
-    </View>
     );
 }
 
 const size = 100;
 
 const styles = StyleSheet.create({
-    container: {
-        display: 'flex',
-        flexDirection: 'column',
-        //backgroundColor: 'grey',
-        //alignItems: 'center',
-        //justifyContent: 'center',
-      },
-    backgroundImage:{
-        flex: 1,
-        width: '100%',
-        height: 255
-    },
     txtSet:{
         fontSize: 40,
         textAlign: 'center',
         margin: 30,
         color: 'white',
 
-      },
-    welcome: {
-        margin: 50,
-      },
-    info:{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'white',
-        borderTopLeftRadius: 70,
-        borderTopRightRadius: 70,
-
-      },
+    },
     infoBtn:{
         textAlign: 'center',
         alignItems: 'center',
-        height: 24,
-        marginLeft: 30,
-        marginRight: 30,
-        marginTop: 4.5,
         fontSize: 20,
         color: '#000000',
     },
     userBtn:{
-        height: 33,
-        marginLeft: 60,
-        marginRight: 60,
-        marginTop: 54,
+        width:300,
+        alignSelf:'center',
+        marginTop: 50,
         backgroundColor: 'rgba(65, 105, 225, 0.7)',
         borderRadius: 20,
+        padding:5,
         opacity: 0.5,
     },
     groupContainer:{

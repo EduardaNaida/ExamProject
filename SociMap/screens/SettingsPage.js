@@ -94,7 +94,6 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       margin: 30,
       color: 'white',
-      fontFamily: "Cochin"
     },
     welcome: {
       margin: 50,

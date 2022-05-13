@@ -81,7 +81,12 @@ export async function GetPersonsFromPath(path){
     {
         const d = ref.docs[i];
         //console.log(doc(db, 'Users', GetUid(), 'People', d.id).path);
-        const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id))
+        const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id));
+        
+        if(!r.exists()){
+            RemovePersonFromCollection(path, d.id)
+            continue;
+        }
         
         ret.push({
             id: d.id,
@@ -130,6 +135,35 @@ export async function AddNewPerson(person){
     
     return [personId, url];
 }
+
+export async function AddNewPersonCustomId(person, id){
+    
+    const notes = person.notes;
+    const img = person.img;
+
+    await setDoc(doc(db, 'Users', GetUid(), 'People', id), {name:person.name, img:'', color:person.color});
+
+    for (let x = 0; x < notes.length; x++) {
+        const note = notes[x];
+        
+        const noteId = await AddNote(id, note.headline);
+
+        const values = note.values;
+        for(let y = 0; y < values.length; y++){
+            const value = values[y].value;
+
+            await AddValueToNote(id, noteId, value);
+        }
+    }
+
+    if(!img)
+        return [id, ''];
+
+    const url = await SetPersonImage(id, img);
+    
+    return [id, url];
+}
+
 export function SendPasswordResetEmail(email){
 
         const result = sendPasswordResetEmail(auth, email);
@@ -268,21 +302,10 @@ export async function SetNewPassword(currentPassword, newPassword){
     
     await reauthenticateWithCredential(GetCurrentUser(), credential);
     await updatePassword(GetCurrentUser(), newPassword);
-    /*try{
-        await reauthenticateWithCredential(GetCurrentUser(), credential);
-    }
-    catch(err){
-        console.log(err);
-        return 'incorrect';
-    }
+}
 
-    try{
-        await updatePassword(GetCurrentUser(), newPassword);
-    }
-    catch(err){
-        console.log(err);
-        return 'invalid';
-    }
-
-    return 'sucess';*/
+export async function RemovePersonFromCollection(path, personId){
+    const p = `Users/${GetUid()}/${path}/People/${personId}`.replace("//", '/');
+    const ref = doc(db, p);
+    await deleteDoc(ref);
 }

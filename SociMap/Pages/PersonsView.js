@@ -1,9 +1,10 @@
 import { useState, useEffect, useReducer } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground, Modal } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native';
-import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
+import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection, RemovePersonFromCollection, AddNewPersonCustomId } from '../FirebaseInterface'
+import uuid from 'react-native-uuid';
 
 
 const globalStyle = require('../assets/Stylesheet');
@@ -11,7 +12,7 @@ const globalStyle = require('../assets/Stylesheet');
 
 const PersonThumbnail = ({personData}) =>
 {
-    const [acro, _] = useState(() => {
+    const f = () => {
         if(!personData.name)
             return '';
 
@@ -19,7 +20,9 @@ const PersonThumbnail = ({personData}) =>
         const matches = str.match(/\b(\w)/g);
         const acronym = matches.join('').substring(0,1); 
         return acronym;
-    });
+    }
+    const acro = f();
+
     if(personData.img != ''){
         return (
             <Image style={styles.thumbnail}
@@ -36,14 +39,14 @@ const PersonThumbnail = ({personData}) =>
         </Text>);
 }
 
-const PersonWidget = ({personData, navigation}) =>
+const PersonWidget = ({personData, navigation, dispatch}) =>
 {
     const navToPerson = () => {
         navigation.navigate('Person', {personId: personData.id, isCreatingNew:false})
     }
 
     return (
-        <TouchableOpacity onPress={navToPerson}>
+        <TouchableOpacity onPress={navToPerson} onLongPress={() => dispatch({type:'select', data:{name:personData.name, id:personData.id}})}>
             
                 <View style={styles.listItem}>
                     <PersonThumbnail personData={personData}/>
@@ -57,7 +60,7 @@ const PersonWidget = ({personData, navigation}) =>
 const stateUpdater = (state, action) => {
     switch (action.type) {
         case 'init':
-            return {people:action.data, filtered:action.data, text:''};
+            return {people:action.data, filtered:action.data, text:'', selected:null};
 
         case 'add':
             const dat = action.data;
@@ -68,6 +71,33 @@ const stateUpdater = (state, action) => {
             return {...state, people:n, filtered:filt};
         case 'set text':
             return {...state, text:action.data, filtered:filterPersons(action.data, state.people)};
+
+        case 'deselect':
+            return {...state, selected:null}
+
+        case 'select':
+            return {...state, selected:action.data}
+
+        case 'remove':
+            const pep = state.people.filter(p => p.id != action.id);
+            const fi = state.filtered.filter(p => p.id != action.id);
+            return {...state, people:pep, filtered:fi, selected:null};
+
+        case 'update url':
+            const index = state.people.map((e) => { return e.id; }).indexOf(action.id);
+            const index2 = state.filtered.map((e) => { return e.id; }).indexOf(action.id);
+            if(index > -1)
+                state.people[index].url = action.url;
+            if(index2 > -1)
+                state.filtered[index2].url = action.url;
+            
+            return {...state};
+
+        case 'add group':
+            const newArr = state.people.concat(action.data);
+            const newFilt = filterPersons(state.text, newArr);
+
+            return {...state, people:newArr, filtered:newFilt};
     
         default:
             console.log('Unkown');
@@ -83,15 +113,17 @@ const filterPersons = (text, arr) => {
     }));
 };
 
-export default PersonsView = ({navigation, route}) =>
+export default PersonsView = ({navigation, route, isChild}) =>
 {
+    const [adding, setAdding] = useState(false);
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
     const header_name = "People";
     //const Stack = createNativeStackNavigator();
     const isFocused = useIsFocused();
 
-    const path = route.params?.Path;
+    const path = route.params?.Path ? route.params.Path : '';
+    const child = isChild == true;
 
     useEffect(async ()=>{
         //console.log('fetching...')
@@ -120,25 +152,66 @@ export default PersonsView = ({navigation, route}) =>
             return;
 
         const obj = JSON.parse(route.params?.Post);
-            
-        const [id, url] = await AddNewPerson(obj);
+        
+        
+        const id = uuid.v4();
+        
+        const nObj = {...obj, id:id};
+        setImmediate(() => dispatch({type:'add', data:nObj}));
+        
+        const [_, url] = await AddNewPersonCustomId(obj, id);
+
+        setImmediate(() => dispatch({type:'update url', target:id, url:url}));
+
         if(path)
             AddPersonIdToCollection(path, id);
-            
+        
         navigation.setParams({...route.params, Post:''});
-
+        
         //console.log(id,url);
 
-        const nObj = {...obj, id:id, img:url};
-
-        setImmediate(() => dispatch({type:'add', data:nObj}));
     }, [route.params?.Post])
 
-    const renderWidget = ({item}) =>{
+    useEffect(()=>{
+        if(!route.params?.Add)
+            return;
+
+        if(!path)
+            return;
+
+        const toAdd = JSON.parse(route.params?.Add);
+
+
+        console.log(toAdd);
+        
+        for (let index = 0; index < toAdd.length; index++) {
+            const element = toAdd[index];
+            
+            AddPersonIdToCollection(path, element.id);
+        }
+
+        dispatch({type:'add group', data:toAdd});
+    }, [route.params?.Add]);
+
+    const RenderWidget = ({item}) =>{
         //console.log(item);
 
-        return (<PersonWidget personData={item} navigation={navigation}/>)
+        return (<PersonWidget personData={item} navigation={navigation} dispatch={dispatch}/>)
     };
+
+    const RemovePersonFromCol = (id) => {
+        dispatch({type:'remove', id:id});
+        RemovePersonFromCollection(path, id);
+    };
+
+    const addPerson = () => {
+        if(!child){
+            navigation.navigate('Person', { isCreatingNew: true });
+            return;
+        }
+
+        setAdding(true);
+    }
 
 
     return loading ?
@@ -149,7 +222,66 @@ export default PersonsView = ({navigation, route}) =>
         :
         (  
             <View style={{flex:1}}>
-                <Text style={styles.header}>{header_name}</Text>
+                <Modal visible={state.selected != null}
+                    transparent={true}
+                    onRequestClose={()=>{dispatch({type:'deselect'})}}
+                    animationType='fade'>
+                    <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                        <Pressable style={{position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'black', opacity:0.5}} 
+                            onPress={()=>{dispatch({type:'deselect'})}}/>
+
+                        <View style={{backgroundColor:'white', borderRadius:15, padding:20}}>
+                            <Text>Are you sure you want to remove {state.selected?.name}?</Text>
+                            <View style={{flexDirection:'row', justifyContent:'space-evenly', marginTop:10}}>
+                                <Pressable style={{margin:5, borderColor:'red', borderWidth:2, borderRadius:5, padding:5}}
+                                    onPress={() => RemovePersonFromCol(state.selected.id)}>
+                                    <Text style={{color:'red'}}>Remove</Text>
+                                </Pressable>
+                                <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                    onPress={()=>{dispatch({type:'deselect'})}}>
+                                    <Text style={{color:'#ADD8E6'}}>Cancel</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+
+                </Modal>
+                <Modal visible={adding}
+                    transparent={true}
+                    onRequestClose={()=>{setAdding(false)}}
+                    animationType='fade'>
+                    <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                        <Pressable style={{position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'black', opacity:0.5}} 
+                            onPress={()=>{setAdding(false)}}/>
+
+                        <View style={{backgroundColor:'white', borderRadius:15, padding:20, maxWidth:300}}>
+                            <Text>Do you want to create a new Person or add an existing?</Text>
+                            <View style={{flexDirection:'row', justifyContent:'space-evenly', marginTop:10}}>
+                                <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                    onPress={() => {
+                                        setAdding(false);
+                                        navigation.navigate('Person', { isCreatingNew: true });
+                                    }}>
+                                    <Text style={{color:'#ADD8E6'}}>New</Text>
+                                </Pressable>
+                                <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                    onPress={() => {
+                                        setAdding(false);
+                                        navigation.navigate('AddExistingPerson', { filterAway: state.people.map(x => x.id)});
+                                    }}>
+                                    <Text style={{color:'#ADD8E6'}}>Existing</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+
+                </Modal>
+                {
+                    child ? 
+                    <></>
+                    :
+                    <Text style={styles.header}>{header_name}</Text>
+                }
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
                         <View style={styles.inputView}>
@@ -162,20 +294,27 @@ export default PersonsView = ({navigation, route}) =>
                         </View>
                         <View style={styles.buttonView}>
                             <Pressable style={styles.buttonStyle} 
-                            onPress={() => {
-                                navigation.navigate('Person', { isCreatingNew: true });
-                            } }>
+                            onPress={addPerson}>
                                 <Plus style={styles.addButton} />
                             </Pressable>
                         </View>
                     </View>
 
                     <View style={styles.listContainer}>
-                        <FlatList
-                            style={styles.listSection}
-                            data={state.filtered}
-                            renderItem={renderWidget}
-                            keyExtractor={(_, index) => index} />
+                        {
+                            child ? 
+                            <View style={styles.listSection}>
+                                {
+                                    state.filtered.map((x) => <RenderWidget item={x} key={x.id}/>)
+                                }
+                            </View>
+                            :
+                            <FlatList
+                                style={styles.listSection}
+                                data={state.filtered}
+                                renderItem={RenderWidget}
+                                keyExtractor={(_, index) => index} />
+                        }
                     </View>
                 </View>
             </View>
@@ -195,12 +334,12 @@ export default PersonsView = ({navigation, route}) =>
 
 const styles = StyleSheet.create({
     header:{
-        marginTop: 40,
-        marginBottom: 10,
-        marginLeft:40,
-        fontSize: 40,
-        
-        color:'#fff',
+        color:'white', 
+        fontSize:40, 
+        height:100, 
+        alignSelf:'center', 
+        textAlign:'center', 
+        textAlignVertical:'center'
     },
     container:{
         alignItems:'center',
