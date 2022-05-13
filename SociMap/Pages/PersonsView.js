@@ -1,7 +1,6 @@
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, Image, TextInput, TouchableOpacity, Pressable, ImageBackground } from 'react-native';
-import { Plus, Search  } from 'react-native-feather';
-//import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { Plus } from 'react-native-feather';
 import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection } from '../FirebaseInterface'
 
@@ -87,8 +86,6 @@ export default PersonsView = ({navigation, route}) =>
 {
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
-    const header_name = "SociMap";
-    //const Stack = createNativeStackNavigator();
     const isFocused = useIsFocused();
 
     const path = route.params?.Path;
