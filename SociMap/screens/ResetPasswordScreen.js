@@ -16,21 +16,26 @@ function ResetPasswordScreen({navigation}) {
     return (
              
         <View style={styles.container}>
+           <View >
+             <Text style={styles.txtWelcome}>Reset password</Text>
+            </View>
+          <Text style={styles.text}>
+            Email address:
+          </Text>
             <View style={styles.inputView} >
-        <TextInput
-            style={styles.TextInput}
-            placeholder="Your account email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            autoCapitalize='none'
-        />
-         
-             </View> 
+               <TextInput
+                 placeholder="Your account email"
+                 value={email}
+                 onChangeText={(text) => setEmail(text)}
+                 //autoCapitalize='none'
+                 ></TextInput>
+            </View> 
+            
             <TouchableOpacity 
                 onPress={() => resetPassword()
                 }
                 style={styles.userBtn}>
-            <Text style={styles.btnTxt}>Reset password</Text>
+                <Text style={styles.btnTxt}>Submit</Text>
             </TouchableOpacity> 
         </View>
     );
@@ -42,8 +47,14 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+      //alignItems: 'center',
+      //justifyContent: 'center',
+    },
+    txtWelcome:{
+      fontSize: 35,
+      textAlign: 'center',
+      marginTop: 115,
+      color: 'black',
     },
     inputView: {
         borderRadius: 25,
@@ -51,7 +62,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#C4C4C480",
         padding: 15,
         height: 45,
-        marginBottom: 10
+        marginBottom: 10,
+        marginLeft: 20,
       },
       TextInput: {
         borderColor: 'black',
@@ -67,9 +79,17 @@ const styles = StyleSheet.create({
       },
       userBtn:{
         borderRadius: 25,
+        marginLeft: 110,
         backgroundColor: "#FF38E2",
         padding: 15,
         width: "45%"
-      }
+      },
+      text:{
+        color: 'black',
+        fontSize: 16,
+        marginBottom: 10,
+        marginTop: 140,
+        marginLeft: 25,
+    },
 });
 
