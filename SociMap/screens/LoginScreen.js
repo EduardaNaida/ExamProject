@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: 'white',
       //fontFamily: "Inter",
-      marginTop: 60
+      marginTop: 115
 
     },
     smallText: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     },
     inputView: {
       borderRadius: 25,
-      width: "60%",
+      width: "65%",
       backgroundColor: "white",
       opacity: 0.7,
       padding: 15,
@@ -190,8 +190,9 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       backgroundColor: "#FF38E2",
       padding: 10,
-      width: "35%",
-      margin: 15
+      width: "40%",
+      marginTop: 10,
+      margin: 1,
     },
     btnTxt:{
       fontSize: 16,
