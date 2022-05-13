@@ -142,7 +142,7 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
                                     <></>
                                 }
                             </TouchableOpacity>}>
-                            <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                            <Menu.Item style={styles.menuItem} onPress={() => alert('yoo')} title='Edit category'/>
                             <Divider/>
                             <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
                         </Menu>
@@ -285,15 +285,16 @@ function stateUpdater(state, action) {
 
 export default function PersonView({navigation, route}) {
 
-    navigation.setOptions({
-        headerShown: true,
-        headerTransparent: true,
-        title:'',
-        headerTintColor: '#fff',
-      });
+    useEffect(() => {
+        navigation.setOptions({
+            headerShown: true,
+            headerTransparent: true,
+            title:'',
+            headerTintColor: '#fff',
+          });
+    }, []);
 
-    const [editing, setEditing] = useState(false);
-
+    
     const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
@@ -305,7 +306,8 @@ export default function PersonView({navigation, route}) {
     
     const personId = route.params.personId;
     const isCreatingNew = route.params.isCreatingNew;
-
+    
+    const [editing, setEditing] = useState(isCreatingNew);
     
     const [prev, _] = useState(() => {
         const routes = navigation.getState()?.routes;
@@ -428,6 +430,12 @@ export default function PersonView({navigation, route}) {
     const nameFinished = async () => {
         nameInput.current.blur();
         setEditingName(false);
+
+        if(name == ''){
+            alert('Invalid name');
+            setName(state.name);
+            return;
+        }
         
         if(!isCreatingNew)
             UpdatePersonFields(personId, {name:name});
@@ -462,7 +470,7 @@ export default function PersonView({navigation, route}) {
     return (
         
         <View style={{flex:1}}>
-            <Text style={styles.header}>{"SociMap"}</Text>
+            <Text style={styles.header}>{state.name}</Text>
             <View style={styles.container}>
                 <ScrollView 
                     style={styles.scroller}
@@ -553,14 +561,12 @@ const styles = StyleSheet.create({
 
     },
     header:{
-        //marginTop: 80,
-        marginBottom:0,
-        marginTop:50,
-        marginLeft:30,
-        fontSize: 40,
-        //marginLeft:-150,
-        color:'#fff',
-        marginBottom:10,
+        color:'white', 
+        fontSize:40, 
+        height:100, 
+        alignSelf:'center', 
+        textAlign:'center', 
+        textAlignVertical:'center'
     },
     scroller:{
     },
