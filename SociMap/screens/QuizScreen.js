@@ -45,8 +45,8 @@ export const QuizView = () =>
             setCurrentQuestion(currentQuestion + 1);
         }
 
-        return <TouchableOpacity onPress={onPressCorrect} style={styleQuiz.answers}><Text style={styleQuiz.btnTxt}>{title}</Text></TouchableOpacity>
-                    }
+        return <TouchableOpacity onPress={onPressCorrect} style={styleQuiz.answerButton}><Text style={styleQuiz.btnTxt}>{title}</Text></TouchableOpacity>
+    }
 
 
 
@@ -109,10 +109,9 @@ export const QuizView = () =>
         ?   <><View style={styleQuiz.container2}><Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
             <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text></View>
             <Text style={styleQuiz.question}>{questionText}</Text>
-            {buttons}
-            <View style={styleQuiz.startOverBox}>
+            <View style={styleQuiz.answers}>{buttons}</View>
+            
             <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-            </View>
             </>
         :  (<View><Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
             <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
@@ -132,9 +131,9 @@ const styleQuiz = StyleSheet.create({
         //alignItems:'center',    <Button title={"Start over"} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}></Button>
 
         backgroundColor:'#ffffff',//    <View style={styleQuiz.startOverBox}><TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity></View>      
-
+        
         width:'100%',
-        //height:'100%',
+        height:'100%',
         borderRadius:60,
        // flexDirection:'column',
         marginBottom:'-100%',
@@ -145,7 +144,7 @@ const styleQuiz = StyleSheet.create({
         flexDirection:'row',
         padding:20,
         fontSize: 20,
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     statsText:{
         fontSize: 20,
@@ -181,19 +180,16 @@ const styleQuiz = StyleSheet.create({
         textAlign: 'center'
     },
       answers:{
+        backgroundColor:'red',
         justifyContent: 'space-evenly',
           alignSelf: 'center',
+        },
+        answerButton:{
+            alignSelf: 'center',
           borderRadius: 10,
           backgroundColor: "#4169E1",
-         // paddingHorizontal: 20,
           width: 200,
-          margin: 20,
-        },
-          startOverBox:{
-            alignSelf: 'center',
-            width: 200,
-            position: 'absolute',
-            top:550,
+          margin: 10,
         },
         startOver:{
             alignSelf: 'center',
@@ -201,6 +197,7 @@ const styleQuiz = StyleSheet.create({
           backgroundColor: "#FF6B00",
           width: 200,
           margin: 20,
+          zIndex: 1
         },
         btnTxt:{
           fontSize: 16,
