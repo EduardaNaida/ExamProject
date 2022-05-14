@@ -1,11 +1,9 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert } from 'react-native';
 import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User} from 'react-native-feather';
-import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
+import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
-
-import { Menu, Divider, Provider } from 'react-native-paper'; 
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -51,7 +49,11 @@ const PersonThumbnail = ({personData}) =>
 
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
-    
+    const [visible, setVisible] = useState(false);
+    const [changingName, setChangingName] = useState(false);
+    const [name, setName] = useState(sectionData.headline);
+    const nameInput = useRef();
+
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
@@ -85,61 +87,85 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
-    const alertDeletion = () =>
-    Alert.alert(
-        // Alert messages 
-        "Are you sure you want to delete this category?",
-        "This will delete all entries in the category.",
-      [{
-          text: "Yes", onPress: removeNote 
-        },{
-          text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel"
-        }]
-    );
+    const renameNote = () => {
+        if(!isCreatingNew)
+            RenameNote(personId, sectionData.id, name);
 
-    const alertMsg = () => 
-    Alert.alert(
-        "Edit category name not implemented.",
-        "",
-        [{
-                text: 'Return', onPress: () => console.log('Return pressed'), style: 'cancel'
-            }])
+        dispatch({type:'rename note', noteId:sectionData.id, newNoteName:name})
+    }
 
-    const [visible, setVisible] = React.useState(false);
-    const openMenu = () => {
-        if(editing) setVisible(true);
-    };
-    const closeMenu = () => setVisible(false);
+    const submitChange = () => {
+        nameInput.current?.blur();
+        setChangingName(false);
+        if(name != ''){
+            renameNote();
+            return;
+        }
+
+        setVisible(true);
+    }
 
     return (
         <View style={styles.categoryView}> 
+            <Modal visible={visible}
+                transparent={true}
+                onRequestClose={()=>{
+                    setVisible(false);
+                    setName(sectionData.headline);}}
+                animationType='fade'>
+                <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                    <Pressable style={{position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'black', opacity:0.5}} 
+                        onPress={()=>{
+                            setVisible(false);
+                            setName(sectionData.headline);}}/>
+
+                    <View style={{backgroundColor:'white', borderRadius:15, padding:20}}>
+                        <Text>Are you sure you want to remove {sectionData.headline}?</Text>
+                        <View style={{flexDirection:'row', justifyContent:'space-evenly', marginTop:10}}>
+                            <Pressable style={{margin:5, borderColor:'red', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={removeNote}>
+                                <Text style={{color:'red'}}>Remove</Text>
+                            </Pressable>
+                            <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={()=>{
+                                    setVisible(false);
+                                    setName(sectionData.headline);
+                                    }}>
+                                <Text style={{color:'#ADD8E6'}}>Cancel</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
             <View style={styles.categoryContainer}>
-            <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                <Provider>
-                    <Menu 
-                        style={styles.menu}
-                        visible={visible}
-                        onDismiss={closeMenu}
-                        anchor={
-                        <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignSelf:'flex-start'}} onPress={openMenu}>
-                            {
-                                editing ?
-                                <ChevronUp 
-                                    width={20}
-                                    height={20}
-                                    color={'lightgrey'}
-                                    margin={10}
-                                    marginLeft={0}
-                                    alignSelf={'center'}/>
-                                :
-                                <></>
-                            }
-                        </TouchableOpacity>}>
-                        <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
-                        <Divider/>
-                        <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
-                    </Menu>
-                </Provider>
+                {
+                    changingName && editing ?
+                    <View style={{...styles.txtContainer, justifyContent:'center', alignItems:'center', alignSelf:'center', width:'100%', margin:0}}>
+                        <TextInput ref={nameInput} style={styles.inputView} value={name} onChangeText={setName} onBlur={submitChange}/>
+                    </View>
+                    :
+                    <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                    
+                    <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignSelf:'flex-start'}} onPress={() =>{
+                        setChangingName(true);
+                        setTimeout(() => nameInput.current?.focus(), 10);
+                    }}>
+                    {
+                        editing ?
+                        <ChevronUp 
+                            width={20}
+                            height={20}
+                            color={'lightgrey'}
+                            margin={10}
+                            marginLeft={0}
+                            alignSelf={'center'}/>
+                        :
+                        <></>
+                    }
+                    </TouchableOpacity>
+                    </View>
+                }
             </View>
             {
             sectionData.values.map(note => 
@@ -285,6 +311,12 @@ function stateUpdater(state, action) {
                 ...state,
                 name:action.name
             };
+        case 'rename note':{
+            const index = state.notes.map(x => x.id).indexOf(action.noteId);
+            if(index > -1)
+                state.notes[index].headline = action.newNoteName
+            return {...state};
+        }
         default:
             break;
     }
@@ -477,7 +509,6 @@ export default function PersonView({navigation, route}) {
     //console.log(state.name);
 
     return (
-        
         <View style={{flex:1}}>
             <Text style={styles.header}>{state.name}</Text>
             <View style={styles.container}>
@@ -616,7 +647,7 @@ const styles = StyleSheet.create({
         width:'90%',
     },
     inputView:{
-        backgroundColor:'#00000000',
+        backgroundColor:'transparent',
         borderBottomColor:'black',
         borderBottomWidth:1,
         fontSize:20,
@@ -634,19 +665,19 @@ const styles = StyleSheet.create({
         //paddingTop:50,
         flexDirection: 'row',
         //justifyContent:'center',
-        zIndex:100,
     },
     menuItem:{
         height:30,
     },
     menu:{
-        backgroundColor:'#fff',
-        borderRadius:20,
-        borderWidth:0,
+        //backgroundColor:'#fff',
+        //borderRadius:20,
+        //borderWidth:0,
         top:-80,
         left:0, 
         position:'absolute',
-        zIndex:100,
+        elevation:100,
+        zIndex:100
     },
     categoryView:{
         width:'100%',

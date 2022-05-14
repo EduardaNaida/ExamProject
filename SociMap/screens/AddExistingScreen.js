@@ -196,26 +196,30 @@ export default function AddExistingScreen ({navigation, route}){
 
 
     return (
-        <View style={styles.container}>
-            <View style={styles.menuBar}>
-                <View style={styles.inputView}>
-                    <TextInput
-                        style={styles.textInput}
-                        placeholder='Search'
-                        value={state.text}
-                        onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
-                    <Search style={styles.searchIcon} />
-                </View>
-            </View>
+        <View style={{flex:1}}>
 
-            <View style={styles.listContainer}>
-                {
-                    <FlatList
-                        style={styles.listSection}
-                        data={state.filtered}
-                        renderItem={RenderWidget}
-                        keyExtractor={(_, index) => index} />
-                }
+            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
+            <View style={styles.container}>
+                <View style={styles.menuBar}>
+                    <View style={styles.inputView}>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder='Search'
+                            value={state.text}
+                            onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
+                        <Search style={styles.searchIcon} />
+                    </View>
+                </View>
+
+                <View style={styles.listContainer}>
+                    {
+                        <FlatList
+                            style={styles.listSection}
+                            data={state.filtered}
+                            renderItem={RenderWidget}
+                            keyExtractor={(_, index) => index} />
+                    }
+                </View>
             </View>
         </View>
     );
@@ -240,7 +244,6 @@ const styles = StyleSheet.create({
         borderBottomStartRadius:0,
         flex:1,
         alignSelf:'stretch',
-        marginTop:100,
     },
     menuBar:{
         marginTop:20, 
