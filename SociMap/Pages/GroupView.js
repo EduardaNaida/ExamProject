@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     userBtn:{
         width:300,
         alignSelf:'center',
-        marginTop: 50,
+        marginTop: 20,
         backgroundColor: 'rgba(65, 105, 225, 0.7)',
         borderRadius: 20,
         padding:5,
