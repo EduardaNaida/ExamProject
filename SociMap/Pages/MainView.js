@@ -67,7 +67,7 @@ export default MainView = ({}) => {
                             return <Users color={focused ? '#ADD8E6' : 'black'}/>
                         },
                         tabBarShowLabel:false}}/>
-                    <Tab.Screen name='Quiz' component={Blank}
+                    <Tab.Screen name='Quiz' component={QuizScreen}
                         options={{tabBarIcon: ({focused, col, siz}) => {
                             return <PlayCircle color={focused ? '#ADD8E6' : 'black'}/>
                         },

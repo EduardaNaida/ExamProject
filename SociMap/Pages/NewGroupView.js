@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-import { useEffect, useReducer, useState } from "react";
-import { TextInput, View, Button } from "react-native";
-import { ColorPicker } from "react-native-wheel-color-picker";
-=======
 import { useEffect, useReducer, useRef, useState } from "react";
 import { TextInput, View, Button, StyleSheet, Pressable, Text } from "react-native";
 import { Save } from "react-native-feather";
 import ColorPicker from "react-native-wheel-color-picker";
->>>>>>> main
 
 const handleChange = (state, action) => {
     switch (action.type) {
