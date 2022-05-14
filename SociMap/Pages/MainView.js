@@ -1,6 +1,6 @@
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, ActivityIndicator, ImageBackground } from 'react-native';
+import { Text, ActivityIndicator, ImageBackground, StyleSheet, Dimensions, StatusBar } from 'react-native';
 
 import PersonsScreen from '../screens/PersonsScreen';
 import GroupScreen from '../screens/GroupScreen';
@@ -27,17 +27,23 @@ const navTheme = {
     },
   };
 
+const styl = StyleSheet.create({
+    backgroundImage: {
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height + StatusBar.currentHeight,
+    },
+})
+
+
 export default MainView = ({}) => {
     
 
 
     return (
-        <ImageBackground source={background} style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            bottom: 0,
-            left: 0}}>
+        <ImageBackground source={background} style={styl.backgroundImage}>
             <NavigationContainer theme={navTheme}>
                 <Tab.Navigator screenOptions={{headerShown:false}}>
                     <Tab.Screen name='Persons' component={PersonsScreen}/>

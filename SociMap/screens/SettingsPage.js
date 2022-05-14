@@ -62,7 +62,7 @@ function SettingsPageAux({navigation}) {
               </View>
         </View>
 
-                  );
+    );
 }
 
 export default SettingsPage;
@@ -75,7 +75,10 @@ function SettingsPage(){
   return (
     <Stack.Navigator initialRouteName='Settings'>
       <Stack.Screen options={{headerShown: false}} name='SettingsNested' component={SettingsPageAux}/>
-      <Stack.Screen name='NewPasswordScreen' component={NewPasswordScreen}/>
+      <Stack.Screen name='NewPasswordScreen' options={{headerShown: true,
+            headerTransparent: true,
+            title:'',
+            headerTintColor: '#fff',}} component={NewPasswordScreen}/>
     </Stack.Navigator>
   );
 }
