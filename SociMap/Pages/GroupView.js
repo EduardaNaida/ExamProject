@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from "react";
 import { ActivityIndicator, Button, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, Pressable, FlatList } from "react-native";
-import { AddGroupCustomId, GetGroups } from "../FirebaseInterface";
+import { AddGroupCustomId, GetGroups, RemoveGroup } from "../FirebaseInterface";
 import uuid from 'react-native-uuid';
 
 const GroupStateHandler = (state, action) => {
@@ -8,7 +8,11 @@ const GroupStateHandler = (state, action) => {
         case 'init':
             return action.data;
         case 'add group':
-            return [...state, action.data]
+            return [...state, action.data];
+        case 'remove':
+            const index = state.map(x => x.id).indexOf(action.id);
+            state.splice(index, 1);
+            return [...state];
         default:
             break;
     }
@@ -16,6 +20,7 @@ const GroupStateHandler = (state, action) => {
 
 export default GroupView = ({route, navigation}) => {
     const [state, dispatch] = useReducer(GroupStateHandler, null);
+    const [selected, setSelected] = useState(null);
 
     //console.log(route.params);
     const path = route.params?.Path ? route.params.Path : '';
@@ -57,11 +62,41 @@ export default GroupView = ({route, navigation}) => {
         navigation.push('SubView', params);
     }
 
+    const RemoveGroupFromCol = (id) => {
+        dispatch({type:'remove', id:id});
+        RemoveGroup(path, id);
+        setSelected(null);
+    }
+
     if(state == null)
         return <ActivityIndicator size='large'/>
 
     return (
         <View> 
+            <Modal visible={selected != null}
+                transparent={true}
+                onRequestClose={()=>{setSelected(null)}}
+                animationType='fade'>
+                <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                    <Pressable style={{position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'black', opacity:0.5}} 
+                        onPress={()=>{setSelected(null)}}/>
+
+                    <View style={{backgroundColor:'white', borderRadius:15, padding:20}}>
+                        <Text>Are you sure you want to remove {selected?.name}?</Text>
+                        <View style={{flexDirection:'row', justifyContent:'space-evenly', marginTop:10}}>
+                            <Pressable style={{margin:5, borderColor:'red', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={() => RemoveGroupFromCol(selected.id)}>
+                                <Text style={{color:'red'}}>Remove</Text>
+                            </Pressable>
+                            <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={()=>{setSelected(null)}}>
+                                <Text style={{color:'#ADD8E6'}}>Cancel</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </View>
+
+            </Modal>
             <Pressable  style={styles.userBtn} 
                 onPress={() => navigation.navigate('NewGroup')}>
                 <Text style={styles.infoBtn}>Add a new group</Text>
@@ -71,7 +106,7 @@ export default GroupView = ({route, navigation}) => {
             {
                 state.map(
                     x => 
-                    <TouchableOpacity key={x.id} onPress={() => navDeeper(x.id, x.name)}>
+                    <TouchableOpacity key={x.id} onPress={() => navDeeper(x.id, x.name)} onLongPress={() => setSelected(x)}>
                         <View style={{...styles.groupCircle, backgroundColor:x.color}}>
                         </View>
                         <Text style={styles.groupName}>
@@ -105,7 +140,7 @@ const styles = StyleSheet.create({
     userBtn:{
         width:300,
         alignSelf:'center',
-        marginTop: 50,
+        marginTop: 20,
         backgroundColor: 'rgba(65, 105, 225, 0.7)',
         borderRadius: 20,
         padding:5,

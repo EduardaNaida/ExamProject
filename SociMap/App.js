@@ -42,9 +42,13 @@ export default function App() {
 
 
   return !logged ? 
-    (<LoginView></LoginView>)
+    (
+      <LoginView></LoginView>
+    )
     :
-    (<MainView></MainView>);
+    (
+      <MainView></MainView>
+    );
 }
 
 const styles = StyleSheet.create({
