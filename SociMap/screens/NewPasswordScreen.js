@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet } from "react-native";
+import { View, TextInput, Button, Text, StyleSheet, TouchableHighlight } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { SetNewPassword } from "../FirebaseInterface";
 
 
@@ -32,34 +33,34 @@ export default function NewPasswordScreen({navigation}){
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.welcome}>
-             <Text style={styles.txtChange}>Change password</Text>
-            </View>
-        <View style={styles.info}>
-            <Text style={styles.txt}>
-                       Current Password:
-                    </Text>
+        <View style={{flex:1}}>
+        <Text style={{color:'white', fontSize:40, height:150, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Change Password</Text>
+            <View style={styles.info}>
+                <Text style={styles.txt}>
+                        Current Password:
+                        </Text>
 
-            <View style={styles.inputFilter}>
-                 <TextInput style={styles.txtInput}
-                 placeholder=""
-                 value={current} onChangeText={setCurrent}></TextInput>
-            </View>
+                <View style={styles.inputFilter}>
+                    <TextInput style={styles.txtInput}
+                    placeholder=""
+                    value={current} onChangeText={setCurrent}
+                    textContentType='password'
+                    secureTextEntry={true}/>
+                </View>
 
-             <Text style={styles.txt} >
-                    New Password:
-                    </Text>
-            <View style={styles.inputFilter}>           
-                 <TextInput 
-                 style={styles.txtInput}
-                 value={newP} onChangeText={setNewP}></TextInput>
-            </View>
-            <View style={styles.btnNew}>   
-                <Button 
-                color={'white'} 
-                title="Confirm" onPress={setPassword}></Button>
-            </View>
+                <Text style={styles.txt} >
+                        New Password:
+                        </Text>
+                <View style={styles.inputFilter}>           
+                    <TextInput 
+                    style={styles.txtInput}
+                    value={newP} onChangeText={setNewP}
+                    textContentType='newPassword'
+                    secureTextEntry={true}/>
+                </View>
+                <TouchableHighlight style={styles.btnNew} onPress={setPassword}>
+                    <Text style={{width:'100%', height:'100%', textAlign:'center', textAlignVertical:'center', color:'white'}}>Confirm</Text>
+                </TouchableHighlight>
             </View>
         </View>
     );
@@ -78,13 +79,10 @@ const styles = StyleSheet.create({
         width: '100%',
         color: 'white',
       },
-      welcome: {
-        margin: 50,
-      },
     info:{
-        display: 'flex',
+        flex:1,
         width: '100%',
-        height: '100%',
+        alignSelf:'stretch',
         backgroundColor: 'white',
         borderTopLeftRadius: 70,
         borderTopRightRadius: 70
@@ -96,19 +94,16 @@ const styles = StyleSheet.create({
         marginTop: 40,
     },
     inputFilter:{
-        marginTop: 20,
-        marginLeft: 30,
-        marginRight: 30,
-        height: 33,
-        backgroundColor: 'rgba(186, 183, 183, 0.47)',
-        borderRadius: 20,
     },
     txtInput: {
         color: 'black',
         fontSize: 16,
-        marginTop: 5,
-        width:'100%',
-        marginLeft: 10,
+        width:250,
+        backgroundColor: 'rgba(186, 183, 183, 0.47)',
+        borderRadius: 20,
+        alignSelf:'center',
+        padding:2,
+        paddingHorizontal:10
       },
     btnNew:{
         height: 36,

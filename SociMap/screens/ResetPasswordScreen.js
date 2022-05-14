@@ -1,6 +1,9 @@
 import React, { useState} from 'react';
 import {SendPasswordResetEmail} from "../FirebaseInterface"
-import { View, TextInput, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, StyleSheet, TouchableOpacity, Text, ImageBackground } from 'react-native';
+
+
+const background = require('../img/background.png');
 
 function ResetPasswordScreen({navigation}) {
     const [email, setEmail] = useState('');
@@ -15,7 +18,7 @@ function ResetPasswordScreen({navigation}) {
 
     return (
              
-        <View style={styles.container}>
+        <View>
            <View >
              <Text style={styles.txtWelcome}>Reset password</Text>
             </View>
@@ -54,28 +57,24 @@ const styles = StyleSheet.create({
       fontSize: 35,
       textAlign: 'center',
       marginTop: 115,
-      color: 'black',
+      color: 'white',
     },
     inputView: {
         borderRadius: 25,
-        width: "90%",
+        width: 300,
         backgroundColor: "#C4C4C480",
-        padding: 15,
-        height: 45,
+        padding: 5,
+        paddingHorizontal:10,
         marginBottom: 10,
-        marginLeft: 20,
+        alignSelf:'center',
       },
       TextInput: {
-        borderColor: 'black',
-        height: 40,
-        //flex: 1,
-        padding: 10,
-        marginLeft: 10,
-        marginTop: -12,
+        borderColor: 'black'
       },
       btnTxt:{
         fontSize: 16,
         textAlign: "center",
+        color:'white'
       },
       userBtn:{
         borderRadius: 25,
@@ -85,11 +84,11 @@ const styles = StyleSheet.create({
         width: "45%"
       },
       text:{
-        color: 'black',
+        color: 'white',
         fontSize: 16,
-        marginBottom: 10,
         marginTop: 140,
-        marginLeft: 25,
+        width:300,
+        alignSelf:'center'
     },
 });
 
