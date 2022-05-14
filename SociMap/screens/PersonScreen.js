@@ -1,11 +1,11 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
-import { Edit, Plus, Save, Settings, Check} from 'react-native-feather';
+import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 
-import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
+import { Menu, Divider, Provider } from 'react-native-paper'; 
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -34,15 +34,6 @@ import { Menu, Divider, Provider, Button } from 'react-native-paper';
 
 const PersonThumbnail = ({personData}) =>
 {
-    const [acro, _] = useState(() => {
-        if(!personData.name)
-            return '';
-
-        const str = personData.name + '';
-        const matches = str.match(/\b(\w)/g);
-        const acronym = matches.join('').substring(0,2); 
-        return acronym;
-    });
     if(personData.img != '' && personData.img){
         return (
             <Image style={styles.thumbnail}
@@ -51,14 +42,10 @@ const PersonThumbnail = ({personData}) =>
         );
     }
 
-    return (<Text style={{
-            backgroundColor:personData.color, 
-            ...styles.thumbnail,
-            ...styles.thumbnailText
-        }}>
-            {acro}
-            
-        </Text>
+    return (
+        <View style={{backgroundColor:'grey', width:70, height:70, borderRadius:35, alignItems:'center', justifyContent:'center'}}>
+            <User color='white' height={50} width={50}/>
+        </View>
         );
 }
 
@@ -125,61 +112,71 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     const closeMenu = () => setVisible(false);
 
     return (
-            <View style={styles.categoryView}> 
-                <View style={styles.categoryContainer}>
-                    <Provider>
-                        <Menu 
-                            style={styles.menu}
-                            visible={visible}
-                            onDismiss={closeMenu}
-                            anchor={
-                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
-                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                                {
-                                    editing ?
-                                    <Settings style={styles.settingsButton}/>
-                                    :
-                                    <></>
-                                }
-                            </TouchableOpacity>}>
-                            <Menu.Item style={styles.menuItem} onPress={() => alert('yoo')} title='Edit category'/>
-                            <Divider/>
-                            <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
-                        </Menu>
-                    </Provider>
-                </View>
-                {
-                sectionData.values.map(note => 
-                <Note 
-                    style={styles.txtContainer}
-                    key={note.id} 
-                    value={note} 
-                    dispatch={dispatch} 
-                    personId={personId} 
-                    noteId={sectionData.id}
-                    isCreatingNew={isCreatingNew}
-                    editing={editing}
-                />)
-            }
-            
-            {
-                adding ?
-                <View style={styles.txtContainer}>
-                    <TextInput style={styles.inputView}
-                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
-                </View>
-                :
-                (
-                    editing ?
-                    <Pressable 
-                        style={styles.button}
-                        onPress={buttonClicked}><Plus style={styles.addButton}/>
-                    </Pressable>
-                    :
-                    <></>
-                )
-            }
+        <View style={styles.categoryView}> 
+            <View style={styles.categoryContainer}>
+            <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                <Provider>
+                    <Menu 
+                        style={styles.menu}
+                        visible={visible}
+                        onDismiss={closeMenu}
+                        anchor={
+                        <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignSelf:'flex-start'}} onPress={openMenu}>
+                            {
+                                editing ?
+                                <ChevronUp 
+                                    width={20}
+                                    height={20}
+                                    color={'lightgrey'}
+                                    margin={10}
+                                    marginLeft={0}
+                                    alignSelf={'center'}/>
+                                :
+                                <></>
+                            }
+                        </TouchableOpacity>}>
+                        <Menu.Item style={styles.menuItem} onPress={alertMsg} title='Edit category'/>
+                        <Divider/>
+                        <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
+                    </Menu>
+                </Provider>
             </View>
+            {
+            sectionData.values.map(note => 
+            <Note 
+                style={styles.txtContainer}
+                key={note.id} 
+                value={note} 
+                dispatch={dispatch} 
+                personId={personId} 
+                noteId={sectionData.id}
+                isCreatingNew={isCreatingNew}
+                editing={editing}
+            />)
+        }
+        
+        {
+            adding ?
+            <View style={styles.txtContainer}>
+                <TextInput style={styles.inputView}
+                ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+            </View>
+            :
+            (
+                editing ?
+                <Pressable 
+                    style={styles.button}
+                    onPress={buttonClicked}>
+                        <Plus 
+                            color={'black'}
+                            width={15}
+                            />
+                </Pressable>
+                :
+                <></>
+            )
+        }
+        </View>
     );
 }
 
@@ -210,7 +207,13 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     };
 
     return (
-        <View style={styles.txtContainer}>
+        <Pressable style={styles.txtContainer}
+            onPress={()=>{
+                if(!editing)
+                    return;
+                setEditable(true);
+                setTimeout(() => input.current.focus(), 10); 
+            }}>
             {
                 editable ? 
                 <TextInput 
@@ -228,16 +231,22 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
             {
                 editing ?
                 <Pressable 
-                    onPress={() => {setEditable(true); 
-                    setTimeout(() => input.current.focus(), 10);
+                    onPress={() => {
+                        setEditable(true); 
+                        console.log('hej');
+                        setTimeout(() => input.current.focus(), 10);
                 } }>
-                    <Edit style={styles.editButton}/>
+                    <CornerDownLeft 
+                        width={20}
+                        color={"lightgrey"}
+                        marginLeft={-20}
+                        />
                 </Pressable>
                 :
                 <></>
             }
         
-        </View>
+        </Pressable>
     );
 }
 
@@ -528,12 +537,12 @@ export default function PersonView({navigation, route}) {
                     <View style={{flexDirection:'column', alignContent:'center'}}>
                         <Text style={styles.newTitle}>{'Category name:'}</Text>
                             <View style={styles.categoryContainer}>
-                        <TextInput style={styles.inputView}
-                        ref={input} 
-                        onChangeText={setText} 
-                        onBlur={textFinished}></TextInput>
+                            <TextInput style={styles.inputView}
+                            ref={input} 
+                            onChangeText={setText} 
+                            onBlur={textFinished}></TextInput>
                         </View>
-                        </View>
+                    </View>
                     :
                     <>
                     {
@@ -597,24 +606,20 @@ const styles = StyleSheet.create({
         alignSelf:'stretch',
     }, 
     txtContainer:{
-        //flex:1,
         margin:10,
-        position:'relative',
         padding:7,
         flexDirection:'row',
-        backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
-        justifyContent:'center',
+        backgroundColor:'#ebebeb',      // TODO: The color of user-choice (from group)
+        justifyContent:'space-between',
         alignSelf:'center',
         borderRadius:10,
-        width:319,
+        width:'90%',
     },
     inputView:{
         backgroundColor:'#00000000',
         borderBottomColor:'black',
         borderBottomWidth:1,
         fontSize:20,
-        height:30,
-        paddingLeft:15,
         width:'90%',
         alignSelf:'center',
         textAlign:'center',
@@ -647,34 +652,28 @@ const styles = StyleSheet.create({
         width:'100%',
         flexDirection:'column',
         alignItems:'center',
-        alignSelf:'flex-start',
     },
     categoryContainer:{
         flexDirection:'row',
-        marginTop:10,
-        borderWidth:0.7,
-        borderColor:'black',
-        backgroundColor:'#ebebeb',
+        backgroundColor:'#00000000',
         borderRadius:10,
-        width:'60%',
+        width:'100%',
         padding:7,
-        alignSelf:'center',
-        marginBottom:10,
+        
     },
     categoryTitle:{
         fontSize:24,
         color:'black',
-        textAlign:'center',
+        textAlign:'left',
         margin:5,
-        alignSelf:'center',
+        //width:'90%',
     },    
     categoryText:{
         fontSize:19,
-        //textAlign:'left',
-        //marginLeft:10,
-        //marginRight:-10,
         justifyContent:'center',
         alignSelf:'center',
+        textAlign:'center',
+        width:'95%',
     },
     settingsButton:{
         height:40,
@@ -726,10 +725,12 @@ const styles = StyleSheet.create({
     },
     addCategoryStyle:{
         backgroundColor:'#ebebeb',
-        //width:'35%',
         padding:7.5,
+        paddingHorizontal:10,
+        alignSelf:'center',
         marginTop:20,
         borderRadius:10,
+        opacity:0.7,
     },
     addButton:{
         color:'black',
