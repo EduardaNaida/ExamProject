@@ -279,6 +279,11 @@ export async function AddGroup(path, groupData){
     return ref.id;
 }
 
+export async function RemoveGroup(path, groupId){
+    const p = `Users/${GetUid()}/${path}/Groups/${groupId}`.replace("//", "/");
+    await deleteDoc(doc(db, p));
+}
+
 export async function AddGroupCustomId(path, groupData, groupId){
     const p = `Users/${GetUid()}/${path}/Groups`.replace("//", "/");
     console.log('p:', p);
@@ -308,4 +313,8 @@ export async function RemovePersonFromCollection(path, personId){
     const p = `Users/${GetUid()}/${path}/People/${personId}`.replace("//", '/');
     const ref = doc(db, p);
     await deleteDoc(ref);
+}
+
+export async function RenameNote(personId, noteId, newName){
+    await updateDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId), {headline:newName});
 }

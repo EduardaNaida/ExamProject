@@ -1,11 +1,9 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, ActivityIndicator, Pressable, ImageBackground, Alert } from 'react-native';
-import { Edit, Plus, Save, Settings, Check} from 'react-native-feather';
-import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields } from '../FirebaseInterface';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert } from 'react-native';
+import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User} from 'react-native-feather';
+import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
-
-import { Menu, Divider, Provider, Button } from 'react-native-paper'; 
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
@@ -34,15 +32,6 @@ import { Menu, Divider, Provider, Button } from 'react-native-paper';
 
 const PersonThumbnail = ({personData}) =>
 {
-    const [acro, _] = useState(() => {
-        if(!personData.name)
-            return '';
-
-        const str = personData.name + '';
-        const matches = str.match(/\b(\w)/g);
-        const acronym = matches.join('').substring(0,2); 
-        return acronym;
-    });
     if(personData.img != '' && personData.img){
         return (
             <Image style={styles.thumbnail}
@@ -51,20 +40,20 @@ const PersonThumbnail = ({personData}) =>
         );
     }
 
-    return (<Text style={{
-            backgroundColor:personData.color, 
-            ...styles.thumbnail,
-            ...styles.thumbnailText
-        }}>
-            {acro}
-            
-        </Text>
+    return (
+        <View style={{backgroundColor:'grey', width:70, height:70, borderRadius:35, alignItems:'center', justifyContent:'center'}}>
+            <User color='white' height={50} width={50}/>
+        </View>
         );
 }
 
 
 const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
-    
+    const [visible, setVisible] = useState(false);
+    const [changingName, setChangingName] = useState(false);
+    const [name, setName] = useState(sectionData.headline);
+    const nameInput = useRef();
+
     const [adding, setAdding] = useState(false);
     const [text, setText] = useState('');
     const input = useRef();
@@ -98,88 +87,122 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         dispatch({type:'remove note', noteId:sectionData.id})
     }
 
-    const alertDeletion = () =>
-    Alert.alert(
-        // Alert messages 
-        "Are you sure you want to delete this category?",
-        "This will delete all entries in the category.",
-      [{
-          text: "Yes", onPress: removeNote 
-        },{
-          text: "Cancel", onPress: () => console.log("Cancel Pressed"), style: "cancel"
-        }]
-    );
+    const renameNote = () => {
+        if(!isCreatingNew)
+            RenameNote(personId, sectionData.id, name);
 
-    const alertMsg = () => 
-    Alert.alert(
-        "Edit category name not implemented.",
-        "",
-        [{
-                text: 'Return', onPress: () => console.log('Return pressed'), style: 'cancel'
-            }])
+        dispatch({type:'rename note', noteId:sectionData.id, newNoteName:name})
+    }
 
-    const [visible, setVisible] = React.useState(false);
-    const openMenu = () => {
-        if(editing) setVisible(true);
-    };
-    const closeMenu = () => setVisible(false);
+    const submitChange = () => {
+        nameInput.current?.blur();
+        setChangingName(false);
+        if(name != ''){
+            renameNote();
+            return;
+        }
+
+        setVisible(true);
+    }
 
     return (
-            <View style={styles.categoryView}> 
-                <View style={styles.categoryContainer}>
-                    <Provider>
-                        <Menu 
-                            style={styles.menu}
-                            visible={visible}
-                            onDismiss={closeMenu}
-                            anchor={
-                            <TouchableOpacity style={{flexDirection:'row', alignSelf:'center', alignConten:'center'}}onPress={openMenu}>
-                                <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
-                                {
-                                    editing ?
-                                    <Settings style={styles.settingsButton}/>
-                                    :
-                                    <></>
-                                }
-                            </TouchableOpacity>}>
-                            <Menu.Item style={styles.menuItem} onPress={() => alert('yoo')} title='Edit category'/>
-                            <Divider/>
-                            <Menu.Item style={styles.menuItem} onPress={alertDeletion} title='Delete category'/>    
-                        </Menu>
-                    </Provider>
+        <View style={styles.categoryView}> 
+            <Modal visible={visible}
+                transparent={true}
+                onRequestClose={()=>{
+                    setVisible(false);
+                    setName(sectionData.headline);}}
+                animationType='fade'>
+                <View style={{flex:1, alignItems:'center', justifyContent:'center'}}>
+                    <Pressable style={{position:'absolute', top:0, left:0, right:0, bottom:0, backgroundColor:'black', opacity:0.5}} 
+                        onPress={()=>{
+                            setVisible(false);
+                            setName(sectionData.headline);}}/>
+
+                    <View style={{backgroundColor:'white', borderRadius:15, padding:20}}>
+                        <Text>Are you sure you want to remove {sectionData.headline}?</Text>
+                        <View style={{flexDirection:'row', justifyContent:'space-evenly', marginTop:10}}>
+                            <Pressable style={{margin:5, borderColor:'red', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={removeNote}>
+                                <Text style={{color:'red'}}>Remove</Text>
+                            </Pressable>
+                            <Pressable style={{margin:5, borderColor:'#ADD8E6', borderWidth:2, borderRadius:5, padding:5}}
+                                onPress={()=>{
+                                    setVisible(false);
+                                    setName(sectionData.headline);
+                                    }}>
+                                <Text style={{color:'#ADD8E6'}}>Cancel</Text>
+                            </Pressable>
+                        </View>
+                    </View>
                 </View>
+            </Modal>
+            <View style={styles.categoryContainer}>
                 {
-                sectionData.values.map(note => 
-                <Note 
-                    style={styles.txtContainer}
-                    key={note.id} 
-                    value={note} 
-                    dispatch={dispatch} 
-                    personId={personId} 
-                    noteId={sectionData.id}
-                    isCreatingNew={isCreatingNew}
-                    editing={editing}
-                />)
-            }
-            
-            {
-                adding ?
-                <View style={styles.txtContainer}>
-                    <TextInput style={styles.inputView}
-                    ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
-                </View>
-                :
-                (
-                    editing ?
-                    <Pressable 
-                        style={styles.button}
-                        onPress={buttonClicked}><Plus style={styles.addButton}/>
-                    </Pressable>
+                    changingName && editing ?
+                    <View style={{...styles.txtContainer, justifyContent:'center', alignItems:'center', alignSelf:'center', width:'100%', margin:0}}>
+                        <TextInput ref={nameInput} style={styles.inputView} value={name} onChangeText={setName} onBlur={submitChange}/>
+                    </View>
                     :
-                    <></>
-                )
-            }
+                    <View style={styles.categoryContainer}>
+                    <Text style={styles.categoryTitle}>{sectionData.headline}</Text>
+                    
+                    <TouchableOpacity style={{flexDirection:'row',justifyContent:'center',alignSelf:'flex-start'}} onPress={() =>{
+                        setChangingName(true);
+                        setTimeout(() => nameInput.current?.focus(), 10);
+                    }}>
+                    {
+                        editing ?
+                        <ChevronUp 
+                            width={20}
+                            height={20}
+                            color={'lightgrey'}
+                            margin={10}
+                            marginLeft={0}
+                            alignSelf={'center'}/>
+                        :
+                        <></>
+                    }
+                    </TouchableOpacity>
+                    </View>
+                }
             </View>
+            {
+            sectionData.values.map(note => 
+            <Note 
+                style={styles.txtContainer}
+                key={note.id} 
+                value={note} 
+                dispatch={dispatch} 
+                personId={personId} 
+                noteId={sectionData.id}
+                isCreatingNew={isCreatingNew}
+                editing={editing}
+            />)
+        }
+        
+        {
+            adding ?
+            <View style={styles.txtContainer}>
+                <TextInput style={styles.inputView}
+                ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+            </View>
+            :
+            (
+                editing ?
+                <Pressable 
+                    style={styles.button}
+                    onPress={buttonClicked}>
+                        <Plus 
+                            color={'black'}
+                            width={15}
+                            />
+                </Pressable>
+                :
+                <></>
+            )
+        }
+        </View>
     );
 }
 
@@ -210,7 +233,13 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     };
 
     return (
-        <View style={styles.txtContainer}>
+        <Pressable style={styles.txtContainer}
+            onPress={()=>{
+                if(!editing)
+                    return;
+                setEditable(true);
+                setTimeout(() => input.current.focus(), 10); 
+            }}>
             {
                 editable ? 
                 <TextInput 
@@ -228,16 +257,22 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
             {
                 editing ?
                 <Pressable 
-                    onPress={() => {setEditable(true); 
-                    setTimeout(() => input.current.focus(), 10);
+                    onPress={() => {
+                        setEditable(true); 
+                        console.log('hej');
+                        setTimeout(() => input.current.focus(), 10);
                 } }>
-                    <Edit style={styles.editButton}/>
+                    <CornerDownLeft 
+                        width={20}
+                        color={"lightgrey"}
+                        marginLeft={-20}
+                        />
                 </Pressable>
                 :
                 <></>
             }
         
-        </View>
+        </Pressable>
     );
 }
 
@@ -276,6 +311,12 @@ function stateUpdater(state, action) {
                 ...state,
                 name:action.name
             };
+        case 'rename note':{
+            const index = state.notes.map(x => x.id).indexOf(action.noteId);
+            if(index > -1)
+                state.notes[index].headline = action.newNoteName
+            return {...state};
+        }
         default:
             break;
     }
@@ -468,7 +509,6 @@ export default function PersonView({navigation, route}) {
     //console.log(state.name);
 
     return (
-        
         <View style={{flex:1}}>
             <Text style={styles.header}>{state.name}</Text>
             <View style={styles.container}>
@@ -528,12 +568,12 @@ export default function PersonView({navigation, route}) {
                     <View style={{flexDirection:'column', alignContent:'center'}}>
                         <Text style={styles.newTitle}>{'Category name:'}</Text>
                             <View style={styles.categoryContainer}>
-                        <TextInput style={styles.inputView}
-                        ref={input} 
-                        onChangeText={setText} 
-                        onBlur={textFinished}></TextInput>
+                            <TextInput style={styles.inputView}
+                            ref={input} 
+                            onChangeText={setText} 
+                            onBlur={textFinished}></TextInput>
                         </View>
-                        </View>
+                    </View>
                     :
                     <>
                     {
@@ -597,24 +637,20 @@ const styles = StyleSheet.create({
         alignSelf:'stretch',
     }, 
     txtContainer:{
-        //flex:1,
         margin:10,
-        position:'relative',
         padding:7,
         flexDirection:'row',
-        backgroundColor:'#D2F2CB', // TODO: The color of user-choice (from group)
-        justifyContent:'center',
+        backgroundColor:'#ebebeb',      // TODO: The color of user-choice (from group)
+        justifyContent:'space-between',
         alignSelf:'center',
         borderRadius:10,
-        width:319,
+        width:'90%',
     },
     inputView:{
-        backgroundColor:'#00000000',
+        backgroundColor:'transparent',
         borderBottomColor:'black',
         borderBottomWidth:1,
         fontSize:20,
-        height:30,
-        paddingLeft:15,
         width:'90%',
         alignSelf:'center',
         textAlign:'center',
@@ -629,52 +665,46 @@ const styles = StyleSheet.create({
         //paddingTop:50,
         flexDirection: 'row',
         //justifyContent:'center',
-        zIndex:100,
     },
     menuItem:{
         height:30,
     },
     menu:{
-        backgroundColor:'#fff',
-        borderRadius:20,
-        borderWidth:0,
+        //backgroundColor:'#fff',
+        //borderRadius:20,
+        //borderWidth:0,
         top:-80,
         left:0, 
         position:'absolute',
-        zIndex:100,
+        elevation:100,
+        zIndex:100
     },
     categoryView:{
         width:'100%',
         flexDirection:'column',
         alignItems:'center',
-        alignSelf:'flex-start',
     },
     categoryContainer:{
         flexDirection:'row',
-        marginTop:10,
-        borderWidth:0.7,
-        borderColor:'black',
-        backgroundColor:'#ebebeb',
+        backgroundColor:'#00000000',
         borderRadius:10,
-        width:'60%',
+        width:'100%',
         padding:7,
-        alignSelf:'center',
-        marginBottom:10,
+        
     },
     categoryTitle:{
         fontSize:24,
         color:'black',
-        textAlign:'center',
+        textAlign:'left',
         margin:5,
-        alignSelf:'center',
+        //width:'90%',
     },    
     categoryText:{
         fontSize:19,
-        //textAlign:'left',
-        //marginLeft:10,
-        //marginRight:-10,
         justifyContent:'center',
         alignSelf:'center',
+        textAlign:'center',
+        width:'95%',
     },
     settingsButton:{
         height:40,
@@ -726,10 +756,12 @@ const styles = StyleSheet.create({
     },
     addCategoryStyle:{
         backgroundColor:'#ebebeb',
-        //width:'35%',
         padding:7.5,
+        paddingHorizontal:10,
+        alignSelf:'center',
         marginTop:20,
         borderRadius:10,
+        opacity:0.7,
     },
     addButton:{
         color:'black',
