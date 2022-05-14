@@ -100,45 +100,49 @@ export const QuizView = () =>
     /><Text style={styleQuiz.question}>Preparing Quiz</Text></View></ImageBackground>)
     :
     (
-    <ImageBackground style={styles.headerImg}>   
-    <Text style={styles.header}>Quiz</Text>
-    <View style={styleQuiz.container}>
-    
-    
-    {currentQuestion < amountOfQuestions
-        ?   <><View style={styleQuiz.container2}><Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
-            <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text></View>
-            <Text style={styleQuiz.question}>{questionText}</Text>
-            <View style={styleQuiz.answers}>{buttons}</View>
-            
-            <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-            </>
-        :  (<View><Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
-            <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-        </View>)
+        <View style={{flex:1}}>
 
-    }
-    <StatusBar style="auto" />
-  </View>
-  </ImageBackground>);
+            <Text style={styles.header}>Quiz</Text>
+            <View style={styleQuiz.container}>
+            
+            
+            {currentQuestion < amountOfQuestions
+                ?   
+                <>
+                    <View style={styleQuiz.container2}>
+                        <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
+                        <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
+                    </View>
+                    <Text style={styleQuiz.question}>{questionText}</Text>
+                    <View style={styleQuiz.answers}>{buttons}</View>
+                    
+                    <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}>
+                        <Text style={styleQuiz.btnTxt}>Start over</Text>
+                    </TouchableOpacity>
+                </>
+                :  
+                (<View>
+                    <Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
+                    <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
+                </View>)
+
+            }
+            <StatusBar style="auto" />
+        </View>
+    </View>);
 }
 
 
 const styleQuiz = StyleSheet.create({
     container:{
-        flex: 1,
-        padding:10, //<TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-        //alignItems:'center',    <Button title={"Start over"} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}></Button>
-
-        backgroundColor:'#ffffff',//    <View style={styleQuiz.startOverBox}><TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity></View>      
-        
-        width:'100%',
-        height:'100%',
+        alignItems:'center',
+        backgroundColor:'white',
+        marginLeft:0,
         borderRadius:60,
-       // flexDirection:'column',
-        marginBottom:'-100%',
-        paddingBottom:60,
-        //alignItems:'center',
+        borderBottomEndRadius:0,
+        borderBottomStartRadius:0,
+        flex:1,
+        alignSelf:'stretch'
     },
     container2:{
         flexDirection:'row',
@@ -148,14 +152,12 @@ const styleQuiz = StyleSheet.create({
     },
     statsText:{
         fontSize: 20,
-        fontFamily: "Inter"
     },
     welcome: {
         height: 100,
         fontSize: 30,
         margin: 20,
         color: 'white',
-        fontFamily: "Inter"
       },
       widgetContainer:{
         alignItems: 'center',

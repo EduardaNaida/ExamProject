@@ -5,7 +5,10 @@ import {
     getAuth, signInWithEmailAndPassword, setPersistence, 
     createUserWithEmailAndPassword, signOut, 
     reactNativeLocalPersistence, sendPasswordResetEmail, 
-    onAuthStateChanged } from 'firebase/auth/react-native';
+    onAuthStateChanged, 
+    reauthenticateWithCredential,
+    EmailAuthProvider,
+    updatePassword} from 'firebase/auth/react-native';
 import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc} from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
@@ -41,11 +44,13 @@ export async function AttemptSignUp(email, password){
 }
 
 export async function SignOut(){
-    await signOut(auth)
+    const result = await signOut(auth);
+    console.log(result.user, 'User signed out!')
+    return result.user;
 }
 
 export function GetCurrentUser(){
-    return auth.currentUser
+    return auth.currentUser;
 }
 
 export function GetUid(){
@@ -91,7 +96,12 @@ export async function GetPersonsFromPath(path){
     {
         const d = ref.docs[i];
         //console.log(doc(db, 'Users', GetUid(), 'People', d.id).path);
-        const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id))
+        const r = await getDoc(doc(db, 'Users', GetUid(), 'People', d.id));
+        
+        if(!r.exists()){
+            RemovePersonFromCollection(path, d.id)
+            continue;
+        }
         
         ret.push({
             id: d.id,
@@ -141,7 +151,35 @@ export async function AddNewPerson(person){
     return [personId, url];
 }
 
-export function SendPasswordResetEmail(auth, email){
+export async function AddNewPersonCustomId(person, id){
+    
+    const notes = person.notes;
+    const img = person.img;
+
+    await setDoc(doc(db, 'Users', GetUid(), 'People', id), {name:person.name, img:'', color:person.color});
+
+    for (let x = 0; x < notes.length; x++) {
+        const note = notes[x];
+        
+        const noteId = await AddNote(id, note.headline);
+
+        const values = note.values;
+        for(let y = 0; y < values.length; y++){
+            const value = values[y].value;
+
+            await AddValueToNote(id, noteId, value);
+        }
+    }
+
+    if(!img)
+        return [id, ''];
+
+    const url = await SetPersonImage(id, img);
+    
+    return [id, url];
+}
+
+export function SendPasswordResetEmail(email){
 
         const result = sendPasswordResetEmail(auth, email);
           // Redirect user to your login screen
@@ -268,4 +306,21 @@ export async function AddPersonIdToCollection(path, id){
     console.log(p);
 
     await setDoc(doc(db, p, id), {});
+}
+
+export async function SetNewPassword(currentPassword, newPassword){
+    const credential = EmailAuthProvider.credential(
+        GetCurrentUser().email,
+        currentPassword
+    );
+
+    
+    await reauthenticateWithCredential(GetCurrentUser(), credential);
+    await updatePassword(GetCurrentUser(), newPassword);
+}
+
+export async function RemovePersonFromCollection(path, personId){
+    const p = `Users/${GetUid()}/${path}/People/${personId}`.replace("//", '/');
+    const ref = doc(db, p);
+    await deleteDoc(ref);
 }
