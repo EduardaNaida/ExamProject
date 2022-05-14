@@ -90,14 +90,21 @@ export const QuizView = () =>
 
 
 
-    return loading ? 
-    (   <ImageBackground style={styles.headerImg}>   
-        <Text style={styles.header}>Quiz</Text>
-        <View style={styleQuiz.container}>
-        <ActivityIndicator
-        size='large'
-        color='blue'
-    /><Text style={styleQuiz.question}>Preparing Quiz</Text></View></ImageBackground>)
+    return loading ?  
+    (<View style={{flex:1}}>
+        <View style={{marginTop:100}}></View>
+        <View style={styles.container}>
+            <Text style={styles.header}>Quiz</Text>
+            <View style={styleQuiz.container}>
+                <ActivityIndicator
+                size='large'
+                color='blue'
+                />
+                <Text style={styleQuiz.question}>Preparing Quiz</Text>
+            </View>
+        </View>
+    </View>
+    )
     :
     (
         <View style={{flex:1}}>
@@ -127,7 +134,6 @@ export const QuizView = () =>
                 </View>)
 
             }
-            <StatusBar style="auto" />
         </View>
     </View>);
 }
