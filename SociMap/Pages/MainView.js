@@ -78,6 +78,7 @@ export default MainView = ({}) => {
                         tabBarShowLabel:false}}/>
                 </Tab.Navigator>
             </NavigationContainer>
+            
         </ImageBackground>
     );
 }

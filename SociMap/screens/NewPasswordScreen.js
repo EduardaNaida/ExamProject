@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet, TouchableHighlight } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { SetNewPassword } from "../FirebaseInterface";
 
 
