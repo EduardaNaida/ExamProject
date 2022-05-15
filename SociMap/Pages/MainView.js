@@ -52,6 +52,7 @@ export default MainView = ({}) => {
     return (
         <ImageBackground source={background} style={styl.backgroundImage}>
             <SafeAreaView style={{flex:1}}>
+                <View style={{backgroundColor:'white', position:'absolute', bottom:0, height:50, left:0, right:0}}/>
                 <NavigationContainer theme={navTheme}>
                     <Tab.Navigator screenOptions={{headerShown:false}}
                     >
@@ -80,7 +81,6 @@ export default MainView = ({}) => {
                     </Tab.Navigator>
                 </NavigationContainer>
             </SafeAreaView>
-            <View style={{backgroundColor:'white', alignSelf:'stretch'}}/>
         </ImageBackground>
     );
 }
