@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
       color: 'white',
       fontSize: 22,
       marginLeft: 80,
-      marginTop:10,
+      marginTop:20,
     },
     inputView: {
       borderRadius: 25,
