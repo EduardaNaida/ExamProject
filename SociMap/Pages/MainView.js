@@ -80,7 +80,7 @@ export default MainView = ({}) => {
                     </Tab.Navigator>
                 </NavigationContainer>
             </SafeAreaView>
-            <View style={{backgroundColor:'white', position:'absolute', bottom:0, height:30, left:0, right:0}}/>
+            <View style={{backgroundColor:'white', alignSelf:'stretch'}}/>
         </ImageBackground>
     );
 }
