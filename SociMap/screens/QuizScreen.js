@@ -203,7 +203,7 @@ const styleQuiz = StyleSheet.create({
         alignSelf:'center',
         width:70,
         height:70,
-        //borderRadius:35,
+        borderRadius:35,
         backgroundColor:'red'
     },
       answers:{
