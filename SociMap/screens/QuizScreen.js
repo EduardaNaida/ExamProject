@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, ImageBackground, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Pressable } from 'react-native';
+import { Button, ImageBackground, StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, Pressable, Image } from 'react-native';
 import { useEffect, useState } from 'react';
 import { AttemptSignIn } from '../FirebaseInterface';
 import { createQuiz } from '../QuizAlgorithm';
@@ -40,7 +40,6 @@ export const QuizView = () =>
             if (correct)
             {
                 setCorrectGuesses(correctGuesses + 1);
-                console.log("rätt");
             }
             setCurrentQuestion(currentQuestion + 1);
         }
@@ -84,6 +83,11 @@ export const QuizView = () =>
             setQuestionData(allQuestions[currentQuestion]);
             setButtons(buttonList(questionData.answers));
             setQuestionText(questionData.text);
+            if(questionData.img == '')
+            {
+                console.log("wtf");
+            }
+            else console.log("ftw");
 
         }
     }, [currentQuestion]);
@@ -120,6 +124,14 @@ export const QuizView = () =>
                         <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
                         <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
                     </View>
+                    {questionData.img && questionData.img != ''
+                        ?
+                        <Image style={styleQuiz.thumbnail} source={{uri:questionData.img}}/>
+                        :
+                        <></>
+                        }
+
+
                     <Text style={styleQuiz.question}>{questionText}</Text>
                     <View style={styleQuiz.answers}>{buttons}</View>
                     
@@ -187,8 +199,14 @@ const styleQuiz = StyleSheet.create({
         alignSelf: 'center',
         textAlign: 'center'
     },
+    thumbnail:{
+        alignSelf:'center',
+        width:70,
+        height:70,
+        //borderRadius:35,
+        backgroundColor:'red'
+    },
       answers:{
-        backgroundColor:'red',
         justifyContent: 'space-evenly',
           alignSelf: 'center',
         },

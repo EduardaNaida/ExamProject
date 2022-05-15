@@ -42,23 +42,20 @@ function createQuestion(dict, topics)
 
 function yesOrNoQuestion(choices, topic)
 {
-    var choice = choices[Math.floor(Math.random() * choices.length)];
-    var person = choice.name;
-    var correctAnswers = choice.value;
-    var questionAnswer = choices[Math.floor(Math.random() * choices.length)].value[Math.floor(Math.random() * choice.value.length)];
-
+    var person = choices[Math.floor(Math.random() * choices.length)];
+    var correctAnswers = person.value;
+    var questionAnswer = choices[Math.floor(Math.random() * choices.length)].value[Math.floor(Math.random() * person.value.length)];
     var text;
     //!TODO add more topics and cases
     switch (topic) {
         case 'work':
-            text = 'Does ' + person + " work at/with " + questionAnswer + '?';
+            text = 'Does ' + person.name + " work at/with " + questionAnswer + '?';
             break;
     
         default:
-            text = 'Does the note ' + questionAnswer + ' belong to ' + person + '?';
+            text = 'Does the note ' + questionAnswer + ' belong to ' + person.name + '?';
             break;
     }
-
     if (correctAnswers.includes(questionAnswer))
     {
         answers = [{text:'Yes', correct:true}, {text:'No', correct:false}];
@@ -68,23 +65,22 @@ function yesOrNoQuestion(choices, topic)
         answers = [{text:'Yes', correct:false}, {text:'No', correct:true}];
     }
 
-    return {type:'yesorno', text:text, answers:answers};
+    return {type:'yesorno', text:text, answers:answers, img:person.img};
 }
 
 function multipleChoiceQuestion(choices, topic)
 {
-    var choice = choices[Math.floor(Math.random() * choices.length)];
-    var person = choice.name;
-    var correctAnswer = choice.value[Math.floor(Math.random() * choice.value.length)];
-    choices.splice(choices.indexOf(choice), 1);
+    var person = choices[Math.floor(Math.random() * choices.length)];
+    var correctAnswer = person.value[Math.floor(Math.random() * person.value.length)];
+    choices.splice(choices.indexOf(person), 1);
     var text;
     switch (topic) {
         case 'work':
-            text = 'Where does ' + person + 'work/what does ' + person + 'work with?';
+            text = 'Where does ' + person.name + 'work/what does ' + person.name + 'work with?';
             break;
     
         default:
-            text = 'Which note is for ' + person + '?';
+            text = 'Which note is for ' + person.name + '?';
             break;
     }
 
@@ -98,7 +94,7 @@ function multipleChoiceQuestion(choices, topic)
         
     }
     shuffleArray(answers);
-    return {type:'multiplechoice', text:text, answers:answers}
+    return {type:'multiplechoice', text:text, answers:answers, img:person.img}
 }
 
 function shuffleArray(array)
@@ -139,7 +135,11 @@ function createListOrPush(dict, tag, person, note)
 {
     if (note.values.length)
     {
-        const questionObject = {name:person.name, value:note.values.map(element => element.value)};
+        const questionObject = {name:person.name, img:'', value:note.values.map(element => element.value)};
+        if(person.img)
+        {
+            questionObject['img'] = person.img;
+        }
         if (dict[tag] != null)
         {
             dict[tag].push(questionObject);
