@@ -1,5 +1,5 @@
 import { useState, useEffect, useReducer } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground, Modal } from 'react-native';
+import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground, Modal, StatusBar } from 'react-native';
 import { Bold, Feather, Plus, Search  } from 'react-native-feather';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native';
