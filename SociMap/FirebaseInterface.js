@@ -69,6 +69,21 @@ export function SetAuthStateChangeCallback(callback){
     return onAuthStateChanged(auth, callback);
 }
 
+export async function GetPersonsData(path){
+    const p = `Users/${GetUid()}/${path}/People`.replace("//", '/');
+    const ref = await getDocs(collection(db, p));
+    const ret = [];
+
+    for (let index = 0; index < ref.docs.length; index++) {
+        const element = ref.docs[index];
+        
+        const person = await GetPersonData(element.id);
+        ret.push(person);
+    }
+
+    return ret;
+}
+
 export async function GetPersonsFromPath(path){
     const p = `Users/${GetUid()}/${path}/People`.replace("//", '/');
     const ref = await getDocs(collection(db, p));
