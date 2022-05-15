@@ -153,7 +153,8 @@ const styles = StyleSheet.create({
     smallText: {
       color: 'white',
       fontSize: 22,
-      marginLeft: 80
+      marginLeft: 80,
+      marginTop:10,
     },
     inputView: {
       borderRadius: 25,
