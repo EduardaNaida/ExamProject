@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from '@react-navigation/native';
 import PersonsView from "../Pages/PersonsView";
 import PersonView from "./PersonScreen";
+import { SafeAreaView } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
