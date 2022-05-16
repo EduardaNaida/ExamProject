@@ -25,11 +25,9 @@ function SettingsPageAux({navigation}) {
         }
     }
     return (
-        <View style={styles.container}>
-            <View style={styles.welcome}>
-              <Text style={styles.txtSet}>Settings</Text>
-              </View>
-           <View style={styles.info}> 
+      <View style={{flex:1}}>
+          <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
+          <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                    <View style={styles.headerInfo}>
                      <Text style={styles.headerInfoTxt}>{email}</Text>
                    </View>
@@ -86,9 +84,7 @@ function SettingsPage(){
 
 const styles = StyleSheet.create({
     container: {
-      display: 'flex',
-      flexDirection: 'column',
-      backgroundColor: 'transparent',
+      flex:1,
       //alignItems: 'center',
       //justifyContent: 'center',
     },

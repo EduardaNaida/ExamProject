@@ -69,8 +69,7 @@ export default NewGroupView = ({route, navigation}) => {
 
     return (
         <View style={{flex:1}}>
-            <Text style={{color:'white', fontSize:40, height:150, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Create New Group</Text>
-
+            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Create New Group</Text>
             <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                 <View style={styles.filter}>
                     <Pressable style={styles.inputFilter} onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>

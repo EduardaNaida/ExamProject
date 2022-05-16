@@ -1,6 +1,6 @@
 import { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator, TextInput, Image, Button, TouchableOpacity, Pressable, ImageBackground, Modal, StatusBar } from 'react-native';
-import { Bold, Feather, Plus, Search  } from 'react-native-feather';
+import { Bold, Feather, Plus, Search, UserPlus  } from 'react-native-feather';
 //import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection, RemovePersonFromCollection, AddNewPersonCustomId } from '../FirebaseInterface'
@@ -295,7 +295,7 @@ export default PersonsView = ({navigation, route, isChild}) =>
                         <View style={styles.buttonView}>
                             <Pressable style={styles.buttonStyle} 
                             onPress={addPerson}>
-                                <Plus style={styles.addButton} />
+                                <UserPlus style={styles.addButton} />
                             </Pressable>
                         </View>
                     </View>
