@@ -26,7 +26,7 @@ function SettingsPageAux({navigation}) {
     }
     return (
       <View style={{flex:1}}>
-          <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
+          <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Settings</Text>
           <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                    <View style={styles.headerInfo}>
                      <Text style={styles.headerInfoTxt}>{email}</Text>
