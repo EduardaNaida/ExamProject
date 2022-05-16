@@ -73,6 +73,7 @@ export const QuizView = () =>
         }
         setFirstRender(false);
         setLoading(false);
+        
     }, []);
 
 
@@ -83,12 +84,7 @@ export const QuizView = () =>
             setQuestionData(allQuestions[currentQuestion]);
             setButtons(buttonList(questionData.answers));
             setQuestionText(questionData.text);
-            if(questionData.img == '')
-            {
-                console.log("wtf");
-            }
-            else console.log("ftw");
-
+            console.log("bild=", questionData);
         }
     }, [currentQuestion]);
 
@@ -97,7 +93,7 @@ export const QuizView = () =>
     return loading ?  
     (<View style={{flex:1}}>
         <View style={{marginTop:100}}></View>
-        <View style={styles.container}>
+        <View style={styleQuiz.container}>
             <Text style={styles.header}>Quiz</Text>
             <View style={styleQuiz.container}>
                 <ActivityIndicator
@@ -135,9 +131,6 @@ export const QuizView = () =>
                     <Text style={styleQuiz.question}>{questionText}</Text>
                     <View style={styleQuiz.answers}>{buttons}</View>
                     
-                    <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}>
-                        <Text style={styleQuiz.btnTxt}>Start over</Text>
-                    </TouchableOpacity>
                 </>
                 :  
                 (<View>
