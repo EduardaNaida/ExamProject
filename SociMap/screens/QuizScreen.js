@@ -5,6 +5,7 @@ import { AttemptSignIn } from '../FirebaseInterface';
 import { createQuiz } from '../QuizAlgorithm';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import styles from '../assets/Stylesheet';
+import { async } from '@firebase/util';
 //import { white } from 'react-native-paper/lib/typescript/styles/colors';
 
 const Stack = createNativeStackNavigator();
@@ -57,10 +58,11 @@ export const QuizView = () =>
     const [buttons, setButtons] = useState(<></>);
     const [questionText, setQuestionText] = useState('');
     const [questionData, setQuestionData] = useState(null);
-    const [firstRender, setFirstRender] = useState(true);
     const [loading, setLoading] = useState(true);
+    const [thumbnail, setQuestionThumbnail] = useState(<></>);
 
-    useEffect(async () => {
+    async function setQuiz()
+    {
         const q = await createQuiz('');
         setAllQuestions(q);
         setAmountOfQuestions(q.length);
@@ -70,24 +72,32 @@ export const QuizView = () =>
             setQuestionData(firstElement);
             setButtons(buttonList(firstElement.answers));
             setQuestionText(firstElement.text);
+            setCurrentQuestion(0);
         }
-        setFirstRender(false);
         setLoading(false);
+    }
+
+    useEffect(async () => {
+        setQuiz();
     }, []);
 
 
     useEffect(() =>
     {
-        if(firstRender == false && currentQuestion < amountOfQuestions)
+        if(currentQuestion < amountOfQuestions)
         {
             setQuestionData(allQuestions[currentQuestion]);
             setButtons(buttonList(questionData.answers));
             setQuestionText(questionData.text);
-            if(questionData.img == '')
+            var img = questionData.img;
+            if (img && img != '')
             {
-                console.log("wtf");
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{uri:questionData.img}}/>);
             }
-            else console.log("ftw");
+            else
+            {
+                setQuestionThumbnail(<></>);
+            }
 
         }
     }, [currentQuestion]);
@@ -97,7 +107,7 @@ export const QuizView = () =>
     return loading ?  
     (<View style={{flex:1}}>
         <View style={{marginTop:100}}></View>
-        <View style={styles.container}>
+        <View style={styleQuiz.container}>
             <Text style={styles.header}>Quiz</Text>
             <View style={styleQuiz.container}>
                 <ActivityIndicator
@@ -124,26 +134,26 @@ export const QuizView = () =>
                         <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
                         <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
                     </View>
-                    {questionData.img && questionData.img != ''
-                        ?
-                        <Image style={styleQuiz.thumbnail} source={{uri:questionData.img}}/>
-                        :
-                        <></>
-                        }
+                    {thumbnail}
 
 
                     <Text style={styleQuiz.question}>{questionText}</Text>
                     <View style={styleQuiz.answers}>{buttons}</View>
                     
-                    <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}>
-                        <Text style={styleQuiz.btnTxt}>Start over</Text>
-                    </TouchableOpacity>
                 </>
                 :  
-                (<View>
-                    <Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
-                    <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setCorrectGuesses(0);setCurrentQuestion(0)}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-                </View>)
+                amountOfQuestions != 0
+                    ?
+                    <View>
+                        <Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
+                        <TouchableOpacity style={styleQuiz.startOver} onPress={async () => {setLoading(true);setCorrectGuesses(0);setQuiz()}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
+                    </View>
+                    :
+                    <View>
+                        <Text style={styleQuiz.question}>{'You do not have enough contacts and/or notes to create a quiz at the moment'}</Text>
+                        <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setLoading(true);setQuiz()}}><Text style={styleQuiz.btnTxt}>Retry</Text></TouchableOpacity>
+                    </View>
+                
 
             }
         </View>

@@ -19,7 +19,6 @@ export async function createQuiz(id)
   
         
     }
-
     return quiz;
 }
 
@@ -28,7 +27,7 @@ function createQuestion(dict, topics)
     if(topics.length == 0) return null;
     var topic = topics[Math.floor(Math.random() * topics.length)];
     const rand = Math.random() < 0.5;
-    if(dict[topic] && dict[topic].length > 2)
+    if(dict[topic] && dict[topic].length > 1)
     {
         if (rand)
         {
@@ -42,6 +41,7 @@ function createQuestion(dict, topics)
 
 function yesOrNoQuestion(choices, topic)
 {
+    console.log(choices);
     var person = choices[Math.floor(Math.random() * choices.length)];
     var correctAnswers = person.value;
     var questionAnswer = choices[Math.floor(Math.random() * choices.length)].value[Math.floor(Math.random() * person.value.length)];
@@ -72,7 +72,8 @@ function multipleChoiceQuestion(choices, topic)
 {
     var person = choices[Math.floor(Math.random() * choices.length)];
     var correctAnswer = person.value[Math.floor(Math.random() * person.value.length)];
-    choices.splice(choices.indexOf(person), 1);
+    var choicesAux = choices;
+    choicesAux.splice(choicesAux.indexOf(person), 1);
     var text;
     switch (topic) {
         case 'work':
@@ -88,7 +89,7 @@ function multipleChoiceQuestion(choices, topic)
 
     for (var i = 0; i < choices.length && i < 3; i++)
     {
-        var wrongAnswer = choices[Math.floor(Math.random() * choices.length)];
+        var wrongAnswer = choicesAux[Math.floor(Math.random() * choicesAux.length)];
         var answer = wrongAnswer.value[Math.floor(Math.random() * wrongAnswer.value.length)];
         answers.push({text:answer, correct:false});
         
