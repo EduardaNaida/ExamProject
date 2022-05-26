@@ -62,7 +62,7 @@ function LoginScreen({navigation}) {
     }
 
   return (
-    <ImageBackground source={background} style={{width: '100%', height: '100%'}}>
+    <View>
     <View style={styles.firstContainer}>
       <Text style={styles.welcome}>SociMap</Text>
       </View>
@@ -86,7 +86,8 @@ function LoginScreen({navigation}) {
             autoCapitalize='none'
             onChangeText={(text) => setPassword(text)}
         />
-            <TouchableOpacity 
+        <TouchableOpacity 
+            style={{alignSelf:'center', marginRight:5}}
             onPress={updateSecureText}
             >
              <Feather 
@@ -94,12 +95,8 @@ function LoginScreen({navigation}) {
              color = 'grey'
              size = {20}
              height= {30}
-             marginLeft = {300}
-             marginTop={-35}
              />
         </TouchableOpacity>
-
-
       </View>
      <View style={styles.btnContainer}>
       <TouchableOpacity 
@@ -125,7 +122,7 @@ function LoginScreen({navigation}) {
       </TouchableOpacity>
      
        <StatusBar style="auto" /> 
-    </ImageBackground> 
+    </View> 
   );
 }
 
@@ -150,39 +147,38 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       color: 'white',
       //fontFamily: "Inter",
-      marginTop: 60
+      marginTop: 115
 
     },
     smallText: {
       color: 'white',
       fontSize: 22,
-      marginLeft: 80
+      marginLeft: 80,
+      marginTop:20,
     },
     inputView: {
       borderRadius: 25,
-      width: "60%",
+      width: "65%",
       backgroundColor: "white",
       opacity: 0.7,
-      padding: 15,
       height: 33,
       alignSelf: 'center',
       alignItems: 'flex-start',
       justifyContent: 'flex-start',
+      flexDirection:'row',
       marginBottom: 10
     },
     TextInput: {
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
       textAlign: 'left',
       borderColor: 'black',
-      height: 40,
-      marginTop: -17,
-      width:'100%',
+      paddingLeft:10,
+      flex:1,
+      alignSelf:'stretch'
     },
     btnContainer:{
       flexDirection: 'row',
-      justifyContent: "center",
-      width: "75%",
+      justifyContent: 'space-around',
+      width: "65%",
       alignSelf: 'center',
       opacity: 0.8,
     },
@@ -190,8 +186,9 @@ const styles = StyleSheet.create({
       borderRadius: 20,
       backgroundColor: "#FF38E2",
       padding: 10,
-      width: "35%",
-      margin: 15
+      width: "40%",
+      marginTop: 10,
+      margin: 1,
     },
     btnTxt:{
       fontSize: 16,

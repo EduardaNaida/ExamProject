@@ -1,5 +1,6 @@
-import { useEffect, useReducer, useState } from "react";
-import { TextInput, View, Button } from "react-native";
+import { useEffect, useReducer, useRef, useState } from "react";
+import { TextInput, View, Button, StyleSheet, Pressable, Text } from "react-native";
+import { Save } from "react-native-feather";
 import ColorPicker from "react-native-wheel-color-picker";
 
 const handleChange = (state, action) => {
@@ -19,6 +20,10 @@ export default NewGroupView = ({route, navigation}) => {
 
     useEffect(()=>{
         navigation.setOptions({
+            headerShown: true,
+            headerTransparent: true,
+            title:'',
+            headerTintColor: '#fff',
             headerRight: () => SaveButton(state), 
         });
     }, [state])
@@ -48,19 +53,74 @@ export default NewGroupView = ({route, navigation}) => {
         }
 
         return (
-            <Button title='Save' onPress={pressed}/>
+            <View style={{alignSelf:'flex-end'}}>
+                <Pressable  
+                    onPress={pressed}>
+                        
+                    <Save style={styles.saveButton} color='white'/>
+                        
+                </Pressable>
+            </View>
         );
     }
 
+    const ref = useRef();
     //console.log(state);
 
     return (
-        <View style={{width:300, alignSelf:'center'}}>
-            <TextInput value={state.name} onChangeText={(t) => dispatch({type:'change name', name:t})}/>
-            <ColorPicker
-                onColorChangeComplete={(c) => dispatch({type:'change color', color:c})}
-                thumbSize={30}
-            />
+        <View style={{flex:1}}>
+            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Create New Group</Text>
+            <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
+                <View style={styles.filter}>
+                    <Pressable style={styles.inputFilter} onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>
+                        <TextInput 
+                        ref={ref}
+                        placeholder="Enter Group Name"
+                        placeholderTextColor = "black"
+                        autoCapitalize = "none"
+                        style={styles.txtInput}
+                        value={state.name}
+                        onChangeText={(t) => dispatch({type:'change name', name:t})}/>
+                    </Pressable>
+                    <ColorPicker style={styles.colorPicker}
+                        onColorChangeComplete={(c) => dispatch({type:'change color', color:c})}
+                        thumbSize={30}
+                    />
+                </View>
+            </View>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    filter:{
+        marginTop:40,
+        width: 300,
+        alignSelf:'center',
+    },
+    inputFilter:{
+        marginTop: 10,
+        marginLeft: 30,
+        marginRight: 30,
+        height: 33,
+        backgroundColor: 'white',
+        //backgroundColor: 'rgba(65, 105, 225, 0.7)',
+        borderRadius: 20,
+        borderWidth:2,
+        borderColor:'black'
+    },
+    txtInput: {
+        alignSelf:'center',
+        height:'100%',
+        color: 'black',
+        fontSize: 16,
+        textAlign:'center'
+      },
+    colorPicker:{
+        marginTop: 10,
+    },
+    save: {
+        marginTop: 30 ,
+        color: 'black'
+    }
+})
