@@ -69,7 +69,7 @@ export default GroupView = ({route, navigation}) => {
     }
 
     if(state == null)
-        return <ActivityIndicator size='large'/>
+        return <ActivityIndicator size='large' color='grey'/>
 
     return (
         <View> 
@@ -97,9 +97,9 @@ export default GroupView = ({route, navigation}) => {
                 </View>
 
             </Modal>
-            <Pressable  style={styles.userBtn} 
+            <Pressable style={styles.userBtn} 
                 onPress={() => navigation.navigate('NewGroup')}>
-                <Text style={styles.infoBtn}>Add a new group</Text>
+                <Text style={styles.infoBtn}>Add new group</Text>
             </Pressable>
 
             <View style={styles.groupContainer}>
@@ -125,26 +125,26 @@ const size = 100;
 
 const styles = StyleSheet.create({
     txtSet:{
-        fontSize: 40,
+        fontSize: 20,
         textAlign: 'center',
         margin: 30,
         color: 'white',
-
     },
     infoBtn:{
         textAlign: 'center',
         alignItems: 'center',
-        fontSize: 20,
+        fontSize: 18,
         color: '#000000',
     },
     userBtn:{
-        width:300,
+        width:'70%',
+        maxWidth:'70%',
         alignSelf:'center',
         marginTop: 20,
-        backgroundColor: 'rgba(65, 105, 225, 0.7)',
-        borderRadius: 20,
+        backgroundColor:'#ADD8E6', 
+        borderRadius: 15,
         padding:5,
-        opacity: 0.5,
+        opacity: 1,
     },
     groupContainer:{
         flexDirection:'row',

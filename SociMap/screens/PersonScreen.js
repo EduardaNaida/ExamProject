@@ -1,19 +1,13 @@
-/**
- * 
- * Functionality for the PersonScreen 
- *
-*/
-
 import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert } from 'react-native';
 import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
-import { Menu, Divider, Provider } from 'react-native-paper'; 
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
+
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -32,13 +26,7 @@ const PersonThumbnail = ({personData}) =>
         );
 }
 
-/**
- * @param  {array} dispatch - Contains information on what action is taken 
- * @param  {string} sectionData - Data stored on person
- * @param  {} personId - Assigned ID of person                     
- * @param  {Boolean} isCreatingNew - True if new person is created 
- * @param  {Boolean} editing - True if view is in editing mode
- */
+
 const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     const [visible, setVisible] = useState(false);
     const [changingName, setChangingName] = useState(false);
@@ -49,17 +37,11 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     const [text, setText] = useState('');
     const input = useRef();
 
-    /**
-     * Action for when button is clicke
-     */
     const buttonClicked = () => {
         setAdding(true);
         setTimeout(() => input.current.focus(), 10);
     };
 
-    /**
-     * Adds a new value from TextInput 
-     */
     const textFinished = async () => {
         input.current.blur();
         setAdding(false);
@@ -78,9 +60,6 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         }
     }
 
-    /**
-     * Removes a note 
-     */
     const removeNote = () => {
         if(!isCreatingNew)
             RemoveNote(personId, sectionData.id);
@@ -105,9 +84,6 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         setVisible(true);
     }
 
-    /**
-     * Style preferences for PersonPage
-     */
     return (
         <View style={styles.categoryView}> 
             <Modal visible={visible}
@@ -209,19 +185,13 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
     );
 }
 
-/**
- * @param  {array} dispatch         - Contains information on what action is taken 
- * @param  {object} value           - ID and value of objects stored on person
- * @param  {string} personId        - Person ID 
- * @param  {string} noteId          - Note ID
- * @param  {Boolean} isCreatingNew  - True if creating new person 
- * @param  {Boolean} editing        - True if editing person
- */
 const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
+    //console.log(value);
     const input = useRef();
     const [text, setText] = useState(value.value);
     const [editable, setEditable] = useState(false);
-
+    //console.log(editable);
+    const header_name = "People";
 
     const updateText = async () => {
         setEditable(false);
@@ -241,9 +211,6 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
         dispatch({type:'update value', noteId: noteId, valueId:value.id, newValue:text});
     };
 
-    /**
-     * Returns style preferences for PersonPage 
-     */     
     return (
         <Pressable style={styles.txtContainer}
             onPress={()=>{
@@ -288,12 +255,6 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     );
 }
 
-/**
- * 
- * @param {*} state     - Current state of system
- * @param {*} action    - Current action 
- * @returns 
- */
 function stateUpdater(state, action) {
     switch (action.type) {
         case 'init':
@@ -341,10 +302,7 @@ function stateUpdater(state, action) {
     console.log('unkown action');
     return state;
 }
-/**
- * @param  {object} navigation   - Navigation functions
- * @param  {object} route        - Current route
- */
+
 export default function PersonView({navigation, route}) {
 
     useEffect(() => {
@@ -412,14 +370,6 @@ export default function PersonView({navigation, route}) {
 
     }, [state, route.params, editing]);
 
-    
-
-    /**
-     * 
-     * @param {Boolean} edit    - True if edit mode
-     * @param {Function} set    -
-     * @returns                 - If (edit) Save-button else Settings button 
-     */
     const ConfigureButton = (edit, set) => {
         if(edit){
             return (
@@ -427,10 +377,7 @@ export default function PersonView({navigation, route}) {
                     <Pressable  
                         onPress={() => set(false)}>
                             
-                        <Check 
-                            width={30}
-                            height={30} 
-                            color='white'/>
+                        <Check style={styles.saveButton} color='white'/>
                             
                     </Pressable>
                 </View>
@@ -441,9 +388,9 @@ export default function PersonView({navigation, route}) {
             <View style={{alignSelf:'flex-end'}}>
                 <Pressable  
                     onPress={() => set(true)}>
-                    <Settings 
-                        width={30}
-                        color={'white'}/>
+                        
+                    <Settings style={styles.saveButton} color='white'/>
+                        
                 </Pressable>
             </View>
         );
@@ -540,15 +487,11 @@ export default function PersonView({navigation, route}) {
 
     //console.log(state.name);
 
-    /**
-     * Main view for PersonPage
-     */
     return (
         <View style={{flex:1}}>
             <Text style={styles.header}>{state.name}</Text>
             <View style={styles.container}>
                 <ScrollView 
-                    style={styles.scroller}
                     showsVerticalScrollIndicator={true}>
                     <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}} disabled={!editing}>
                         <PersonThumbnail personData={state}/>
@@ -564,19 +507,15 @@ export default function PersonView({navigation, route}) {
                             />
                             :
                             <>
-                            <View style={styles.thumbnailContainer}>
-                                <Text style={styles.thumbnailText}>{state?.name ? state?.name : ''}</Text>
+                            <View style={styles.nameContainer}>
+                                <Text style={styles.nameText}>{state?.name ? state?.name : ''}</Text>
                                 {
                                     editing ? 
                                         <Pressable 
                                         onPress={() => 
                                         buttonClicked(nameInput, setEditingName)}>
-                                        <CornerDownLeft
-                                            width={20}
-                                            height={20}
-                                            color={"lightgrey"}
-                                            alignSelf={'flex-end'}
-                                            />
+                                        <Edit
+                                            style={styles.nameEditButton} height={20}/>
                                         </Pressable>
                                         :
                                         <></>
@@ -633,48 +572,34 @@ export default function PersonView({navigation, route}) {
     );
 };
 
-/**
- * Stylesheets for PersonPage 
- */
 const styles = StyleSheet.create({
+    // TODO: Same as in PersonsView, move to global 
     indicator:{
         marginTop:'50%',
+
     },
     header:{
         color:'white', 
-        fontSize:40, 
+        fontSize:30, 
         height:100, 
+        lineHeight:120,
         alignSelf:'center', 
         textAlign:'center', 
-        textAlignVertical:'center'
     },
-    thumbnailContainer:{
-        minWidth:'90%',
-        padding:5,
-        flexDirection:'row',
-        justifyContent:'space-around',
-        alignSelf:'center',
-        alignItems:'center',
-        borderBottomColor:'lightgrey',
-        borderBottomWidth:1,
+    headerImg:{
+        marginTop:0,
+        width:null,
+        height:'60%',
     },
     thumbnail:{
+        alignSelf:'center',
         width:70,
         height:70,
         borderRadius:35,
-        alignSelf:'center',
-        backgroundColor:'gray',
-        overflow:'hidden',
     },
     thumbnailText:{
-        fontSize:30,
-        paddingTop:'2%',
-        paddingBottom:'2%',
-        textAlign:'center',
-        width:'80%',
-        color:'black',
-        fontFamily:'Avenir-Book',
-        paddingLeft:'5%',
+        fontSize:20,
+        textAlignVertical: 'center',
     },
     container:{
         padding:10,
@@ -685,7 +610,6 @@ const styles = StyleSheet.create({
         borderBottomStartRadius:0,
         alignSelf:'stretch',
     }, 
-    // Entries in categories
     txtContainer:{
         margin:10,
         padding:7,
@@ -696,7 +620,6 @@ const styles = StyleSheet.create({
         borderRadius:10,
         width:'90%',
     },
-    // <TextInput>
     inputView:{
         backgroundColor:'transparent',
         borderBottomColor:'black',
@@ -704,12 +627,10 @@ const styles = StyleSheet.create({
         fontSize:20,
         width:'90%',
         alignSelf:'center',
-        textAlign:'left',
+        textAlign:'center',
     },
-    // Add new category
     newTitle:{
-        fontSize:24,
-        fontFamily:'Avenir-Book',
+        fontSize:20,
         color:'black',
         textAlign:'left',
     },
@@ -721,7 +642,6 @@ const styles = StyleSheet.create({
     },
     menuItem:{
         height:30,
-        fontFamily:'Avenir-Book',
     },
     menu:{
         //backgroundColor:'#fff',
@@ -747,7 +667,6 @@ const styles = StyleSheet.create({
         
     },
     categoryTitle:{
-        fontFamily:'Avenir-Book',
         fontSize:24,
         color:'black',
         textAlign:'left',
@@ -761,45 +680,33 @@ const styles = StyleSheet.create({
         textAlign:'center',
         width:'95%',
     },
-    settingsButton:{
-        height:40,
-        width:40,
-        color:'grey',
-        alignSelf:'center',
-    },
     nameContainer:{
         minWidth:150,
+        maxWidth:200,
         flexDirection:'row',
         alignSelf:'center',
         alignContent:'space-between',
-        
         alignItems:'center',
         justifyContent:'center',
-        //backgroundColor:'blue'
     },
     nameText:{
         fontSize:30,
         color:'black',
         textAlign:'center',
-        width:'80%'
     },
     button:{
-        width:'15%',
+        height:22,
+        width:50,
         backgroundColor:'#ADD8E6',
+        justifyContent:'center',
         alignItems:'center',
         borderRadius:30,
-    },
-    iconButton:{
-        height:40,
-        width:40,
-        color:'black',
     },
     nameEditButton:{
         height:40,
         width:40,
         marginLeft:10,
         color:'gray',
-//        alignSelf:'center',
     },
     addCategoryStyle:{
         backgroundColor:'#ebebeb',
@@ -808,16 +715,25 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         marginTop:20,
         borderRadius:10,
-        opacity:0.7,
+        opacity:0.6,
     },
-    addButton:{
-        color:'black',
-        opacity:0.7,
+    saveButton:{
+        height:40,
+        width:40,
+        color:'white',
     },
     buttonText:{
-        fontSize:16,
+        fontSize:17,
         alignSelf:'center',
         borderRadius:20,
-        fontFamily:'Avenir-Book',
     },
+    buttonStyle:{
+        width:70,
+        height:40,
+        borderRadius:10,
+        alignSelf:'flex-start',
+        backgroundColor:'#ADD8E6',
+        opacity:0.8,
+    },
+    /// ------- END
 });

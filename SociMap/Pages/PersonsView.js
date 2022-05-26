@@ -7,9 +7,6 @@ import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection, RemovePerson
 import uuid from 'react-native-uuid';
 
 
-// TODO: Add global stylesheet 
-// const globalStyle = require('../assets/Stylesheet');
-
 const PersonThumbnail = ({personData}) =>
 {
     const f = () => {
@@ -118,6 +115,8 @@ export default PersonsView = ({navigation, route, isChild}) =>
     const [adding, setAdding] = useState(false);
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
+    const header_name = "People";
+    //const Stack = createNativeStackNavigator();
     const isFocused = useIsFocused();
 
     const path = route.params?.Path ? route.params.Path : '';
@@ -215,7 +214,7 @@ export default PersonsView = ({navigation, route, isChild}) =>
     return loading ?
         (<ActivityIndicator
             size='large'
-            color='blue'
+            color='grey'
         />)
         :
         (  
@@ -282,22 +281,20 @@ export default PersonsView = ({navigation, route, isChild}) =>
                 }
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
-                        <View style={styles.textInput}>
+                        <View style={styles.inputView}>
                             <TextInput
-                                theme={{colors:{primary:'transparent'}}}
-                                height={20}
-                                textAlign={'center'}
-                                fontSize={20}
-                                selectionColor={'gray'}
+                                style={styles.textInput}
                                 placeholder='Search'
                                 value={state.text}
-                                onChangeText={(text) => dispatch({ type: 'set text', data: text })}/>
-                            </View>
+                                onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
+                            <Search style={styles.searchIcon} height={20} />
+                        </View>
+                        <View style={styles.buttonView}>
                             <Pressable style={styles.buttonStyle} 
                             onPress={addPerson}>
-                                <UserPlus style={styles.addButton} />
+                                <UserPlus style={styles.addButton} height={20} alignSelf={'center'}/>
                             </Pressable>
-                     
+                        </View>
                     </View>
 
                     <View style={styles.listContainer}>
@@ -321,14 +318,25 @@ export default PersonsView = ({navigation, route, isChild}) =>
         );
 }
 
+// TODO: Changed Button to Pressable style on row 167
+// <Button
+//title='Add'
+//style={styles.btnStyle}
+//onPress={() =>{
+//    navigation.navigate('Person', {isCreatingNew:true});
+    //setImmediate(() => filterPersons(filterText));
+//}}><Text style={styles.btnTxt}>Add</Text></Button>
+
+
+
 const styles = StyleSheet.create({
     header:{
         color:'white', 
-        fontSize:40, 
+        fontSize:35, 
         height:100, 
+        lineHeight:100,
         alignSelf:'center', 
         textAlign:'center', 
-        textAlignVertical:'center'
     },
     container:{
         alignItems:'center',
@@ -341,32 +349,53 @@ const styles = StyleSheet.create({
         alignSelf:'stretch'
     },
     menuBar:{
-        marginTop:'5%', 
+        marginTop:20, 
         flexDirection:'row',
         justifyContent:'space-between',
     },
+    inputView:{
+        flex:1,
+        paddingLeft:60,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        backgroundColor: 'transparent',
+        alignContent:'center',
+    },
     textInput:{
         fontSize:20,
-        fontFamily:'Avenir-Book',
         backgroundColor:'#e3e3e3',
+        borderColor:'#b5b5b5',
+        textAlign:'center',
         borderRadius: 10,
         padding:5,
-        height:'110%',
-        width:'65%',
-        marginRight:'2%',
+        height:35,
+        width:220,
+    },
+    searchIcon:{
+        color:'grey',
+        marginLeft: -30,
+        marginTop:8,
+       // alignSelf:'flex-start',
+    },
+    buttonView:{
+        flex:1, 
+    },
+    addButton:{
+        alignSelf:'center',
+        color:'black',
+        height:25,
     },
     buttonStyle:{
         width:60,
-        height:25,
+        height:35,
         borderRadius:20,
         justifyContent:'center',
         alignSelf:'center',
         backgroundColor:'#ADD8E6',
-        opacity:0.8,
+        opacity:1,
     },
     buttonText:{
         fontSize:15,
-        fontFamily:'Avenir-Book',
         padding:10,
         color:'black',
         textAlign:'center',
@@ -382,6 +411,8 @@ const styles = StyleSheet.create({
         backgroundColor:'#ebebeb', // TODO: background color of the items should be depending on what group+group color?
         borderRadius:10,
         width:319,
+        marginLeft:20,
+        marginRight:20,
         justifyContent:'flex-start',
     },
     listContainer:{
@@ -389,13 +420,12 @@ const styles = StyleSheet.create({
     },
     itemText:{
         fontSize:20,
-        fontFamily:'Avenir-Book',
         textAlign:'center',
         marginLeft:'5%',
         alignSelf:'center',
     },
     thumbnail:{
-        padding:5,
+        marginLeft:'2.5%',
         backgroundColor:'#ffffff',
         width:35,
         height:35,
@@ -404,8 +434,9 @@ const styles = StyleSheet.create({
         overflow:'hidden',
     },
     thumbnailText:{
-        fontSize:24,
-        fontFamily:'Avenir-Book',
+        lineHeight:40,
+        fontSize:22,
         textAlign: 'center',
+        alignSelf:'center',
     },
 });

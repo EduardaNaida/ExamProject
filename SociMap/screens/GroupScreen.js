@@ -24,7 +24,7 @@ export default GroupScreen = () => {
 const FirstView = ({route, navigation}) => {
     return (
         <View style={{flex:1}}>
-            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
+            <Text style={{color:'white', fontSize:35, height:100, lineHeight:120,alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
             <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                 <ScrollView>
                     <GroupView route={route} navigation={navigation}></GroupView>
@@ -46,7 +46,7 @@ const SubView = ({route, navigation}) => {
 
     return (
         <View style={{flex:1}}>
-        <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>{route.params?.Title}</Text>
+        <Text style={{color:'white', fontSize:35, height:100, lineHeight:120, alignSelf:'center', textAlign:'center'}}>{route.params?.Title}</Text>
             <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                 <ScrollView>
                     <GroupView route={route} navigation={navigation}></GroupView>
