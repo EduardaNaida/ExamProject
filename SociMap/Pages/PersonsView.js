@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
         color:'white', 
         fontSize:35, 
         height:100, 
-        lineHeight:100,
+        lineHeight:120,
         alignSelf:'center', 
         textAlign:'center', 
     },

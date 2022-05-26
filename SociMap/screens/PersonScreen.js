@@ -515,7 +515,7 @@ export default function PersonView({navigation, route}) {
                                         onPress={() => 
                                         buttonClicked(nameInput, setEditingName)}>
                                         <Edit
-                                            style={styles.nameEditButton} height={20}/>
+                                            style={styles.nameEditButton} height={20} marginLeft={20} marginTop={10}/>
                                         </Pressable>
                                         :
                                         <></>
@@ -559,7 +559,7 @@ export default function PersonView({navigation, route}) {
                         <Pressable 
                             title='Add headline' 
                             style={styles.addCategoryStyle}
-                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'New category'}</Text>
+                            onPress={() => buttonClicked(input, setAdding)}><Text style={styles.buttonText}>{'Add new category'}</Text>
                         </Pressable>
                         :
                         <></> 
@@ -573,23 +573,13 @@ export default function PersonView({navigation, route}) {
 };
 
 const styles = StyleSheet.create({
-    // TODO: Same as in PersonsView, move to global 
-    indicator:{
-        marginTop:'50%',
-
-    },
     header:{
         color:'white', 
-        fontSize:30, 
+        fontSize:35, 
         height:100, 
         lineHeight:120,
         alignSelf:'center', 
         textAlign:'center', 
-    },
-    headerImg:{
-        marginTop:0,
-        width:null,
-        height:'60%',
     },
     thumbnail:{
         alignSelf:'center',
@@ -614,7 +604,7 @@ const styles = StyleSheet.create({
         margin:10,
         padding:7,
         flexDirection:'row',
-        backgroundColor:'#ebebeb',      // TODO: The color of user-choice (from group)
+        backgroundColor:'#ebebeb',   
         justifyContent:'space-between',
         alignSelf:'center',
         borderRadius:10,
@@ -622,31 +612,26 @@ const styles = StyleSheet.create({
     },
     inputView:{
         backgroundColor:'transparent',
-        borderBottomColor:'black',
-        borderBottomWidth:1,
+        //borderBottomColor:'black',
+        //borderBottomWidth:1,
         fontSize:20,
-        width:'90%',
+        height:25,
+        width:'80%',
         alignSelf:'center',
-        textAlign:'center',
+        textAlign:'left',
     },
     newTitle:{
         fontSize:20,
         color:'black',
         textAlign:'left',
     },
-
     menuContainer:{
-        //paddingTop:50,
         flexDirection: 'row',
-        //justifyContent:'center',
     },
     menuItem:{
         height:30,
     },
     menu:{
-        //backgroundColor:'#fff',
-        //borderRadius:20,
-        //borderWidth:0,
         top:-80,
         left:0, 
         position:'absolute',
@@ -671,7 +656,6 @@ const styles = StyleSheet.create({
         color:'black',
         textAlign:'left',
         margin:5,
-        //width:'90%',
     },    
     categoryText:{
         fontSize:19,
@@ -690,6 +674,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
     },
     nameText:{
+        marginTop:13,
         fontSize:30,
         color:'black',
         textAlign:'center',
@@ -703,19 +688,19 @@ const styles = StyleSheet.create({
         borderRadius:30,
     },
     nameEditButton:{
-        height:40,
-        width:40,
+        //height:40,
+        //width:40,
         marginLeft:10,
         color:'gray',
     },
     addCategoryStyle:{
-        backgroundColor:'#ebebeb',
-        padding:7.5,
-        paddingHorizontal:10,
+        backgroundColor:'#ADD8E6',
+        padding:6,
         alignSelf:'center',
         marginTop:20,
-        borderRadius:10,
-        opacity:0.6,
+        borderRadius:20,
+        marginTop:30,
+        width:200,
     },
     saveButton:{
         height:40,
@@ -727,13 +712,4 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         borderRadius:20,
     },
-    buttonStyle:{
-        width:70,
-        height:40,
-        borderRadius:10,
-        alignSelf:'flex-start',
-        backgroundColor:'#ADD8E6',
-        opacity:0.8,
-    },
-    /// ------- END
 });
