@@ -318,17 +318,6 @@ export default PersonsView = ({navigation, route, isChild}) =>
         );
 }
 
-// TODO: Changed Button to Pressable style on row 167
-// <Button
-//title='Add'
-//style={styles.btnStyle}
-//onPress={() =>{
-//    navigation.navigate('Person', {isCreatingNew:true});
-    //setImmediate(() => filterPersons(filterText));
-//}}><Text style={styles.btnTxt}>Add</Text></Button>
-
-
-
 const styles = StyleSheet.create({
     header:{
         color:'white', 

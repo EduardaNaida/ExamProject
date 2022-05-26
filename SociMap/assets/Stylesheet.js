@@ -27,9 +27,9 @@ export default StyleSheet.create({
   txtInput:{
     fontSize:20,
     backgroundColor:'#e3e3e3',
-    textAlign:'center',
+    paddingLeft:10,
     alignSelf:'center',        
-    borderRadius: 20,
+    borderRadius: 10,
     height:35,
     width:300,
     marginTop:10, 

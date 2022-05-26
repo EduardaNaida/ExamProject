@@ -4,10 +4,11 @@ import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus,
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
-// TODO: lägg över alla stylesheets i Stylesheet   
-// import styles from './Stylesheet'
 import globalStyles from '../assets/Stylesheet';
+import { Platform } from 'expo-modules-core';
+
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -192,7 +193,6 @@ const Note = ({dispatch, value, personId, noteId, isCreatingNew, editing}) => {
     const [text, setText] = useState(value.value);
     const [editable, setEditable] = useState(false);
     //console.log(editable);
-    const header_name = "People";
 
     const updateText = async () => {
         setEditable(false);
@@ -490,7 +490,9 @@ export default function PersonView({navigation, route}) {
 
     return (
         <View style={{flex:1}}>
-            <Text style={globalStyles.header}>{state.name}</Text>
+        <Text style={globalStyles.header}>{state.name}</Text>
+        <KeyboardAwareScrollView borderTopLeftRadius={60} borderTopRightRadius={60}>
+            
             <View style={styles.container}>
                 <ScrollView 
                     showsVerticalScrollIndicator={true}>
@@ -548,7 +550,7 @@ export default function PersonView({navigation, route}) {
                     <View style={{flexDirection:'column', alignContent:'center'}}>
                         <Text style={styles.newTitle}>{'Category name:'}</Text>
                             <View style={styles.categoryContainer}>
-                            <TextInput style={styles.inputView}
+                            <TextInput style={globalStyles.txtInput} textAlign={'left'}
                             ref={input} 
                             onChangeText={setText} 
                             onBlur={textFinished}></TextInput>
@@ -569,8 +571,9 @@ export default function PersonView({navigation, route}) {
                     </>
                 }
         </ScrollView>
-        </View>        
-    </View>
+    </View> 
+    </KeyboardAwareScrollView>
+    </View>    
     );
 };
 
@@ -596,14 +599,16 @@ const styles = StyleSheet.create({
     container:{
         padding:10,
         backgroundColor:'#ffffff',
-        flex:1,
+        //flex:1,
         borderRadius:60,
         borderBottomEndRadius:0,
         borderBottomStartRadius:0,
         alignSelf:'stretch',
+        height:'200%',
     }, 
     txtContainer:{
         margin:10,
+        height:35,
         padding:7,
         flexDirection:'row',
         backgroundColor:'#ebebeb',   
@@ -621,7 +626,7 @@ const styles = StyleSheet.create({
         textAlign:'center',
     },
     newTitle:{
-        fontSize:20,
+        fontSize:23,
         color:'black',
         textAlign:'left',
     },
@@ -688,8 +693,6 @@ const styles = StyleSheet.create({
         borderRadius:30,
     },
     nameEditButton:{
-        //height:40,
-        //width:40,
         marginLeft:10,
         color:'gray',
     },
