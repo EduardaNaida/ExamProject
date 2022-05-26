@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet, TouchableHighlight } from "react-native";
 import { SetNewPassword } from "../FirebaseInterface";
-
+import globalStyles from '../assets/Stylesheet';
 
 export default function NewPasswordScreen({navigation}){
     const [current, setCurrent] = useState('');
@@ -33,10 +33,10 @@ export default function NewPasswordScreen({navigation}){
 
     return (
         <View style={{flex:1}}>
-        <Text style={{color:'white', fontSize:40, height:150, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Change Password</Text>
+        <Text style={globalStyles.header}>Change password</Text>
             <View style={styles.info}>
                 <Text style={styles.txt}>
-                        Current Password:
+                        Current password:
                         </Text>
 
                 <View style={styles.inputFilter}>
@@ -48,7 +48,7 @@ export default function NewPasswordScreen({navigation}){
                 </View>
 
                 <Text style={styles.txt} >
-                        New Password:
+                        New password:
                         </Text>
                 <View style={styles.inputFilter}>           
                     <TextInput 
@@ -58,7 +58,7 @@ export default function NewPasswordScreen({navigation}){
                     secureTextEntry={true}/>
                 </View>
                 <TouchableHighlight style={styles.btnNew} onPress={setPassword}>
-                    <Text style={{width:'100%', height:'100%', textAlign:'center', textAlignVertical:'center', color:'white'}}>Confirm</Text>
+                    <Text style={styles.btnText}>Confirm</Text>
                 </TouchableHighlight>
             </View>
         </View>
@@ -88,29 +88,25 @@ const styles = StyleSheet.create({
       },
     txt:{
         color: 'black',
-        alignSelf:'center',
-        fontSize: 16,
-        marginTop: 40,
+//        alignSelf:'center',
+        textAlign:'center',
+        fontSize: 22,
+        marginTop: 30,
     },
     inputFilter:{
     },
-    txtInput: {
-        color: 'black',
-        fontSize: 16,
-        width:250,
-        backgroundColor: 'rgba(186, 183, 183, 0.47)',
-        borderRadius: 20,
-        alignSelf:'center',
-        padding:2,
-        paddingHorizontal:10
-      },
     btnNew:{
-        height: 36,
+        height: 30,
         marginTop: 30,
-        backgroundColor: 'rgba(65, 105, 225, 0.7)',
+        backgroundColor: '#ADD8E6',
         borderRadius: 20,
-        width: '35%',
         alignSelf:'center',
-        overflow: 'hidden'
+        justifyContent:'center',
+        width:200,
+      },
+      btnText:{ 
+        color:'black', 
+        fontSize: 17,
+        alignSelf:'center',
       },
 })

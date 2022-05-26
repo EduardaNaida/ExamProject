@@ -5,7 +5,7 @@ import { Bold, Feather, Plus, Search, UserPlus  } from 'react-native-feather';
 import { useIsFocused } from '@react-navigation/native';
 import { GetPersonsFromPath, AddNewPerson, AddPersonIdToCollection, RemovePersonFromCollection, AddNewPersonCustomId } from '../FirebaseInterface'
 import uuid from 'react-native-uuid';
-
+import globalStyles from '../assets/Stylesheet';
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -277,7 +277,7 @@ export default PersonsView = ({navigation, route, isChild}) =>
                     child ? 
                     <></>
                     :
-                    <Text style={styles.header}>{header_name}</Text>
+                    <Text style={globalStyles.header}>People</Text>
                 }
                 <View style={styles.container}>
                     <View style={styles.menuBar}>
@@ -287,12 +287,12 @@ export default PersonsView = ({navigation, route, isChild}) =>
                                 placeholder='Search'
                                 value={state.text}
                                 onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
-                            <Search style={styles.searchIcon} height={20} />
+                            <Search style={styles.searchButton} height={20} alignSelf={'center'}/>
                         </View>
                         <View style={styles.buttonView}>
                             <Pressable style={styles.buttonStyle} 
                             onPress={addPerson}>
-                                <UserPlus style={styles.addButton} height={20} alignSelf={'center'}/>
+                                <UserPlus style={styles.addButton} height={20} alignSelf={'center'} marginLeft={5}/>
                             </Pressable>
                         </View>
                     </View>
@@ -368,14 +368,12 @@ const styles = StyleSheet.create({
         textAlign:'center',
         borderRadius: 20,
         padding:5,
-        height:35,
-        width:'130%',
+        height:30,
+        width:'140%',
     },
-    searchIcon:{
+    searchButton:{
         color:'grey',
         marginLeft: -30,
-        marginTop:8,
-       // alignSelf:'flex-start',
     },
     buttonView:{
         flex:1, 
@@ -386,8 +384,8 @@ const styles = StyleSheet.create({
         height:25,
     },
     buttonStyle:{
-        width:60,
-        height:35,
+        width:70,
+        height:30,
         borderRadius:20,
         justifyContent:'center',
         alignSelf:'center',

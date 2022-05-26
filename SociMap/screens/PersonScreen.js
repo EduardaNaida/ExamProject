@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 // TODO: lägg över alla stylesheets i Stylesheet   
 // import styles from './Stylesheet'
-
+import globalStyles from '../assets/Stylesheet';
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -489,7 +489,7 @@ export default function PersonView({navigation, route}) {
 
     return (
         <View style={{flex:1}}>
-            <Text style={styles.header}>{state.name}</Text>
+            <Text style={globalStyles.header}>{state.name}</Text>
             <View style={styles.container}>
                 <ScrollView 
                     showsVerticalScrollIndicator={true}>
@@ -697,10 +697,10 @@ const styles = StyleSheet.create({
         backgroundColor:'#ADD8E6',
         padding:6,
         alignSelf:'center',
-        marginTop:20,
-        borderRadius:20,
         marginTop:30,
-        width:200,
+        borderRadius:20,
+        height:30,
+        width:300,
     },
     saveButton:{
         height:40,
@@ -710,6 +710,5 @@ const styles = StyleSheet.create({
     buttonText:{
         fontSize:17,
         alignSelf:'center',
-        borderRadius:20,
     },
 });

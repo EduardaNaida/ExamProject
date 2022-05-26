@@ -137,8 +137,8 @@ const styles = StyleSheet.create({
         color: '#000000',
     },
     userBtn:{
-        width:'70%',
-        maxWidth:'70%',
+        width:300,
+        height:30,
         alignSelf:'center',
         marginTop: 20,
         backgroundColor:'#ADD8E6', 

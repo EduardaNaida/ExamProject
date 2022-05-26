@@ -3,6 +3,8 @@ import { TextInput, View, Button, StyleSheet, Pressable, Text } from "react-nati
 import { Save } from "react-native-feather";
 import ColorPicker from "react-native-wheel-color-picker";
 
+import globalStyles from '../assets/Stylesheet';
+
 const handleChange = (state, action) => {
     switch (action.type) {
         case 'change color':
@@ -69,16 +71,15 @@ export default NewGroupView = ({route, navigation}) => {
 
     return (
         <View style={{flex:1}}>
-            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Create New Group</Text>
+            <Text style={globalStyles.header}>Create new group</Text>
             <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
                 <View style={styles.filter}>
-                    <Pressable style={styles.inputFilter} onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>
-                        <TextInput 
+                    <Pressable  onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>
+                        <TextInput
                         ref={ref}
-                        placeholder="Enter Group Name"
-                        placeholderTextColor = "black"
+                        placeholder="Enter group name"
                         autoCapitalize = "none"
-                        style={styles.txtInput}
+                        style={globalStyles.txtInput}
                         value={state.name}
                         onChangeText={(t) => dispatch({type:'change name', name:t})}/>
                     </Pressable>
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderColor:'black'
     },
-    txtInput: {
+    textInput: {
         alignSelf:'center',
         height:'100%',
         color: 'black',
