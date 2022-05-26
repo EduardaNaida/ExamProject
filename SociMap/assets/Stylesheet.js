@@ -29,7 +29,7 @@ export default StyleSheet.create({
     backgroundColor:'#e3e3e3',
     textAlign:'center',
     alignSelf:'center',        
-    borderRadius: 10,
+    borderRadius: 20,
     height:35,
     width:300,
     marginTop:10, 

@@ -119,7 +119,7 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
             <View style={styles.categoryContainer}>
                 {
                     changingName && editing ?
-                    <View style={{...styles.txtContainer, justifyContent:'center', alignItems:'center', alignSelf:'center', width:'100%', margin:0}}>
+                    <View style={{...styles.txtContainer, justifyContent:'center', alignItems:'center', alignSelf:'center', width:'70%', height:30, marginLeft:20}}>
                         <TextInput ref={nameInput} style={styles.inputView} value={name} onChangeText={setName} onBlur={submitChange}/>
                     </View>
                     :
@@ -163,8 +163,9 @@ const Section = ({dispatch, sectionData, personId, isCreatingNew, editing}) => {
         {
             adding ?
             <View style={styles.txtContainer}>
-                <TextInput style={styles.inputView}
-                ref={input} onChangeText={setText} onBlur={textFinished}></TextInput>
+                <TextInput 
+                ref={input} 
+                onChangeText={setText} onBlur={textFinished}></TextInput>
             </View>
             :
             (
@@ -500,6 +501,7 @@ export default function PersonView({navigation, route}) {
                     {
                         editingName ?
                             <TextInput
+                                placeholder={state.name}
                                 style={styles.inputView}
                                 ref={nameInput}
                                 onChangeText={setName}
@@ -612,13 +614,11 @@ const styles = StyleSheet.create({
     },
     inputView:{
         backgroundColor:'transparent',
-        //borderBottomColor:'black',
-        //borderBottomWidth:1,
         fontSize:20,
         height:25,
-        width:'80%',
+        width:300,
         alignSelf:'center',
-        textAlign:'left',
+        textAlign:'center',
     },
     newTitle:{
         fontSize:20,

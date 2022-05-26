@@ -40,8 +40,8 @@ export default function NewPasswordScreen({navigation}){
                         </Text>
 
                 <View style={styles.inputFilter}>
-                    <TextInput style={styles.txtInput}
-                    placeholder=""
+                    <TextInput style={globalStyles.txtInput}
+                    placeholder="******"
                     value={current} onChangeText={setCurrent}
                     textContentType='password'
                     secureTextEntry={true}/>
@@ -52,7 +52,8 @@ export default function NewPasswordScreen({navigation}){
                         </Text>
                 <View style={styles.inputFilter}>           
                     <TextInput 
-                    style={styles.txtInput}
+                    placeholder="******"
+                    style={globalStyles.txtInput}
                     value={newP} onChangeText={setNewP}
                     textContentType='newPassword'
                     secureTextEntry={true}/>
