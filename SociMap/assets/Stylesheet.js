@@ -7,13 +7,14 @@ import { StyleSheet } from 'react-native';
 // TODO: change folder --> ./assets? 
 export default StyleSheet.create({
   header:{
-    marginBottom:0,
-    marginTop:30,
-    marginLeft:30,
-    fontSize: 40,
-    color:'#fff',
-    marginBottom:10,
-  },
+    color:'white', 
+    maxHeight:100,
+    fontSize:35, 
+    height:100, 
+    lineHeight:120,
+    alignSelf:'center', 
+    textAlign:'center', 
+},
   headerImg:{
     marginTop:0,
     width:null,

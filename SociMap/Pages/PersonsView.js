@@ -366,10 +366,10 @@ const styles = StyleSheet.create({
         backgroundColor:'#e3e3e3',
         borderColor:'#b5b5b5',
         textAlign:'center',
-        borderRadius: 10,
+        borderRadius: 20,
         padding:5,
         height:35,
-        width:220,
+        width:'130%',
     },
     searchIcon:{
         color:'grey',
@@ -406,13 +406,11 @@ const styles = StyleSheet.create({
     },
     listItem:{
         margin: 7.5,
-        padding:5,
+        padding:3,
         flexDirection: 'row',
-        backgroundColor:'#ebebeb', // TODO: background color of the items should be depending on what group+group color?
+        backgroundColor:'#ebebeb', 
         borderRadius:10,
         width:319,
-        marginLeft:20,
-        marginRight:20,
         justifyContent:'flex-start',
     },
     listContainer:{
@@ -425,7 +423,7 @@ const styles = StyleSheet.create({
         alignSelf:'center',
     },
     thumbnail:{
-        marginLeft:'2.5%',
+        //marginLeft:'2.5%',
         backgroundColor:'#ffffff',
         width:35,
         height:35,

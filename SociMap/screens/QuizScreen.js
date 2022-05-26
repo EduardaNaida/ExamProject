@@ -131,8 +131,8 @@ export const QuizView = () =>
                 ?   
                 <>
                     <View style={styleQuiz.container2}>
-                        <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
-                        <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
+                        <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions + " \n"}
+                        {"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
                     </View>
                     {thumbnail}
 
@@ -145,7 +145,7 @@ export const QuizView = () =>
                 amountOfQuestions != 0
                     ?
                     <View>
-                        <Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
+                        <Text style={styleQuiz.question}>{'You got ' + correctGuesses + '/' + amountOfQuestions + ' points '}</Text>
                         <TouchableOpacity style={styleQuiz.startOver} onPress={async () => {setLoading(true);setCorrectGuesses(0);setQuiz()}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
                     </View>
                     :
@@ -214,7 +214,7 @@ const styleQuiz = StyleSheet.create({
         width:70,
         height:70,
         borderRadius:35,
-        backgroundColor:'red'
+        backgroundColor:'white'
     },
       answers:{
         justifyContent: 'space-evenly',
@@ -222,24 +222,29 @@ const styleQuiz = StyleSheet.create({
         },
         answerButton:{
             alignSelf: 'center',
-          borderRadius: 10,
-          backgroundColor: "#4169E1",
-          width: 200,
-          margin: 10,
+            borderRadius: 20,
+            backgroundColor: '#ADD8E6',
+            width: 300,
+            margin: 10,
+            height:30,
         },
         startOver:{
             alignSelf: 'center',
-          borderRadius: 10,
-          backgroundColor: "#FF6B00",
-          width: 200,
+          borderRadius: 20,
+          backgroundColor: "#F8CA9C",
+          width: 300,
+          paddingLeft:30,
+          paddingRight:30,
           margin: 20,
-          zIndex: 1
+          zIndex: 1,
+
         },
         btnTxt:{
-          fontSize: 16,
-          textAlign: "center",
+          fontSize: 18,
+          textAlign: 'center',
           margin: 5,
-          color: 'white',  
+          padding:1,
+          color: 'black',  
         },
   });
   
