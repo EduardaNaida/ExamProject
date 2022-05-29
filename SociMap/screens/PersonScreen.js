@@ -1,14 +1,13 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert, KeyboardAvoidingView, ImagePropTypes } from 'react-native';
 import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User} from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
 import * as ImagePicker from 'expo-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import { useHeaderHeight } from '@react-navigation/elements'
 
 import globalStyles from '../assets/Stylesheet';
-import { Platform } from 'expo-modules-core';
-
 
 const PersonThumbnail = ({personData}) =>
 {
@@ -306,7 +305,7 @@ function stateUpdater(state, action) {
 
 export default function PersonView({navigation, route}) {
 
-    useEffect(() => {
+    /*useEffect(() => {
         navigation.setOptions({
             headerShown: true,
             headerTransparent: true,
@@ -314,7 +313,8 @@ export default function PersonView({navigation, route}) {
             headerTintColor: '#fff',
           });
     }, []);
-
+*/
+    const headerHeight = useHeaderHeight();
     
     const [state, dispatch] = useReducer(stateUpdater, {notes:[]});   
     const [adding, setAdding] = useState(false);
@@ -491,11 +491,9 @@ export default function PersonView({navigation, route}) {
     return (
         <View style={{flex:1}}>
         <Text style={globalStyles.header}>{state.name}</Text>
-        <KeyboardAwareScrollView borderTopLeftRadius={60} borderTopRightRadius={60}>
-            
-            <View style={styles.container}>
-                <ScrollView 
-                    showsVerticalScrollIndicator={true}>
+        <View style={globalStyles.container}>
+        <KeyboardAvoidingView style={{flex:1}} behavior='height' keyboardVerticalOffset = {headerHeight + 120}>
+        <KeyboardAwareScrollView style={{flex:1}} >
                     <TouchableOpacity onPress={setImage} style={{width:70, height:70, borderRadius:35, alignSelf:'center', marginTop:10}} disabled={!editing}>
                         <PersonThumbnail personData={state}/>
                     </TouchableOpacity>
@@ -570,9 +568,12 @@ export default function PersonView({navigation, route}) {
                     }
                     </>
                 }
-        </ScrollView>
-    </View> 
-    </KeyboardAwareScrollView>
+
+                
+            </KeyboardAwareScrollView>
+        </KeyboardAvoidingView>
+
+        </View> 
     </View>    
     );
 };
@@ -702,7 +703,6 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         marginTop:30,
         borderRadius:20,
-        height:30,
         width:300,
     },
     saveButton:{
