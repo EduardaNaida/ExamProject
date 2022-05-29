@@ -3,55 +3,53 @@ import { StyleSheet, ActivityIndicator, View, Text, Image, Pressable, TouchableO
 import { Check, Search } from "react-native-feather";
 import { GetPersonsFromPath } from "../FirebaseInterface";
 
-const PersonThumbnail = ({personData}) =>
-{
+const PersonThumbnail = ({ personData }) => {
     const f = () => {
-        if(!personData.name)
+        if (!personData.name)
             return '';
 
         const str = personData.name;
         const matches = str.match(/\b(\w)/g);
-        const acronym = matches.join('').substring(0,1); 
+        const acronym = matches.join('').substring(0, 1);
         return acronym;
     }
     const acro = f();
 
-    if(personData.img != ''){
+    if (personData.img != '') {
         return (
             <Image style={styles.thumbnail}
-            source={{uri:personData.img}}/>
+                source={{ uri: personData.img }} />
         );
     }
 
     return (<Text style={{
-            backgroundColor:personData.color, 
-            ...styles.thumbnail,
-            ...styles.thumbnailText
-        }}>
-            {acro}
-        </Text>);
+        backgroundColor: personData.color,
+        ...styles.thumbnail,
+        ...styles.thumbnailText
+    }}>
+        {acro}
+    </Text>);
 }
 
-const PersonWidget = ({personData, dispatch, state}) =>
-{
+const PersonWidget = ({ personData, dispatch, state }) => {
     const selected = state.selected.indexOf(personData.id) > -1;
 
     return (
-        <TouchableOpacity onPress={() => dispatch({type:'toggle select', id:personData.id})}>
-                <View style={styles.listItem}>
-                    {
-                        selected ?
-                        <View style={{...styles.thumbnail, justifyContent:'center', alignItems:'center'}}>
+        <TouchableOpacity onPress={() => dispatch({ type: 'toggle select', id: personData.id })}>
+            <View style={styles.listItem}>
+                {
+                    selected ?
+                        <View style={{ ...styles.thumbnail, justifyContent: 'center', alignItems: 'center' }}>
                             <Check
-                            style={{}}
-                            color={'black'}
+                                style={{}}
+                                color={'black'}
                             />
                         </View>
                         :
-                        <PersonThumbnail personData={personData}/>
-                    }
-                    <Text style={styles.itemText}>{personData.name}</Text>
-            
+                        <PersonThumbnail personData={personData} />
+                }
+                <Text style={styles.itemText}>{personData.name}</Text>
+
             </View>
         </TouchableOpacity>
     );
@@ -61,7 +59,7 @@ const PersonWidget = ({personData, dispatch, state}) =>
 const stateUpdater = (state, action) => {
     switch (action.type) {
         case 'init':
-            return {people:action.data, filtered:action.data, text:'', selected:[]};
+            return { people: action.data, filtered: action.data, text: '', selected: [] };
 
         case 'add':
             const dat = action.data;
@@ -69,18 +67,18 @@ const stateUpdater = (state, action) => {
             const n = [...state.people, dat];
             const filt = filterPersons(state.text, n)
             //console.log(filt);
-            return {...state, people:n, filtered:filt};
+            return { ...state, people: n, filtered: filt };
         case 'set text':
-            return {...state, text:action.data, filtered:filterPersons(action.data, state.people)};
+            return { ...state, text: action.data, filtered: filterPersons(action.data, state.people) };
 
         case 'toggle select':
             const index = state.selected.indexOf(action.id);
-            if(index == -1)
+            if (index == -1)
                 state.selected.push(action.id);
             else
                 state.selected.splice(index, 1);
 
-            return {...state};
+            return { ...state };
         default:
             console.log('Unkown');
             return state;
@@ -94,7 +92,7 @@ const filterPersons = (text, arr) => {
     }));
 };
 
-export default function AddExistingScreen ({navigation, route}){
+export default function AddExistingScreen({ navigation, route }) {
 
     const [loading, setLoading] = useState(true);
     const [state, dispatch] = useReducer(stateUpdater, null);
@@ -104,18 +102,18 @@ export default function AddExistingScreen ({navigation, route}){
         navigation.setOptions({
             headerShown: true,
             headerTransparent: true,
-            title:'',
+            title: '',
             headerTintColor: '#fff',
-          });
+        });
     }, []);
 
-    useEffect(async ()=>{
+    useEffect(async () => {
 
         //console.log('fetching...')        
         GetPersonsFromPath('').then(ret => {
             var dat = ret;
             console.log(dat);
-            if(route.params?.filterAway){
+            if (route.params?.filterAway) {
                 const filterAway = route.params?.filterAway;
                 dat = ret.filter(x => {
                     return filterAway.indexOf(x.id) == -1;
@@ -123,26 +121,26 @@ export default function AddExistingScreen ({navigation, route}){
             }
             console.log(dat);
 
-            dispatch({type:'init', data:dat});
+            dispatch({ type: 'init', data: dat });
 
             setLoading(false);
             //console.log('fetched persons')
         }).catch(err => {
             console.log(err);
-            
-            dispatch({type:'init', data:[]});
+
+            dispatch({ type: 'init', data: [] });
 
             setLoading(false);
         });
     }, []);
 
-    useEffect(()=>{
+    useEffect(() => {
         navigation.setOptions({
-            headerRight: () => SaveButton(state), 
+            headerRight: () => SaveButton(state),
         });
     }, [state])
 
-    
+
     const [prev, _] = useState(() => {
         const routes = navigation.getState()?.routes;
         const prevRoute = routes[routes.length - 2];
@@ -150,7 +148,7 @@ export default function AddExistingScreen ({navigation, route}){
         console.log(prevRoute.name);
         return prevRoute.name;
     })
-    
+
     const SaveButton = (stat) => {
         const pressed = () => {
             console.log(prev);
@@ -161,33 +159,32 @@ export default function AddExistingScreen ({navigation, route}){
 
             navigation.navigate({
                 name: prev,
-                params: { Add:JSON.stringify(ret) },
+                params: { Add: JSON.stringify(ret) },
                 merge: true,
             });
         }
 
         return (
-            <View style={{alignSelf:'flex-end'}}>
-                <Pressable  
+            <View style={{ alignSelf: 'flex-end' }}>
+                <Pressable
                     onPress={pressed}>
-                        
-                    <Check style={styles.saveButton} color='white'/>
-                        
+
+                    <Check style={styles.saveButton} color='white' />
+
                 </Pressable>
             </View>
         );
     }
 
-    
-    const RenderWidget = ({item}) =>{
+
+    const RenderWidget = ({ item }) => {
         //console.log(item);
 
-        return (<PersonWidget personData={item} navigation={navigation} dispatch={dispatch} state={state}/>)
+        return (<PersonWidget personData={item} navigation={navigation} dispatch={dispatch} state={state} />)
     };
 
 
-    if(loading)
-    {
+    if (loading) {
         return ((<ActivityIndicator
             size='large'
             color='blue'
@@ -196,9 +193,9 @@ export default function AddExistingScreen ({navigation, route}){
 
 
     return (
-        <View style={{flex:1}}>
+        <View style={{ flex: 1 }}>
 
-            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Groups</Text>
+            <Text style={{ color: 'white', fontSize: 40, height: 100, alignSelf: 'center', textAlign: 'center', textAlignVertical: 'center' }}>Groups</Text>
             <View style={styles.container}>
                 <View style={styles.menuBar}>
                     <View style={styles.inputView}>
@@ -227,106 +224,106 @@ export default function AddExistingScreen ({navigation, route}){
 
 
 const styles = StyleSheet.create({
-    header:{
+    header: {
         marginTop: 40,
         marginBottom: 10,
-        marginLeft:40,
+        marginLeft: 40,
         fontSize: 40,
-        
-        color:'#fff',
+
+        color: '#fff',
     },
-    container:{
-        alignItems:'center',
-        backgroundColor:'white',
-        marginLeft:0,
-        borderRadius:60,
-        borderBottomEndRadius:0,
-        borderBottomStartRadius:0,
-        flex:1,
-        alignSelf:'stretch',
+    container: {
+        alignItems: 'center',
+        backgroundColor: 'white',
+        marginLeft: 0,
+        borderRadius: 60,
+        borderBottomEndRadius: 0,
+        borderBottomStartRadius: 0,
+        flex: 1,
+        alignSelf: 'stretch',
     },
-    menuBar:{
-        marginTop:20, 
-        flexDirection:'row',
-        justifyContent:'space-between',
+    menuBar: {
+        marginTop: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
-    inputView:{
+    inputView: {
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: 'transparent',
-        width:320,
-        backgroundColor:'#e3e3e3',
-        borderColor:'#b5b5b5',
-        textAlign:'center',
+        width: 320,
+        backgroundColor: '#e3e3e3',
+        borderColor: '#b5b5b5',
+        textAlign: 'center',
         borderRadius: 10,
-        alignItems:'center'
+        alignItems: 'center'
     },
-    textInput:{
-        fontSize:20,
-        padding:5,
-        flex:1
+    textInput: {
+        fontSize: 20,
+        padding: 5,
+        flex: 1
     },
-    searchIcon:{
-        color:'grey',
-        height:20,
-        alignSelf:'center',
-        marginRight:4
+    searchIcon: {
+        color: 'grey',
+        height: 20,
+        alignSelf: 'center',
+        marginRight: 4
     },
-    buttonView:{
-        flex:1, 
+    buttonView: {
+        flex: 1,
     },
-    addButton:{
-        alignSelf:'center',
-        color:'black',
-        height:40,
+    addButton: {
+        alignSelf: 'center',
+        color: 'black',
+        height: 40,
     },
-    buttonStyle:{
-        width:60,
-        height:35,
-        borderRadius:80,
-        justifyContent:'center',
-        alignSelf:'center',
-        backgroundColor:'#ADD8E6',
-        opacity:0.8,
+    buttonStyle: {
+        width: 60,
+        height: 35,
+        borderRadius: 80,
+        justifyContent: 'center',
+        alignSelf: 'center',
+        backgroundColor: '#ADD8E6',
+        opacity: 0.8,
     },
-    buttonText:{
-        fontSize:15,
-        padding:10,
-        color:'black',
-        textAlign:'center',
+    buttonText: {
+        fontSize: 15,
+        padding: 10,
+        color: 'black',
+        textAlign: 'center',
     },
-    listSection:{
-        padding:5,
-        margin:10,
+    listSection: {
+        padding: 5,
+        margin: 10,
     },
-    listItem:{
+    listItem: {
         margin: 7.5,
-        padding:5,
+        padding: 5,
         flexDirection: 'row',
-        backgroundColor:'#D2F2CB', // TODO: background color of the items should be depending on what group+group color?
-        borderRadius:10,
-        width:320,
-        justifyContent:'flex-start',
+        backgroundColor: '#D2F2CB', // TODO: background color of the items should be depending on what group+group color?
+        borderRadius: 10,
+        width: 320,
+        justifyContent: 'flex-start',
     },
-    listContainer:{
-        flex:1,
+    listContainer: {
+        flex: 1,
     },
-    itemText:{
-        fontSize:20,
-        textAlign:'center',
-        marginLeft:'5%',
-        alignSelf:'center',
+    itemText: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginLeft: '5%',
+        alignSelf: 'center',
     },
-    thumbnail:{
-        marginLeft:'2.5%',
-        backgroundColor:'#ffffff',
-        width:35,
-        height:35,
-        opacity:0.8,
-        borderRadius:35,
+    thumbnail: {
+        marginLeft: '2.5%',
+        backgroundColor: '#ffffff',
+        width: 35,
+        height: 35,
+        opacity: 0.8,
+        borderRadius: 35,
     },
-    thumbnailText:{
-        fontSize:27,
+    thumbnailText: {
+        fontSize: 27,
         textAlign: 'center',
     },
 });

@@ -13,8 +13,8 @@ const styl = StyleSheet.create({
 const background = require('../img/background.png');
 
 export default SplashView = () => {
-    return(
-        
+    return (
+
         <ImageBackground source={background} style={styl.backgroundImage}></ImageBackground>
     );
 }

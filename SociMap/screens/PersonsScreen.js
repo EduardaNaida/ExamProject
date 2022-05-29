@@ -8,12 +8,19 @@ const Stack = createNativeStackNavigator();
 
 export default PersonsScreen = () => {
     return (
-        <Stack.Navigator initialRouteName="PersonsNested">
-            <Stack.Screen name='PersonsNested' component={PersonsView} options={{headerShown:false}}/>
-            <Stack.Screen name='Person' options={{headerShown: true,
-            headerTransparent: true,
-            title:'',
-            headerTintColor: '#fff',}} component={PersonView}/>
+        <Stack.Navigator initialRouteName="PersonsNested"
+            screenOptions={{
+                headerShown: true,
+                //headerTransparent: true,
+                headerStyle: {
+                    backgroundColor: 'transparent',
+                },
+                headerShadowVisible: false,
+                title: '',
+                headerTintColor: '#fff',
+            }}>
+            <Stack.Screen name='PersonsNested' component={PersonsView} />
+            <Stack.Screen name='Person' component={PersonView} />
         </Stack.Navigator>
     );
 }
