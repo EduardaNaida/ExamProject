@@ -14,7 +14,6 @@ export async function createQuiz(id) {
         if (question != null && !isQuestionInQuiz(quiz, question))
         {
             quiz.push(question);
-            console.log(question.text);
             i++;
         }
         
@@ -83,8 +82,6 @@ function multipleChoiceQuestion(choices, topic)
     var choicesAux = choices;
     choicesAux.splice(choicesAux.indexOf(person), 1);
     var correctAnswer = person.value[Math.floor(Math.random() * person.value.length)];
-    
-
     var text;
     switch (topic) {
         case 'work':
@@ -101,7 +98,7 @@ function multipleChoiceQuestion(choices, topic)
     for (var i = 0; i < choices.length && i < 3; i++) {
         var wrongAnswer = choicesAux[Math.floor(Math.random() * choicesAux.length)];
         var answer = wrongAnswer.value[Math.floor(Math.random() * wrongAnswer.value.length)];
-        if (!answers.some((element)=> element.text == answer))
+        if (!answers.some((element)=> element.text == answer) && person.headline.toLowerCase().trim() == wrongAnswer.headline.toLowerCase().trim())
         {
             answers.push({text:answer, correct:false});
         }
