@@ -72,9 +72,9 @@ export const QuizView = () => {
             setButtons(buttonList(firstElement.answers));
             setQuestionText(firstElement.text);
             setCurrentQuestion(0);
-            var img = q.img;
+            var img = firstElement.img;
             if (img && img != '') {
-                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: q.img }} />);
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: firstElement.img }} />);
             }
             else {
                 setQuestionThumbnail(<></>);
