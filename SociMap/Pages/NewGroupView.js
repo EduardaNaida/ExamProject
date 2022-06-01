@@ -3,28 +3,26 @@ import { TextInput, View, Button, StyleSheet, Pressable, Text } from "react-nati
 import { Save } from "react-native-feather";
 import ColorPicker from "react-native-wheel-color-picker";
 
+import globalStyles from '../assets/Stylesheet';
+
 const handleChange = (state, action) => {
     switch (action.type) {
         case 'change color':
-            return {...state, color:action.color};
+            return { ...state, color: action.color };
         case 'change name':
-            return {...state, name:action.name};
-    
+            return { ...state, name: action.name };
+
         default:
             return state;
     }
 }
 
-export default NewGroupView = ({route, navigation}) => {
-    const [state, dispatch] = useReducer(handleChange, {name:'', color:'red'});
+export default NewGroupView = ({ route, navigation }) => {
+    const [state, dispatch] = useReducer(handleChange, { name: '', color: 'red' });
 
-    useEffect(()=>{
+    useEffect(() => {
         navigation.setOptions({
-            headerShown: true,
-            headerTransparent: true,
-            title:'',
-            headerTintColor: '#fff',
-            headerRight: () => SaveButton(state), 
+            headerRight: () => SaveButton(state),
         });
     }, [state])
 
@@ -39,7 +37,7 @@ export default NewGroupView = ({route, navigation}) => {
     const SaveButton = (stat) => {
         const pressed = () => {
             //console.log(stat);
-            if(!stat?.name){
+            if (!stat?.name) {
                 alert('No name!');
                 navigation.pop();
                 return;
@@ -53,12 +51,12 @@ export default NewGroupView = ({route, navigation}) => {
         }
 
         return (
-            <View style={{alignSelf:'flex-end'}}>
-                <Pressable  
+            <View style={{ alignSelf: 'flex-end' }}>
+                <Pressable
                     onPress={pressed}>
-                        
-                    <Save style={styles.saveButton} color='white'/>
-                        
+
+                    <Save style={styles.saveButton} color='white' />
+
                 </Pressable>
             </View>
         );
@@ -68,22 +66,22 @@ export default NewGroupView = ({route, navigation}) => {
     //console.log(state);
 
     return (
-        <View style={{flex:1}}>
-            <Text style={{color:'white', fontSize:40, height:100, alignSelf:'center', textAlign:'center', textAlignVertical:'center'}}>Create New Group</Text>
-            <View style={{flex:1, alignSelf:'stretch', backgroundColor:'white', borderTopLeftRadius:60, borderTopRightRadius:60}}>
+        <View style={{ flex: 1 }}>
+            <Text style={globalStyles.header}>Create new group</Text>
+            <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: 'white', borderTopLeftRadius: 60, borderTopRightRadius: 60 }}>
                 <View style={styles.filter}>
-                    <Pressable style={styles.inputFilter} onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>
-                        <TextInput 
-                        ref={ref}
-                        placeholder="Enter Group Name"
-                        placeholderTextColor = "black"
-                        autoCapitalize = "none"
-                        style={styles.txtInput}
-                        value={state.name}
-                        onChangeText={(t) => dispatch({type:'change name', name:t})}/>
+                    <Pressable onPress={() => ref.current.isFocused() ? ref.current.blur() : ref.current.focus()}>
+                        <TextInput
+                            ref={ref}
+                            placeholder="Enter group name"
+                            placeholderTextColor={'grey'}
+                            autoCapitalize="none"
+                            style={globalStyles.txtInput}
+                            value={state.name}
+                            onChangeText={(t) => dispatch({ type: 'change name', name: t })} />
                     </Pressable>
                     <ColorPicker style={styles.colorPicker}
-                        onColorChangeComplete={(c) => dispatch({type:'change color', color:c})}
+                        onColorChangeComplete={(c) => dispatch({ type: 'change color', color: c })}
                         thumbSize={30}
                     />
                 </View>
@@ -93,34 +91,33 @@ export default NewGroupView = ({route, navigation}) => {
 }
 
 const styles = StyleSheet.create({
-    filter:{
-        marginTop:40,
+    filter: {
+        marginTop: 40,
         width: 300,
-        alignSelf:'center',
+        alignSelf: 'center',
     },
-    inputFilter:{
+    inputFilter: {
         marginTop: 10,
         marginLeft: 30,
         marginRight: 30,
-        height: 33,
+        padding:5,
         backgroundColor: 'white',
         //backgroundColor: 'rgba(65, 105, 225, 0.7)',
         borderRadius: 20,
-        borderWidth:2,
-        borderColor:'black'
+        borderWidth: 2,
+        borderColor: 'black'
     },
-    txtInput: {
-        alignSelf:'center',
-        height:'100%',
+    textInput: {
+        alignSelf: 'center',
         color: 'black',
         fontSize: 16,
-        textAlign:'center'
-      },
-    colorPicker:{
+        textAlign: 'center'
+    },
+    colorPicker: {
         marginTop: 10,
     },
     save: {
-        marginTop: 30 ,
+        marginTop: 30,
         color: 'black'
     }
 })

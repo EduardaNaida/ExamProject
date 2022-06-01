@@ -6,45 +6,31 @@ import { StyleSheet } from 'react-native';
 
 // TODO: change folder --> ./assets? 
 export default StyleSheet.create({
-  header:{
-    marginBottom:0,
-    marginTop:30,
-    marginLeft:30,
-    fontSize: 40,
-    color:'#fff',
-    marginBottom:10,
+  header: {
+    color: 'white',
+    fontSize: 35,
+    height: 60,
+    alignSelf: 'center',
+    textAlign: 'center',
   },
-  headerImg:{
-    marginTop:0,
-    width:null,
-    height:'60%',
+  container: {
+    padding: 10,
+    backgroundColor: '#ffffff',
+    flex: 1,
+    borderTopRightRadius: 60,
+    borderTopLeftRadius: 60,
+    alignSelf: 'stretch',
   },
-  container:{
-    //flex: 1,
-    padding:10,
-    //alignItems:'center',
-    backgroundColor:'#ffffff',
-    width:'100%',
-    //height:'100%',
-    top:'-40%',
-    borderRadius:60,
-    flexDirection:'column',
-    justifyContent:'space-evenly',
-    marginBottom:'-200%',
-    paddingBottom:60,
-    //alignItems:'center',
-}, 
+  txtInput: {
+    fontSize: 20,
+    backgroundColor: '#e3e3e3',
+    color:'black',
+    alignSelf: 'center',
+    justifyContent:'center',
+    borderRadius: 10,
+    padding: 7.5,
+    width: 300,
+    marginTop: 10,
+  },
 
-  });
-
-/** 
- * Use like this: 
- * import styles from './{path}/styles';
- *      <View
-            style={styles.container}>
-            <Button
-                style={styles.button}
-                title="Go to Lucy's profile"
-            />
-        </View>
- */
+});

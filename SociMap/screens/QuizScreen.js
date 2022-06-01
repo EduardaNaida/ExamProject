@@ -10,36 +10,37 @@ import { async } from '@firebase/util';
 
 const Stack = createNativeStackNavigator();
 
-export default QuizScreen = () =>
-{
-    return(
-        <Stack.Navigator>
-            <Stack.Screen name='QuizView' component={QuizView} options={{headerShown:false}}/>
+export default QuizScreen = () => {
+    return (
+        <Stack.Navigator screenOptions={{
+            headerShown: true,
+            //headerTransparent: true,
+            headerStyle: {
+                backgroundColor: 'transparent',
+            },
+            headerShadowVisible: false,
+            title: '',
+            headerTintColor: '#fff',
+        }}>
+            <Stack.Screen name='QuizView' component={QuizView} />
         </Stack.Navigator>
     );
 }
 
-export const QuizView = () =>
-{
-    function buttonList(data)
-    {
-        if (data != null)
-        {
-            return data.map((element, _) =>
-            {
-                return <CustomButton title={element.text} correct={element.correct}/>
+export const QuizView = () => {
+    function buttonList(data) {
+        if (data != null) {
+            return data.map((element, i) => {
+                return <CustomButton title={element.text} correct={element.correct} key={i}/>
             });
         }
         return <></>;
-        
+
     }
 
-    const CustomButton = ({title, correct}) =>
-    {
-        function onPressCorrect()
-        {
-            if (correct)
-            {
+    const CustomButton = ({ title, correct }) => {
+        function onPressCorrect() {
+            if (correct) {
                 setCorrectGuesses(correctGuesses + 1);
             }
             setCurrentQuestion(currentQuestion + 1);
@@ -61,18 +62,23 @@ export const QuizView = () =>
     const [loading, setLoading] = useState(true);
     const [thumbnail, setQuestionThumbnail] = useState(<></>);
 
-    async function setQuiz()
-    {
+    async function setQuiz() {
         const q = await createQuiz('');
         setAllQuestions(q);
         setAmountOfQuestions(q.length);
-        if (q.length)
-        {
+        if (q.length) {
             const firstElement = q[0];
             setQuestionData(firstElement);
             setButtons(buttonList(firstElement.answers));
             setQuestionText(firstElement.text);
             setCurrentQuestion(0);
+            var img = firstElement.img;
+            if (img && img != '') {
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: firstElement.img }} />);
+            }
+            else {
+                setQuestionThumbnail(<></>);
+            }
         }
         setLoading(false);
     }
@@ -82,20 +88,18 @@ export const QuizView = () =>
     }, []);
 
 
-    useEffect(() =>
-    {
-        if(currentQuestion < amountOfQuestions)
-        {
-            setQuestionData(allQuestions[currentQuestion]);
-            setButtons(buttonList(questionData.answers));
-            setQuestionText(questionData.text);
-            var img = questionData.img;
-            if (img && img != '')
-            {
-                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{uri:questionData.img}}/>);
+    useEffect(() => {
+
+        if (currentQuestion < amountOfQuestions) {
+            const q = allQuestions[currentQuestion];
+            setQuestionData(q);
+            setButtons(buttonList(q.answers));
+            setQuestionText(q.text);
+            var img = q.img;
+            if (img && img != '') {
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: q.img }} />);
             }
-            else
-            {
+            else {
                 setQuestionThumbnail(<></>);
             }
 
@@ -104,81 +108,81 @@ export const QuizView = () =>
 
 
 
-    return loading ?  
-    (<View style={{flex:1}}>
-        <View style={{marginTop:100}}></View>
-        <View style={styleQuiz.container}>
-            <Text style={styles.header}>Quiz</Text>
+    return loading ?
+        (<View style={{ flex: 1 }}>
+            <View style={{ marginTop: 100 }}></View>
             <View style={styleQuiz.container}>
-                <ActivityIndicator
-                size='large'
-                color='blue'
-                />
-                <Text style={styleQuiz.question}>Preparing Quiz</Text>
+                <Text style={styles.header}>Quiz</Text>
+                <View style={styleQuiz.container}>
+                    <ActivityIndicator
+                        size='large'
+                        color='blue'
+                    />
+                    <Text style={styleQuiz.question}>Preparing Quiz</Text>
+                </View>
             </View>
         </View>
-    </View>
-    )
-    :
-    (
-        <View style={{flex:1}}>
+        )
+        :
+        (
+            <View style={{ flex: 1 }}>
 
-            <Text style={styles.header}>Quiz</Text>
-            <View style={styleQuiz.container}>
-            
-            
-            {currentQuestion < amountOfQuestions
-                ?   
-                <>
-                    <View style={styleQuiz.container2}>
-                        <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions}</Text>
-                        <Text style={styleQuiz.statsText}>{"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
-                    </View>
-                    {thumbnail}
+                <Text style={styles.header}>Quiz</Text>
+                <View style={styleQuiz.container}>
 
 
-                    <Text style={styleQuiz.question}>{questionText}</Text>
-                    <View style={styleQuiz.answers}>{buttons}</View>
-                    
-                </>
-                :  
-                amountOfQuestions != 0
-                    ?
-                    <View>
-                        <Text style={styleQuiz.question}>{'You got ' + correctGuesses +'/' + amountOfQuestions + 'points'}</Text>
-                        <TouchableOpacity style={styleQuiz.startOver} onPress={async () => {setLoading(true);setCorrectGuesses(0);setQuiz()}}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
-                    </View>
-                    :
-                    <View>
-                        <Text style={styleQuiz.question}>{'You do not have enough contacts and/or notes to create a quiz at the moment'}</Text>
-                        <TouchableOpacity style={styleQuiz.startOver} onPress={() => {setLoading(true);setQuiz()}}><Text style={styleQuiz.btnTxt}>Retry</Text></TouchableOpacity>
-                    </View>
-                
+                    {currentQuestion < amountOfQuestions
+                        ?
+                        <>
+                            <View style={styleQuiz.container2}>
+                                <Text style={styleQuiz.statsText}>{"Score: " + correctGuesses + "/" + amountOfQuestions + " \n"}
+                                    {"Question: " + (currentQuestion + 1) + "/" + amountOfQuestions}</Text>
+                            </View>
+                            {thumbnail}
 
-            }
-        </View>
-    </View>);
+
+                            <Text style={styleQuiz.question}>{questionText}</Text>
+                            <View style={styleQuiz.answers}>{buttons}</View>
+
+                        </>
+                        :
+                        amountOfQuestions != 0
+                            ?
+                            <View>
+                                <Text style={styleQuiz.question}>{'You got ' + correctGuesses + '/' + amountOfQuestions + ' points '}</Text>
+                                <TouchableOpacity style={styleQuiz.startOver} onPress={async () => { setLoading(true); setCorrectGuesses(0); setQuiz() }}><Text style={styleQuiz.btnTxt}>Start over</Text></TouchableOpacity>
+                            </View>
+                            :
+                            <View>
+                                <Text style={styleQuiz.question}>{'You do not have enough contacts and/or notes to create a quiz at the moment'}</Text>
+                                <TouchableOpacity style={styleQuiz.startOver} onPress={() => { setLoading(true); setQuiz() }}><Text style={styleQuiz.btnTxt}>Retry</Text></TouchableOpacity>
+                            </View>
+
+
+                    }
+                </View>
+            </View>);
 }
 
 
 const styleQuiz = StyleSheet.create({
-    container:{
-        alignItems:'center',
-        backgroundColor:'white',
-        marginLeft:0,
-        borderRadius:60,
-        borderBottomEndRadius:0,
-        borderBottomStartRadius:0,
-        flex:1,
-        alignSelf:'stretch'
+    container: {
+        alignItems: 'center',
+        backgroundColor: 'white',
+        marginLeft: 0,
+        borderRadius: 60,
+        borderBottomEndRadius: 0,
+        borderBottomStartRadius: 0,
+        flex: 1,
+        alignSelf: 'stretch'
     },
-    container2:{
-        flexDirection:'row',
-        padding:20,
+    container2: {
+        flexDirection: 'row',
+        padding: 20,
         fontSize: 20,
         justifyContent: 'space-between',
     },
-    statsText:{
+    statsText: {
         fontSize: 20,
     },
     welcome: {
@@ -186,60 +190,63 @@ const styleQuiz = StyleSheet.create({
         fontSize: 30,
         margin: 20,
         color: 'white',
-      },
-      widgetContainer:{
+    },
+    widgetContainer: {
         alignItems: 'center',
         flexDirection: 'row',
-        flex:1,
-        marginBottom:5,
-        backgroundColor:'#b5b5b5',
-        padding:10,
-        borderRadius:10,
+        flex: 1,
+        marginBottom: 5,
+        backgroundColor: '#b5b5b5',
+        padding: 10,
+        borderRadius: 10,
     },
-      questionBox:{
-          margin: 20,
-          flexWrap: 'wrap',
-          justifyContent: 'space-around',
-          alignSelf: 'center',
-      },
-      question:{
+    questionBox: {
+        margin: 20,
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        alignSelf: 'center',
+    },
+    question: {
         margin: 20,
         fontSize: 30,
         justifyContent: 'center',
         alignSelf: 'center',
         textAlign: 'center'
     },
-    thumbnail:{
-        alignSelf:'center',
-        width:70,
-        height:70,
-        borderRadius:35,
-        backgroundColor:'red'
+    thumbnail: {
+        alignSelf: 'center',
+        width: 70,
+        height: 70,
+        borderRadius: 35,
+        backgroundColor: 'white'
     },
-      answers:{
+    answers: {
         justifyContent: 'space-evenly',
-          alignSelf: 'center',
-        },
-        answerButton:{
-            alignSelf: 'center',
-          borderRadius: 10,
-          backgroundColor: "#4169E1",
-          width: 200,
-          margin: 10,
-        },
-        startOver:{
-            alignSelf: 'center',
-          borderRadius: 10,
-          backgroundColor: "#FF6B00",
-          width: 200,
-          margin: 20,
-          zIndex: 1
-        },
-        btnTxt:{
-          fontSize: 16,
-          textAlign: "center",
-          margin: 5,
-          color: 'white',  
-        },
-  });
-  
+        alignSelf: 'center',
+    },
+    answerButton: {
+        alignSelf: 'center',
+        borderRadius: 20,
+        backgroundColor: '#ADD8E6',
+        width: 300,
+        margin: 10,
+    },
+    startOver: {
+        alignSelf: 'center',
+        borderRadius: 20,
+        backgroundColor: "#F8CA9C",
+        width: 300,
+        paddingLeft: 30,
+        paddingRight: 30,
+        margin: 20,
+        zIndex: 1,
+
+    },
+    btnTxt: {
+        fontSize: 18,
+        textAlign: 'center',
+        margin: 5,
+        padding: 1,
+        color: 'black',
+    },
+});
