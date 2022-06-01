@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert, KeyboardAvoidingView, ImagePropTypes } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, SafeAreaView, TextInput, Image, Modal, Pressable, ImageBackground, Alert, KeyboardAvoidingView, ImagePropTypes, Platform } from 'react-native';
 import { Edit, Plus, Save, Settings, Check, ChevronUp, CornerDownLeft, UserPlus, User } from 'react-native-feather';
 import { AddValueToNoteCustomId, GetPersonData, RemoveNote, RemoveValueFromNote, UpdateValueOfNote, AddNoteCustomId, SetPersonImage, UpdatePersonFields, RenameNote } from '../FirebaseInterface';
 import uuid from 'react-native-uuid';
@@ -489,13 +489,23 @@ export default function PersonView({ navigation, route }) {
     };
 
 
+    const PlatfromSpecificKeybordStuff = ({children}) => {
+        if(Platform.OS == 'ios')
+            return children
+
+        return(
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior='height' keyboardVerticalOffset={headerHeight + 120}>
+                {children}
+            </KeyboardAvoidingView>
+        )
+    }
     //console.log(state.name);
 
     return (
         <View style={{ flex: 1 }}>
             <Text style={globalStyles.header}>{state.name}</Text>
             <View style={globalStyles.container}>
-                <KeyboardAvoidingView style={{ flex: 1 }} behavior='height' keyboardVerticalOffset={headerHeight + 120}>
+                <PlatfromSpecificKeybordStuff>
                     <KeyboardAwareScrollView style={{ flex: 1 }} >
                         <TouchableOpacity onPress={setImage} style={{ width: 70, height: 70, borderRadius: 35, alignSelf: 'center', marginTop: 10 }} disabled={!editing}>
                             <PersonThumbnail personData={state} />
@@ -574,7 +584,7 @@ export default function PersonView({ navigation, route }) {
 
 
                     </KeyboardAwareScrollView>
-                </KeyboardAvoidingView>
+                </PlatfromSpecificKeybordStuff>
 
             </View>
         </View>

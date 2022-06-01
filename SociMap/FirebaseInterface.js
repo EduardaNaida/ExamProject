@@ -29,7 +29,6 @@ const db = initializeFirestore(app, {
 })
 const storage = getStorage();
 
-
 enableIndexedDbPersistence(db)
   .catch((err) => {
       if (err.code == 'failed-precondition') {
