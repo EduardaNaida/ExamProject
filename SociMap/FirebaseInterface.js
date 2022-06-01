@@ -11,7 +11,7 @@ import {
     updatePassword,
     deleteUser
 } from 'firebase/auth/react-native';
-import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc, enableIndexedDbPersistence, initializeFirestore, CACHE_SIZE_UNLIMITED } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const app = initializeApp({
@@ -24,8 +24,24 @@ const app = initializeApp({
     measurementId: "G-DB1JX1T6L8"
 });
 const auth = getAuth();
-const db = getFirestore();
+const db = initializeFirestore(app, {
+    cacheSizeBytes: CACHE_SIZE_UNLIMITED
+})
 const storage = getStorage();
+
+
+enableIndexedDbPersistence(db)
+  .catch((err) => {
+      if (err.code == 'failed-precondition') {
+          // Multiple tabs open, persistence can only be enabled
+          // in one tab at a a time.
+          // ...
+      } else if (err.code == 'unimplemented') {
+          // The current browser does not support all of the
+          // features required to enable persistence
+          // ...
+      }
+  });
 
 export async function AttemptSignIn(email, password) {
     //try{
