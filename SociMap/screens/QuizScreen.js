@@ -72,6 +72,13 @@ export const QuizView = () => {
             setButtons(buttonList(firstElement.answers));
             setQuestionText(firstElement.text);
             setCurrentQuestion(0);
+            var img = q.img;
+            if (img && img != '') {
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: q.img }} />);
+            }
+            else {
+                setQuestionThumbnail(<></>);
+            }
         }
         setLoading(false);
     }
@@ -82,13 +89,15 @@ export const QuizView = () => {
 
 
     useEffect(() => {
+
         if (currentQuestion < amountOfQuestions) {
-            setQuestionData(allQuestions[currentQuestion]);
-            setButtons(buttonList(questionData.answers));
-            setQuestionText(questionData.text);
-            var img = questionData.img;
+            const q = allQuestions[currentQuestion];
+            setQuestionData(q);
+            setButtons(buttonList(q.answers));
+            setQuestionText(q.text);
+            var img = q.img;
             if (img && img != '') {
-                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: questionData.img }} />);
+                setQuestionThumbnail(<Image style={styleQuiz.thumbnail} source={{ uri: q.img }} />);
             }
             else {
                 setQuestionThumbnail(<></>);
