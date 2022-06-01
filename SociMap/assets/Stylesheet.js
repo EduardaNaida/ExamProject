@@ -24,10 +24,11 @@ export default StyleSheet.create({
   txtInput: {
     fontSize: 20,
     backgroundColor: '#e3e3e3',
-    paddingLeft: 10,
+    color:'black',
     alignSelf: 'center',
+    justifyContent:'center',
     borderRadius: 10,
-    height: 35,
+    padding: 7.5,
     width: 300,
     marginTop: 10,
   },

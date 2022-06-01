@@ -74,6 +74,7 @@ export default NewGroupView = ({ route, navigation }) => {
                         <TextInput
                             ref={ref}
                             placeholder="Enter group name"
+                            placeholderTextColor={'grey'}
                             autoCapitalize="none"
                             style={globalStyles.txtInput}
                             value={state.name}

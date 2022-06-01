@@ -290,6 +290,7 @@ export default PersonsView = ({ navigation, route, isChild }) => {
                             <TextInput
                                 style={styles.textInput}
                                 placeholder='Search'
+                                placeholderTextColor={'grey'}
                                 value={state.text}
                                 onChangeText={(text) => dispatch({ type: 'set text', data: text })} />
                             <Search style={styles.searchButton} height={20} alignSelf={'center'} />
