@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, LogBox  } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, LogBox } from 'react-native';
 import PersonsView from './Pages/PersonsView';
 import SplashView from './Pages/SplashView';
 import { DelayedLoginCheck, SetAuthStateChangeCallback } from './FirebaseInterface';
@@ -29,19 +29,19 @@ export default function App() {
   const [splashing, setSplashing] = useState(true);
   const [logged, setLogged] = useState(false);
 
-  useEffect(()=>{
-    return SetAuthStateChangeCallback(user =>{
+  useEffect(() => {
+    return SetAuthStateChangeCallback(user => {
       setSplashing(false);
 
       setLogged(user != null);
     });
-  },[]);
+  }, []);
 
-  if(splashing)
-    return(<SplashView></SplashView>);
+  if (splashing)
+    return (<SplashView></SplashView>);
 
 
-  return !logged ? 
+  return !logged ?
     (
       <LoginView></LoginView>
     )
