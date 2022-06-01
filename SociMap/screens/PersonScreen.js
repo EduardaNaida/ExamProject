@@ -120,7 +120,7 @@ const Section = ({ dispatch, sectionData, personId, isCreatingNew, editing }) =>
             <View style={styles.categoryContainer}>
                 {
                     changingName && editing ?
-                        <View style={{ ...styles.txtContainer, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', width: '70%', height: 30, marginLeft: 20 }}>
+                        <View style={{ ...styles.txtContainer, justifyContent: 'center', alignItems: 'center', alignSelf: 'center', width: '70%',  marginLeft: 20 }}>
                             <TextInput ref={nameInput} style={styles.inputView} value={name} onChangeText={setName} onBlur={submitChange} />
                         </View>
                         :
@@ -607,12 +607,10 @@ const styles = StyleSheet.create({
         borderRadius: 60,
         borderBottomEndRadius: 0,
         borderBottomStartRadius: 0,
-        alignSelf: 'stretch',
-        height: '200%',
+        alignSelf: 'stretch'
     },
     txtContainer: {
         margin: 10,
-        height: 35,
         padding: 7,
         flexDirection: 'row',
         backgroundColor: '#ebebeb',
@@ -624,7 +622,6 @@ const styles = StyleSheet.create({
     inputView: {
         backgroundColor: 'transparent',
         fontSize: 20,
-        height: 25,
         width: 300,
         alignSelf: 'center',
         textAlign: 'center',

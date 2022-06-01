@@ -55,6 +55,9 @@ const PersonWidget = ({ personData, navigation, dispatch }) => {
 const stateUpdater = (state, action) => {
     switch (action.type) {
         case 'init':
+            let p = [];
+            if(!action.data)
+                p = action.data;
             return { people: action.data, filtered: action.data, text: '', selected: null };
 
         case 'add':
@@ -89,7 +92,12 @@ const stateUpdater = (state, action) => {
             return { ...state };
 
         case 'add group':
-            const newArr = state.people.concat(action.data);
+            const newArr = [];
+            if(state?.people)
+                newArr.concat(state.people);
+            if(action?.data)
+                newArr.concat(action.data);
+
             const newFilt = filterPersons(state.text, newArr);
 
             return { ...state, people: newArr, filtered: newFilt };
@@ -183,7 +191,7 @@ export default PersonsView = ({ navigation, route, isChild }) => {
 
             AddPersonIdToCollection(path, element.id);
         }
-
+        route.params.Add = '';
         dispatch({ type: 'add group', data: toAdd });
     }, [route.params?.Add]);
 

@@ -1,41 +1,25 @@
 import { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { SetNewPassword } from "../FirebaseInterface";
+import { deleteAcount, SetNewPassword } from "../FirebaseInterface";
 import globalStyles from '../assets/Stylesheet';
 
-export default function NewPasswordScreen({ navigation }) {
+export default function DeleteAcountScreen({ navigation }) {
     const [current, setCurrent] = useState('');
-    const [newP, setNewP] = useState('');
 
-    const setPassword = async () => {
-        /*switch (await SetNewPassword(current, newP)) {
-            case 'sucess':
-                navigation.pop();
-                break;
-            case 'incorrect':
-                alert('Incorrect Password');
-                break;
-            case 'invalid':
-                alert('Invalid Password');
-                break;
-            default:
-                alert('Unkown error');
-                break;
-        }*/
-        try {
-            await SetNewPassword(current, newP);
-            navigation.pop();
+    const confirm = async () => {
+        try{
+            await deleteAcount(current);
         }
-        catch (err) {
+        catch (err){
             alert(err);
         }
-    };
+    }
 
     return (
         <View style={{ flex: 1 }}>
-            <Text style={globalStyles.header}>Change password</Text>
+            <Text style={globalStyles.header}>Delete Acount</Text>
             <View style={styles.info}>
-            <Text style={styles.txt}>
+                <Text style={styles.txt}>
                     Current password:
                 </Text>
 
@@ -48,20 +32,7 @@ export default function NewPasswordScreen({ navigation }) {
                         textContentType='password'
                         secureTextEntry={true} />
                 </View>
-
-                <Text style={styles.txt} >
-                    New password:
-                </Text>
-                <View style={styles.inputFilter}>
-                    <TextInput
-                        placeholder="******"
-                        style={globalStyles.txtInput}
-                        textAlign={'center'}
-                        value={newP} onChangeText={setNewP}
-                        textContentType='newPassword'
-                        secureTextEntry={true} />
-                </View>
-                <TouchableOpacity style={styles.btnNew} onPress={setPassword}>
+                <TouchableOpacity style={styles.btnNew} onPress={confirm}>
                     <Text style={styles.btnText}>Confirm</Text>
                 </TouchableOpacity>
             </View>

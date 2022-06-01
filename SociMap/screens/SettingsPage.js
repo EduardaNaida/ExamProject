@@ -4,8 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { GetCurrentUser, SignOut } from '../FirebaseInterface';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import DeleteAcountScreen from './DeleteAcountScreen';
 import NewPasswordScreen from './NewPasswordScreen';
 import globalStyles from '../assets/Stylesheet';
+
 
 function SettingsPageAux({ navigation }) {
 
@@ -44,7 +46,7 @@ function SettingsPageAux({ navigation }) {
               <Text style={styles.infoBtn}>Language</Text>
             </Pressable>
 
-            <Pressable style={styles.userBtn} onPress={() => navigation.navigate('NewPasswordScreen')}>
+            <Pressable style={styles.userBtn} onPress={() => {navigation.navigate('NewPasswordScreen')}}>
               <Text style={styles.infoBtn}>Change password</Text>
             </Pressable>
 
@@ -55,6 +57,11 @@ function SettingsPageAux({ navigation }) {
             <Pressable style={styles.userBtn}>
               <Text style={styles.infoBtn}>About</Text>
             </Pressable>
+
+            <Pressable style={styles.userBtn} onPress={() => {navigation.navigate('DeleteAcountScreen')}}>
+              <Text style={styles.infoBtn1} >Delete Acount</Text>
+            </Pressable>
+
             <Pressable style={styles.userBtn} onPress={() => handleSignOut()}>
               <Text style={styles.infoBtn1} >Log out</Text>
             </Pressable>
@@ -88,6 +95,7 @@ function SettingsPage() {
     }} initialRouteName='Settings'>
       <Stack.Screen name='SettingsNested' component={SettingsPageAux} />
       <Stack.Screen name='NewPasswordScreen' component={NewPasswordScreen} />
+      <Stack.Screen name='DeleteAcountScreen' component={DeleteAcountScreen} />
     </Stack.Navigator>
   );
 }

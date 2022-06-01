@@ -195,7 +195,7 @@ export default function AddExistingScreen({ navigation, route }) {
     return (
         <View style={{ flex: 1 }}>
 
-            <Text style={{ color: 'white', fontSize: 40, height: 100, alignSelf: 'center', textAlign: 'center', textAlignVertical: 'center' }}>Groups</Text>
+            <Text style={{ color: 'white', fontSize: 40, height: 100, alignSelf: 'center', textAlign: 'center', textAlignVertical: 'center' }}>Add</Text>
             <View style={styles.container}>
                 <View style={styles.menuBar}>
                     <View style={styles.inputView}>

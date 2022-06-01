@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginLeft: 30,
         marginRight: 30,
-        height: 33,
+        padding:5,
         backgroundColor: 'white',
         //backgroundColor: 'rgba(65, 105, 225, 0.7)',
         borderRadius: 20,
@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     },
     textInput: {
         alignSelf: 'center',
-        height: '100%',
         color: 'black',
         fontSize: 16,
         textAlign: 'center'

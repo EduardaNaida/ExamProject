@@ -8,7 +8,8 @@ import {
     onAuthStateChanged,
     reauthenticateWithCredential,
     EmailAuthProvider,
-    updatePassword
+    updatePassword,
+    deleteUser
 } from 'firebase/auth/react-native';
 import { getFirestore, collection, getDocs, doc, getDoc, addDoc, deleteDoc, updateDoc, setDoc } from 'firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
@@ -332,4 +333,17 @@ export async function RemovePersonFromCollection(path, personId) {
 
 export async function RenameNote(personId, noteId, newName) {
     await updateDoc(doc(db, 'Users', GetUid(), 'People', personId, 'Notes', noteId), { headline: newName });
+}
+
+export async function deleteAcount(password){
+    const credential = EmailAuthProvider.credential(
+        GetCurrentUser().email,
+        password
+    );
+
+
+    await reauthenticateWithCredential(GetCurrentUser(), credential);
+
+    await deleteDoc(doc(db, `Users/${GetUid()}`));
+    await deleteUser(GetCurrentUser());
 }

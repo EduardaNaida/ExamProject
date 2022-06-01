@@ -33,9 +33,18 @@ export default LoginView = ({ SetLogged }) => {
     <ImageBackground source={background} style={styl.backgroundImage}>
 
       <NavigationContainer theme={navTheme}>
-        <Stack.Navigator initialRouteName='LoginScreen'>
+        <Stack.Navigator initialRouteName='LoginScreen' screenOptions={{
+            headerShown: true,
+            //headerTransparent: true,
+            headerStyle: {
+                backgroundColor: 'transparent',
+            },
+            headerShadowVisible: false,
+            title: '',
+            headerTintColor: '#fff',
+        }}>
           <Stack.Screen options={{ headerShown: false }} name="LoginScreen" component={LoginScreen} initialParams={{ UpdateLogged: SetLogged }} />
-          <Stack.Screen options={{ headerShown: false }} name="ResetPasswordScreen" component={ResetPasswordScreen} />
+          <Stack.Screen name="ResetPasswordScreen" component={ResetPasswordScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </ImageBackground>);

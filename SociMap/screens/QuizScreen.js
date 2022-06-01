@@ -30,8 +30,8 @@ export default QuizScreen = () => {
 export const QuizView = () => {
     function buttonList(data) {
         if (data != null) {
-            return data.map((element, _) => {
-                return <CustomButton title={element.text} correct={element.correct} />
+            return data.map((element, i) => {
+                return <CustomButton title={element.text} correct={element.correct} key={i}/>
             });
         }
         return <></>;
