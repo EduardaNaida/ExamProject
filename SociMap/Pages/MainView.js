@@ -19,31 +19,24 @@ const Blank = () => {
     );
 };
 
-
 const background = require('../img/background.png');
-
 const navTheme = {
-    ...DefaultTheme,
-    colors: {
-        ...DefaultTheme.colors,
-        background: 'transparent',
-    },
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'transparent',
+  },
 };
 
+
 const styl = StyleSheet.create({
-    backgroundImage: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: Dimensions.get('window').width,
-        height: Dimensions.get('window').height //+ StatusBar.currentHeight,
-    },
-    icon: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    }
+  backgroundImage: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height + StatusBar.currentHeight,
+  },
 })
 
 
@@ -53,7 +46,7 @@ export default MainView = ({ }) => {
 
     return (
         <ImageBackground source={background} style={styl.backgroundImage}>
-
+            <StatusBar backgroundColor='transparent' translucent/>
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={{ backgroundColor: 'white', position: 'absolute', bottom: 0, height: 60, left: 0, right: 0 }} />
                 <NavigationContainer theme={navTheme}>
