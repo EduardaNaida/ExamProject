@@ -27,7 +27,7 @@ function isQuestionInQuiz(quiz, question)
     {
         return false;
     }
-    return quiz.some((element)=> element.text == question.text);
+    return quiz.some((element)=> element.text.toLowerCase().trim() == question.text.toLowerCase().trim());
 }
 
 function createQuestion(dict, topics)
