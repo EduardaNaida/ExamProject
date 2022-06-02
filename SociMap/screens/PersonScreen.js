@@ -505,7 +505,7 @@ export default function PersonView({ navigation, route }) {
         <View style={{ flex: 1 }}>
             <Text style={globalStyles.header}>{state.name}</Text>
             <View style={globalStyles.container}>
-                <PlatfromSpecificKeybordStuff>
+                <KeyboardAvoidingView style={{ flex: 1 }} behavior='height' keyboardVerticalOffset={headerHeight + 120}>
                     <KeyboardAwareScrollView style={{ flex: 1 }} >
                         <TouchableOpacity onPress={setImage} style={{ width: 70, height: 70, borderRadius: 35, alignSelf: 'center', marginTop: 10 }} disabled={!editing}>
                             <PersonThumbnail personData={state} />
@@ -584,7 +584,7 @@ export default function PersonView({ navigation, route }) {
 
 
                     </KeyboardAwareScrollView>
-                </PlatfromSpecificKeybordStuff>
+                </KeyboardAvoidingView>
 
             </View>
         </View>
