@@ -165,6 +165,7 @@ const Section = ({ dispatch, sectionData, personId, isCreatingNew, editing }) =>
                 adding ?
                     <View style={styles.txtContainer}>
                         <TextInput
+                            style={styles.inputView}
                             ref={input}
                             onChangeText={setText} onBlur={textFinished}></TextInput>
                     </View>
