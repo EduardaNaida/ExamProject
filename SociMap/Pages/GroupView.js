@@ -150,8 +150,7 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'center',
         color: 'black',
-        width: 300,
-        marginLeft: 30,
+        width: '100%',
     },
     groupCircle: {
         textAlign: 'center',
