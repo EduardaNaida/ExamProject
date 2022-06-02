@@ -106,10 +106,10 @@ export default GroupView = ({ route, navigation }) => {
                 {
                     state.map(
                         x =>
-                            <TouchableOpacity key={x.id} onPress={() => navDeeper(x.id, x.name)} onLongPress={() => setSelected(x)}>
-                                <View style={{ ...styles.groupCircle, backgroundColor: x.color }}>
+                            <TouchableOpacity style={{width:100, justifyContent:'center', alignItems:'center', marginTop:20}} key={x.id} onPress={() => navDeeper(x.id, x.name)} onLongPress={() => setSelected(x)}>
+                                <View style={{backgroundColor: x.color, width:50, height:50, borderRadius:25 }}>
                                 </View>
-                                <Text style={styles.groupName}>
+                                <Text style={{textAlign: 'center', fontSize: 16, width:'100%'}}>
                                     {x.name}
                                 </Text>
                             </TouchableOpacity>
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     groupContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         color: 'black',
         width: 300,
         marginLeft: 30,
